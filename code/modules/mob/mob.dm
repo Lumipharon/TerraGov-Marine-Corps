@@ -439,7 +439,7 @@
 	put_in_hands(I)
 	return TRUE
 
-///weap swap///
+///////weap swap/////////
 /mob/proc/find_weap_from_slot_if_possible(slot)
 	if(!slot)
 		return FALSE
@@ -456,9 +456,9 @@
 		return FALSE
 	if (slot == SLOT_IN_B_HOLSTER && ( !( istype(I, /obj/item/storage/holster) || istype(I, /obj/item/weapon) ) ) )
 		return FALSE
-	if (slot == SLOT_IN_ACCESSORY && (!istype(I, /obj/item/clothing/under ) ) ) //note to self, draw code has a further istype for the attachment, does this also need an early return if there is no attachment, or it's fine? probs fine
+	if (slot == SLOT_IN_ACCESSORY && (!istype(I, /obj/item/clothing/under ) ) )
 		return FALSE
-	if (slot == SLOT_IN_L_POUCH && ( !( istype(I, /obj/item/storage/holster) || istype(I, /obj/item/weapon) || istype(I, /obj/item/storage/pouch/pistol) ) ) ) //if pistol pouches get merged into holsters, this will need to be updated
+	if (slot == SLOT_IN_L_POUCH && ( !( istype(I, /obj/item/storage/holster) || istype(I, /obj/item/weapon) || istype(I, /obj/item/storage/pouch/pistol) ) ) )
 		return FALSE
 	if (slot == SLOT_IN_R_POUCH && ( !( istype(I, /obj/item/storage/holster) || istype(I, /obj/item/weapon) || istype(I, /obj/item/storage/pouch/pistol) ) ) )
 		return FALSE
@@ -470,8 +470,7 @@
 			return FALSE
 		var/obj/item/W = B.current_gun
 		B.remove_from_storage(W, user = src)
-		put_in_hands(W)
-		return TRUE
+		return W
 	//holster items
 	if (istype(I, /obj/item/storage/holster) )
 		var/obj/item/storage/holster/B = I
@@ -479,8 +478,7 @@
 			return FALSE
 		var/obj/item/W = B.holstered_item
 		B.remove_from_storage(W, user = src)
-		put_in_hands(W)
-		return TRUE
+		return W
 	//webbing holsters
 	if (istype(I, /obj/item/clothing/under))
 		var/obj/item/clothing/under/B = I
@@ -491,71 +489,17 @@
 			return FALSE
 		var/obj/item/W = S.contents[length(S.contents)]
 		S.remove_from_storage(W, user = src)
-		put_in_hands(W)
-		return TRUE
-		//general storage module
-	if (istype(I, /obj/item/clothing/suit))
-		var/obj/item/clothing/suit/B = I
-		if (!istype(B.attachments_by_slot[ATTACHMENT_SLOT_STORAGE], /obj/item/armor_module/storage) )
-			return FALSE
-		var/obj/item/storage/S = B.attachments_by_slot[ATTACHMENT_SLOT_STORAGE].storage
-		if(!length(S.contents))
-			return FALSE
-		var/obj/item/W = S.contents[length(S.contents)]
-		S.remove_from_storage(W, user = src)
-		put_in_hands(W)
-		return TRUE
-	//suit internal storage
-	if(istype(I, /obj/item/clothing/suit/storage))
-		var/obj/item/clothing/suit/storage/S = I
-		if(!S.pockets)
-			return FALSE
-		var/obj/item/storage/internal/P = S.pockets
-		if(!length(P.contents))
-			return FALSE
-		var/obj/item/W = P.contents[length(P.contents)]
-		P.remove_from_storage(W, user = src)
-		put_in_hands(W)
-		return TRUE
-	//boots
-	if(istype(I, /obj/item/clothing/shoes/marine))
-		var/obj/item/clothing/shoes/marine/S = I
-		if(!S.pockets)
-			return FALSE
-		var/obj/item/storage/internal/P = S.pockets
-		if(!length(P.contents))
-			return FALSE
-		var/obj/item/W = P.contents[length(P.contents)]
-		P.remove_from_storage(W, user = src)
-		put_in_hands(W)
-		return TRUE
-	//helmet
-	if(istype(I, /obj/item/clothing/head))
-		var/obj/item/clothing/head/B = I
-		if (!istype(B.attachments_by_slot[ATTACHMENT_SLOT_STORAGE], /obj/item/armor_module/storage) )
-			return FALSE
-		var/obj/item/storage/S = B.attachments_by_slot[ATTACHMENT_SLOT_STORAGE].storage
-		if(!length(S.contents))
-			return FALSE
-		var/obj/item/W = S.contents[length(S.contents)]
-		S.remove_from_storage(W, user = src)
-		put_in_hands(W)
-		return TRUE
-	//catch all storage items
-	if(istype(I, /obj/item/storage))
-		var/obj/item/storage/S = I
-		if(!length(S.contents))
-			return FALSE
-		var/obj/item/W = S.contents[length(S.contents)]
-		S.remove_from_storage(W, user = src)
-		put_in_hands(W)
-		return TRUE
+		return W
+	//general storage module, removed for now
+	//suit internal storage, removed for now
+	//boots, removed for now
+	//helmet, removed for now
+	//catch all storage items, removed for now
+
 	//just pulls the actually equipped item if all else fails
-	if(CHECK_BITFIELD(I.flags_inventory, NOQUICKEQUIP))
+	if( CHECK_BITFIELD(I.flags_inventory, NOQUICKEQUIP) || !istype(I, /obj/item/weapon) )
 		return FALSE
-	temporarilyRemoveItemFromInventory(I)
-	put_in_hands(I)
-	return TRUE
+	return I
 
 //end of weap swap
 

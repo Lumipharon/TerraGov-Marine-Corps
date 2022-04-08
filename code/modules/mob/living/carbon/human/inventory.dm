@@ -33,41 +33,45 @@
 
 ///weaponswap proc
 /mob/living/carbon/human/proc/swap_weapon()
-	SIGNAL_HANDLER_DOES_SLEEP
-	. = COMSIG_KB_ACTIVATED //The return value must be a flag compatible with the signals triggering this.
 
-	if(incapacitated() || lying_angle || istype(loc, /obj/vehicle/multitile/root/cm_armored))
+	//checks for active weapon
+	var/obj/item/A = get_active_held_item()
+	if(!A || (!istype(A, /obj/item/weapon) ) )
 		return
+	var/obj/item/weapon/current_weapon = A
 
-	var/obj/item/I = get_active_held_item()
-	if(!I)
-		return
-	//the draw part - result needs to be found but not immediately put in hand
+	//???
 	if(next_move > world.time)
 		return
+	//find weap to draw later
+	var/obj/item/I = null
 	if(client?.prefs?.preferred_slot)
-		if(find_weap_from_slot_if_possible(client.prefs.preferred_slot))
-			next_move = world.time + 1
-		//if a weap isn't found in the preferred slot, check all slots per draw order
-		else for(var/slot in SLOT_DRAW_ORDER)
-			if(find_weap_from_slot_if_possible(slot))
-				next_move = world.time + 1
-			else
-				return //no weapon found, end
-	//store part
-	if(s_active && s_active.can_be_inserted(I)) //checks if the active weapon can be stored in the active (open) storage
-		s_active.handle_item_insertion(I, FALSE, src) //chucks it in active storage
-		return //end - bad
-	if(client?.prefs?.preferred_slot) //if it doesn't go in active storage, check preferred storage
-		if(equip_to_slot_if_possible(I, client.prefs.preferred_slot, FALSE, FALSE, FALSE)) //same shit
-			return //end - bad
-	if(!equip_to_appropriate_slot(I, FALSE)) //if pref slot doesn't work, cycle through all slots
-		return //if it can't fit in anything, end - bad
-	//updates hand hud
+		I = find_weap_from_slot_if_possible(client.prefs.preferred_slot)
+	for (var/slot in SLOT_DRAW_ORDER)
+		I = (find_weap_from_slot_if_possible(slot))
+		if (I)
+			break
+	if (!I)
+		return
+	//we now have a I as an item to draw, or proc has ended
+
+	//remove it from inventory temporarily
+	temporarilyRemoveItemFromInventory(I)
+
+	//this SHOULD place current_gun if possible. if it fails, the newgun is put back (not necessarily the same place but FUCK YOU)
+	if(!equip_to_appropriate_slot(current_weapon, FALSE))
+		equip_to_appropriate_slot(I, FALSE)
+		return
+
+	//puts newgun into hand
+	put_in_hands(I)
+
+	//this may or may not be needed tp update your inventory hud.
 	if(hand)
 		update_inv_l_hand(FALSE)
 	else
 		update_inv_r_hand(FALSE)
+
 
 /mob/living/carbon/human/proc/equip_in_one_of_slots(obj/item/W, list/slots, del_on_fail = 1)
 	for (var/slot in slots)
