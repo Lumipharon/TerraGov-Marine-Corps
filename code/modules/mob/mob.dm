@@ -452,7 +452,7 @@
 	//the slot define specific early returns
 	if (slot == SLOT_IN_HOLSTER && ( !( istype(I, /obj/item/storage/holster) || istype(I, /obj/item/weapon) || istype(I, /obj/item/storage/belt/gun) ) ) )
 		return FALSE
-	if (slot == SLOT_IN_S_HOLSTER && ( !( istype(I, /obj/item/storage/holster) || istype(I, /obj/item/weapon) || istype(I, /obj/item/storage/belt/gun) || istype(I, /obj/item/storage/belt/knifepouch) ) ) )
+	if (slot == SLOT_IN_S_HOLSTER && ( !( istype(I, /obj/item/storage/holster) || istype(I, /obj/item/weapon) || istype(I, /obj/item/storage/belt/gun) ) ) )
 		return FALSE
 	if (slot == SLOT_IN_B_HOLSTER && ( !( istype(I, /obj/item/storage/holster) || istype(I, /obj/item/weapon) ) ) )
 		return FALSE
@@ -499,6 +499,7 @@
 	//just pulls the actually equipped item if all else fails
 	if( CHECK_BITFIELD(I.flags_inventory, NOQUICKEQUIP) || !istype(I, /obj/item/weapon) )
 		return FALSE
+	temporarilyRemoveItemFromInventory(I)
 	return I
 
 //end of weap swap

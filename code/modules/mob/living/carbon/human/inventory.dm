@@ -47,16 +47,15 @@
 	var/obj/item/I = null
 	if(client?.prefs?.preferred_slot)
 		I = find_weap_from_slot_if_possible(client.prefs.preferred_slot)
-	for (var/slot in SLOT_DRAW_ORDER)
-		I = (find_weap_from_slot_if_possible(slot))
-		if (I)
-			break
+	if (!I)
+		for (var/slot in SLOT_DRAW_ORDER)
+			I = (find_weap_from_slot_if_possible(slot))
+			if (I)
+				break
 	if (!I)
 		return
-	//we now have a I as an item to draw, or proc has ended
+	//we now have a I as an item to draw, or proc has ended. Note: Item has been withdrawn from storage temporarily
 
-	//remove it from inventory temporarily
-	temporarilyRemoveItemFromInventory(I)
 
 	//this SHOULD place current_gun if possible. if it fails, the newgun is put back (not necessarily the same place but FUCK YOU)
 	if(!equip_to_appropriate_slot(current_weapon, FALSE))
