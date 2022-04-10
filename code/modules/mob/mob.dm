@@ -478,7 +478,7 @@
 		S.remove_from_storage(W, user = src)
 		return W
 	//storage - pocket holster
-	if(istype(I, /obj/item/storage))
+	if(istype(I, /obj/item/storage/pouch/pistol))
 		var/obj/item/storage/S = I
 		if(!length(S.contents))
 			return FALSE
