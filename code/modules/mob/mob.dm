@@ -439,7 +439,7 @@
 	put_in_hands(I)
 	return TRUE
 
-///////weap swap/////////
+///Used for weapon_swap proc, finds a readily available weapon and returns the weapon back to weapon_proc. Unequips the found weapon to allow the currently equipped weapon to be stored in that slot if needed
 /mob/proc/find_weap_from_slot_if_possible(slot)
 	if(!slot)
 		return FALSE
@@ -447,20 +447,6 @@
 	var/obj/item/I = get_item_by_slot(slot)
 
 	if(!I)
-		return FALSE
-
-	//the slot define specific early returns
-	if (slot == SLOT_IN_HOLSTER && ( !( istype(I, /obj/item/storage/holster) || istype(I, /obj/item/weapon) || istype(I, /obj/item/storage/belt/gun) ) ) )
-		return FALSE
-	if (slot == SLOT_IN_S_HOLSTER && ( !( istype(I, /obj/item/storage/holster) || istype(I, /obj/item/weapon) || istype(I, /obj/item/storage/belt/gun) ) ) )
-		return FALSE
-	if (slot == SLOT_IN_B_HOLSTER && ( !( istype(I, /obj/item/storage/holster) || istype(I, /obj/item/weapon) ) ) )
-		return FALSE
-	if (slot == SLOT_IN_ACCESSORY && (!istype(I, /obj/item/clothing/under ) ) )
-		return FALSE
-	if (slot == SLOT_IN_L_POUCH && ( !( istype(I, /obj/item/storage/holster) || istype(I, /obj/item/weapon) || istype(I, /obj/item/storage/pouch/pistol) ) ) )
-		return FALSE
-	if (slot == SLOT_IN_R_POUCH && ( !( istype(I, /obj/item/storage/holster) || istype(I, /obj/item/weapon) || istype(I, /obj/item/storage/pouch/pistol) ) ) )
 		return FALSE
 
 	//belt holsters
@@ -482,27 +468,28 @@
 	//webbing holsters
 	if (istype(I, /obj/item/clothing/under))
 		var/obj/item/clothing/under/B = I
-		if (!istype(B.attachments_by_slot[ATTACHMENT_SLOT_UNIFORM], /obj/item/armor_module/storage/uniform/holster || /obj/item/armor_module/storage/uniform/knifeharness) )
+		if (!istype(B.attachments_by_slot[ATTACHMENT_SLOT_UNIFORM], /obj/item/armor_module/storage/uniform/holster || /obj/item/armor_module/storage/uniform/knifeharness))
 			return FALSE
-		var/obj/item/storage/S = B.attachments_by_slot[ATTACHMENT_SLOT_UNIFORM].storage
+		var/obj/item/armor_module/storage/U = B.attachments_by_slot[ATTACHMENT_SLOT_UNIFORM]
+		var/obj/item/storage/S = U.storage
 		if(!length(S.contents))
 			return FALSE
 		var/obj/item/W = S.contents[length(S.contents)]
 		S.remove_from_storage(W, user = src)
 		return W
-	//general storage module, removed for now
-	//suit internal storage, removed for now
-	//boots, removed for now
-	//helmet, removed for now
-	//catch all storage items, removed for now
-
-	//just pulls the actually equipped item if all else fails
+	//storage - pocket holster
+	if(istype(I, /obj/item/storage))
+		var/obj/item/storage/S = I
+		if(!length(S.contents))
+			return FALSE
+		var/obj/item/W = S.contents[length(S.contents)]
+		S.remove_from_storage(W, user = src)
+		return W
+	//equipped weapon
 	if( CHECK_BITFIELD(I.flags_inventory, NOQUICKEQUIP) || !istype(I, /obj/item/weapon) )
 		return FALSE
 	temporarilyRemoveItemFromInventory(I)
 	return I
-
-//end of weap swap
 
 /mob/proc/show_inv(mob/user)
 	user.set_interaction(src)

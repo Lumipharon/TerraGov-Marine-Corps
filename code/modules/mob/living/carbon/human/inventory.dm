@@ -31,7 +31,7 @@
 		else
 			update_inv_r_hand(FALSE)
 
-///weaponswap proc
+///swaps out the active weapon for one available in the mob's inventory
 /mob/living/carbon/human/proc/swap_weapon()
 
 	//checks for active weapon
@@ -40,32 +40,27 @@
 		return
 	var/obj/item/weapon/current_weapon = A
 
-	//???
 	if(next_move > world.time)
 		return
-	//find weap to draw later
-	var/obj/item/I = null
+	//finds a weapon to draw
+	var/obj/item/new_weapon = null
 	if(client?.prefs?.preferred_slot)
-		I = find_weap_from_slot_if_possible(client.prefs.preferred_slot)
-	if (!I)
+		new_weapon = find_weap_from_slot_if_possible(client.prefs.preferred_slot)
+	if (!new_weapon)
 		for (var/slot in SLOT_DRAW_ORDER)
-			I = (find_weap_from_slot_if_possible(slot))
-			if (I)
+			new_weapon = (find_weap_from_slot_if_possible(slot))
+			if (new_weapon)
 				break
-	if (!I)
+	if (!new_weapon)
 		return
-	//we now have a I as an item to draw, or proc has ended. Note: Item has been withdrawn from storage temporarily
 
-
-	//this SHOULD place current_gun if possible. if it fails, the newgun is put back (not necessarily the same place but FUCK YOU)
+	//If unable to store the current weapon, the new weapon is stored again
 	if(!equip_to_appropriate_slot(current_weapon, FALSE))
-		equip_to_appropriate_slot(I, FALSE)
+		equip_to_appropriate_slot(new_weapon, FALSE)
 		return
 
-	//puts newgun into hand
-	put_in_hands(I)
+	put_in_hands(new_weapon)
 
-	//this may or may not be needed tp update your inventory hud.
 	if(hand)
 		update_inv_l_hand(FALSE)
 	else
