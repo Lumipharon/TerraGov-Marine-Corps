@@ -160,11 +160,11 @@
 // If welding tool ran out of fuel during a construction task, construction fails.
 /obj/item/tool/weldingtool/tool_use_check(mob/living/user, amount)
 	if(!isOn() || !check_fuel())
-		to_chat(user, span_warning("[src] has to be on to complete this task!"))
+		balloon_alert(user, "[src] not on")
 		return FALSE
 
 	if(get_fuel() < amount)
-		to_chat(user, span_warning("You need more welding fuel to complete this task!"))
+		balloon_alert(user, "low fuel")
 		return FALSE
 
 	return TRUE
@@ -398,7 +398,10 @@
 
 	else if(istype(I, /obj/item/ammo_magazine/flamer_tank))
 		var/obj/item/ammo_magazine/flamer_tank/FT = I
-		if(!reagents.total_volume)
+		if(FT.current_rounds == FT.max_rounds || !reagents.total_volume)
+			return ..()
+		if(FT.default_ammo != /datum/ammo/flamethrower)
+			to_chat(user, span_warning("Not the right kind of fuel!"))
 			return ..()
 
 		//Reworked and much simpler equation; fuel capacity minus the current amount, with a check for insufficient fuel

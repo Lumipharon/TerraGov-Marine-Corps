@@ -216,6 +216,8 @@ A good representation is: 'byond applies a volume reduction to the sound every X
 			S = pick('sound/weapons/guns/fire/v51_1.ogg','sound/weapons/guns/fire/v51_2.ogg','sound/weapons/guns/fire/v51_3.ogg','sound/weapons/guns/fire/v51_4.ogg')
 		if("gun_pulse")
 			S = pick('sound/weapons/guns/fire/m41a_1.ogg','sound/weapons/guns/fire/m41a_2.ogg','sound/weapons/guns/fire/m41a_3.ogg','sound/weapons/guns/fire/m41a_4.ogg','sound/weapons/guns/fire/m41a_5.ogg','sound/weapons/guns/fire/m41a_6.ogg')
+		if("rpg_fire")
+			S = pick('sound/weapons/guns/fire/rpg_1.ogg', 'sound/weapons/guns/fire/rpg_2.ogg', 'sound/weapons/guns/fire/rpg_3.ogg')
 
 		// Xeno
 		if("acid_hit")
@@ -263,11 +265,11 @@ A good representation is: 'byond applies a volume reduction to the sound every X
 
 		// Human
 		if("male_scream")
-			S = pick('sound/voice/human_male_scream_1.ogg','sound/voice/human_male_scream_2.ogg','sound/voice/human_male_scream_3.ogg','sound/voice/human_male_scream_4.ogg','sound/voice/human_male_scream_5.ogg','sound/voice/human_male_scream_6.ogg')
+			S = pick('sound/voice/human_male_scream_1.ogg','sound/voice/human_male_scream_2.ogg','sound/voice/human_male_scream_3.ogg','sound/voice/human_male_scream_4.ogg','sound/voice/human_male_scream_5.ogg','sound/voice/human_male_scream_6.ogg', 'sound/voice/human_male_scream_7.ogg')
 		if("male_pain")
-			S = pick('sound/voice/human_male_pain_1.ogg','sound/voice/human_male_pain_2.ogg','sound/voice/human_male_pain_3.ogg','sound/voice/human_male_pain_4.ogg','sound/voice/human_male_pain_5.ogg','sound/voice/human_male_pain_6.ogg','sound/voice/human_male_pain_7.ogg','sound/voice/human_male_pain_8.ogg')
+			S = pick('sound/voice/human_male_pain_1.ogg','sound/voice/human_male_pain_2.ogg','sound/voice/human_male_pain_3.ogg','sound/voice/human_male_pain_4.ogg','sound/voice/human_male_pain_5.ogg','sound/voice/human_male_pain_6.ogg','sound/voice/human_male_pain_7.ogg','sound/voice/human_male_pain_8.ogg', 'sound/voice/human_male_pain_9.ogg', 'sound/voice/human_male_pain_10.ogg', 'sound/voice/human_male_pain_11.ogg')
 		if("male_gored")
-			S = pick('sound/voice/human_male_gored_1.ogg','sound/voice/human_male_gored_2.ogg')
+			S = pick('sound/voice/human_male_gored_1.ogg','sound/voice/human_male_gored_2.ogg', 'sound/voice/human_male_gored3.ogg')
 		if("male_fragout")
 			S = pick('sound/voice/human_male_grenadethrow_1.ogg', 'sound/voice/human_male_grenadethrow_2.ogg', 'sound/voice/human_male_grenadethrow_3.ogg')
 		if("male_warcry")
@@ -295,7 +297,7 @@ A good representation is: 'byond applies a volume reduction to the sound every X
 		if("female_cough")
 			S = pick("sound/voice/human_female_cough1.ogg", 'sound/voice/human_female_cough2.ogg')
 		if("male_preburst")
-			S = pick("sound/voice/human_male_preburst1.ogg", 'sound/voice/human_male_preburst2.ogg', 'sound/voice/human_male_preburst3.ogg')
+			S = pick("sound/voice/human_male_preburst1.ogg", 'sound/voice/human_male_preburst2.ogg', 'sound/voice/human_male_preburst3.ogg', 'sound/voice/human_male_preburst4.ogg', 'sound/voice/human_male_preburst5.ogg', 'sound/voice/human_male_preburst6.ogg', 'sound/voice/human_male_preburst7.ogg', 'sound/voice/human_male_preburst8.ogg', 'sound/voice/human_male_preburst9.ogg', 'sound/voice/human_male_preburst10.ogg')
 		if("female_preburst")
 			S = pick("sound/voice/human_female_preburst1.ogg", 'sound/voice/human_female_preburst2.ogg', 'sound/voice/human_female_preburst3.ogg')
 

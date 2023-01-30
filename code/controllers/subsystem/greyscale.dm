@@ -7,7 +7,7 @@ SUBSYSTEM_DEF(greyscale)
 	var/list/datum/greyscale_layer/layer_types = list()
 
 /datum/controller/subsystem/greyscale/Initialize(start_timeofday)
-	for(var/datum/greyscale_layer/fake_type as anything in subtypesof(/datum/greyscale_layer))
+	for(var/datum/greyscale_layer/fake_type AS in subtypesof(/datum/greyscale_layer))
 		layer_types[initial(fake_type.layer_type)] = fake_type
 
 	for(var/greyscale_type in subtypesof(/datum/greyscale_config))
@@ -27,17 +27,6 @@ SUBSYSTEM_DEF(greyscale)
 		var/obj/item/clothing/head/modular/helmet = new helmet_type()
 		cache_list(helmet.colorable_colors, helmet.greyscale_config)
 		qdel(helmet)
-
-	for(var/obj/item/weapon/gun/gun_type AS in subtypesof(/obj/item/weapon/gun))
-		if(!initial(gun_type.greyscale_config))
-			continue
-		var/obj/item/weapon/gun/gun = new gun_type()
-		cache_list(gun.colorable_colors, gun.greyscale_config)
-		for(var/key in gun.item_icons)
-			if(!ispath(gun.item_icons[key], /datum/greyscale_config))
-				continue
-			cache_list(gun.colorable_colors, gun.item_icons[key])
-		qdel(gun)
 
 	return ..()
 

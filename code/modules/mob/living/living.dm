@@ -11,14 +11,12 @@
 	updatehealth()
 
 
-//this updates all special effects: knockdown, druggy, stuttering, etc..
+//this updates all special effects: knockdown, druggy, etc.., DELETE ME!!
 /mob/living/proc/handle_status_effects()
 	if(no_stun)//anti-chainstun flag for alien tackles
 		no_stun = max(0, no_stun - 1) //decrement by 1.
 
 	handle_drugged()
-	handle_stuttering()
-	handle_slurring()
 	handle_slowdown()
 	handle_stagger()
 
@@ -52,21 +50,10 @@
 	reagent_shock_modifier = 0
 	reagent_pain_modifier = 0
 
-/mob/living/proc/handle_stuttering()
-	if(stuttering)
-		stuttering = max(stuttering-1, 0)
-	return stuttering
-
 /mob/living/proc/handle_drugged()
 	if(druggy)
 		adjust_drugginess(-1)
 	return druggy
-
-/mob/living/proc/handle_slurring()
-	if(slurring)
-		slurring = max(slurring-1, 0)
-	return slurring
-
 
 /mob/living/proc/handle_staminaloss()
 	if(world.time < last_staminaloss_dmg + 3 SECONDS)
@@ -104,6 +91,7 @@
 
 	set_armor_datum()
 	AddElement(/datum/element/gesture)
+	AddElement(/datum/element/keybinding_update)
 	stamina_regen_modifiers = list()
 	received_auras = list()
 	emitted_auras = list()
@@ -346,6 +334,10 @@
 /mob/living/is_drawable(allowmobs = TRUE)
 	return (allowmobs && can_inject())
 
+#define NO_SWAP 0
+#define SWAPPING 1
+#define PHASING 2
+
 /mob/living/Bump(atom/A)
 	. = ..()
 	if(.) //We are thrown onto something.
@@ -369,16 +361,18 @@
 					return
 
 		if(!L.buckled && !L.anchored && !moving_diagonally)
-			var/mob_swap = FALSE
+			var/mob_swap_mode = NO_SWAP
 			//the puller can always swap with its victim if on grab intent
 			if(L.pulledby == src && a_intent == INTENT_GRAB)
-				mob_swap = TRUE
+				mob_swap_mode = SWAPPING
 			//restrained people act if they were on 'help' intent to prevent a person being pulled from being seperated from their puller
 			else if((L.restrained() || L.a_intent == INTENT_HELP) && (restrained() || a_intent == INTENT_HELP) && L.move_force < MOVE_FORCE_VERY_STRONG)
-				mob_swap = TRUE
+				mob_swap_mode = SWAPPING
+			else if(get_xeno_hivenumber() == L.get_xeno_hivenumber() && (L.flags_pass & PASSXENO || flags_pass & PASSXENO))
+				mob_swap_mode = PHASING
 			else if((move_resist >= MOVE_FORCE_VERY_STRONG || move_resist > L.move_force) && a_intent == INTENT_HELP) //Larger mobs can shove aside smaller ones. Xenos can always shove xenos
-				mob_swap = TRUE
-			if(mob_swap)
+				mob_swap_mode = SWAPPING
+			if(mob_swap_mode)
 				//switch our position with L
 				if(loc && !loc.Adjacent(L.loc))
 					return
@@ -392,7 +386,7 @@
 				flags_pass |= PASSMOB
 
 				var/move_failed = FALSE
-				if(!L.Move(oldloc) || !Move(oldLloc))
+				if(!Move(oldLloc) || (mob_swap_mode == SWAPPING && !L.Move(oldloc)))
 					L.forceMove(oldLloc)
 					forceMove(oldloc)
 					move_failed = TRUE
@@ -511,10 +505,10 @@
 /mob/living/proc/get_permeability_protection()
 	return LIVING_PERM_COEFF
 
-/mob/proc/flash_act(intensity = 1, bypass_checks, type = /obj/screen/fullscreen/flash, duration)
+/mob/proc/flash_act(intensity = 1, bypass_checks, type = /atom/movable/screen/fullscreen/flash, duration)
 	return
 
-/mob/living/carbon/flash_act(intensity = 1, bypass_checks, type = /obj/screen/fullscreen/flash, duration = 40)
+/mob/living/carbon/flash_act(intensity = 1, bypass_checks, type = /atom/movable/screen/fullscreen/flash, duration = 40)
 	if( bypass_checks || (get_eye_protection() < intensity && !(disabilities & BLIND)) )
 		overlay_fullscreen_timer(duration, 20, "flash", type)
 		return TRUE
@@ -535,7 +529,7 @@
 	else if(eye_blind == 1)
 		adjust_blindness(-1)
 	if(tinttotal)
-		overlay_fullscreen("tint", /obj/screen/fullscreen/impaired, tinttotal)
+		overlay_fullscreen("tint", /atom/movable/screen/fullscreen/impaired, tinttotal)
 		return TRUE
 	else
 		clear_fullscreen("tint", 0)
@@ -621,7 +615,7 @@ below 100 is not dizzy
 			client.pixel_x = amplitude * sin(0.008 * dizziness * world.time)
 			client.pixel_y = amplitude * cos(0.008 * dizziness * world.time)
 
-		sleep(1)
+		sleep(0.1 SECONDS)
 	//endwhile - reset the pixel offsets to zero
 	is_dizzy = FALSE
 	if(client)
@@ -730,6 +724,7 @@ below 100 is not dizzy
 	var/obj/visual = new /obj/effect/overlay/temp/point/big(our_tile, 0, invisibility)
 	animate(visual, pixel_x = (tile.x - our_tile.x) * world.icon_size + A.pixel_x, pixel_y = (tile.y - our_tile.y) * world.icon_size + A.pixel_y, time = 1.7, easing = EASE_OUT)
 	visible_message("<b>[src]</b> points to [A]")
+	SEND_SIGNAL(src, COMSIG_POINT_TO_ATOM, A)
 	return TRUE
 
 

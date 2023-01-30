@@ -75,12 +75,16 @@
 	user.update_inv_s_store()
 
 //Will only draw the specific holstered item, not ammo etc.
-/obj/item/storage/holster/do_quick_equip()
+/obj/item/storage/holster/do_quick_equip(mob/user)
 	if(!holstered_item)
 		return FALSE
 	var/obj/item/W = holstered_item
-	remove_from_storage(W, user = src)
+	remove_from_storage(W, null, user)
 	return W
+
+/obj/item/storage/holster/vendor_equip(mob/user)
+	..()
+	return user.equip_to_appropriate_slot(src)
 
 //backpack type holster items
 /obj/item/storage/holster/backholster
@@ -107,7 +111,7 @@
 ///RR bag
 /obj/item/storage/holster/backholster/rpg
 	name = "\improper TGMC rocket bag"
-	desc = "This backpack can hold 5 67mm shells or 80mm rockets, in addition to a recoiless launcher."
+	desc = "This backpack can hold 4 67mm shells, in addition to a recoiless launcher."
 	icon_state = "marine_rocket"
 	item_state = "marine_rocket"
 	base_icon = "marine_rocket"
@@ -144,6 +148,41 @@
 	new /obj/item/ammo_magazine/rocket/recoilless/low_impact(src)
 	new /obj/item/ammo_magazine/rocket/recoilless/low_impact(src)
 	var/obj/item/new_item = new /obj/item/weapon/gun/launcher/rocket/recoillessrifle/low_impact(src)
+	INVOKE_ASYNC(src, .proc/handle_item_insertion, new_item)
+
+/obj/item/storage/holster/backholster/rpg/som
+	name = "\improper SOM RPG bag"
+	desc = "This backpack can hold 4 RPGs, in addition to a RPG launcher."
+	icon_state = "som_rocket"
+	item_state = "som_rocket"
+	base_icon = "som_rocket"
+	holsterable_allowed = list(
+		/obj/item/weapon/gun/launcher/rocket/som,
+		/obj/item/weapon/gun/launcher/rocket/som/rad,
+	)
+	bypass_w_limit = list(/obj/item/weapon/gun/launcher/rocket/som)
+	storage_type_limits = list(/obj/item/weapon/gun/launcher/rocket/som = 1)
+	can_hold = list(
+		/obj/item/ammo_magazine/rocket,
+		/obj/item/weapon/gun/launcher/rocket/som,
+	)
+
+/obj/item/storage/holster/backholster/rpg/som/war_crimes/Initialize()
+	. = ..()
+	new /obj/item/ammo_magazine/rocket/som/incendiary(src)
+	new /obj/item/ammo_magazine/rocket/som/incendiary(src)
+	new /obj/item/ammo_magazine/rocket/som/rad(src)
+	new /obj/item/ammo_magazine/rocket/som/rad(src)
+	var/obj/item/new_item = new /obj/item/weapon/gun/launcher/rocket/som/rad(src)
+	INVOKE_ASYNC(src, .proc/handle_item_insertion, new_item)
+
+/obj/item/storage/holster/backholster/rpg/som/ert/Initialize()
+	. = ..()
+	new /obj/item/ammo_magazine/rocket/som/thermobaric(src)
+	new /obj/item/ammo_magazine/rocket/som/thermobaric(src)
+	new /obj/item/ammo_magazine/rocket/som/heat(src)
+	new /obj/item/ammo_magazine/rocket/som/rad(src)
+	var/obj/item/new_item = new /obj/item/weapon/gun/launcher/rocket/som/rad(src)
 	INVOKE_ASYNC(src, .proc/handle_item_insertion, new_item)
 
 //one slot holsters

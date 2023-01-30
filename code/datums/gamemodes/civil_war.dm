@@ -1,12 +1,13 @@
 /datum/game_mode/civil_war
 	name = "Civil War"
 	config_tag = "Civil War"
-	flags_round_type = MODE_LZ_SHUTTERS|MODE_TWO_HUMAN_FACTIONS|MODE_HUMAN_ONLY|MODE_WIN_POINTS|MODE_NO_PERMANENT_WOUNDS|MODE_SPECIFIC_SHIP_MAP
+	flags_round_type = MODE_LZ_SHUTTERS|MODE_TWO_HUMAN_FACTIONS|MODE_HUMAN_ONLY|MODE_WIN_POINTS|MODE_NO_PERMANENT_WOUNDS
 	flags_landmarks = MODE_LANDMARK_SPAWN_SPECIFIC_SHUTTLE_CONSOLE
 	shutters_drop_time = 18 MINUTES
 	flags_xeno_abilities = ABILITY_CRASH
 	respawn_time = 5 MINUTES
 	time_between_round = 36 HOURS
+	factions = list(FACTION_TERRAGOV, FACTION_TERRAGOV_REBEL)
 	valid_job_types = list(
 		/datum/job/terragov/command/captain = 1,
 		/datum/job/terragov/command/fieldcommander = 1,
@@ -42,6 +43,8 @@
 		/datum/job/terragov/squad/leader/rebel = 4,
 		/datum/job/terragov/squad/standard/rebel = -1
 	)
+	whitelist_ship_maps = list(MAP_TWIN_PILLARS)
+	blacklist_ship_maps = null
 
 	win_points_needed = 1000
 	///How many points per zone to control, determined by the number of zones

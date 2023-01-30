@@ -328,7 +328,6 @@ engineer, construction, leadership, medical, surgery, pilot, police, powerloader
 	pistols = SKILL_PISTOLS_TRAINED
 	police = SKILL_POLICE_MP
 	powerloader = SKILL_POWERLOADER_MASTER
-	large_vehicle = SKILL_LARGE_VEHICLE_TRAINED
 
 /datum/skills/early_synthetic
 	name = "Early Synthetic"
@@ -393,14 +392,13 @@ engineer, construction, leadership, medical, surgery, pilot, police, powerloader
 	name = MECH_PILOT
 	engineer = SKILL_ENGINEER_ENGI
 	powerloader = SKILL_POWERLOADER_PRO
-	leadership = SKILL_LEAD_TRAINED
 	large_vehicle = SKILL_LARGE_VEHICLE_TRAINED
 
 /datum/skills/ce
 	name = CHIEF_SHIP_ENGINEER
 	engineer = SKILL_ENGINEER_MASTER
 	construction = SKILL_CONSTRUCTION_MASTER
-	leadership = SKILL_LEAD_MASTER
+	leadership = SKILL_LEAD_EXPERT
 	police = SKILL_POLICE_MP
 	powerloader = SKILL_POWERLOADER_MASTER
 
