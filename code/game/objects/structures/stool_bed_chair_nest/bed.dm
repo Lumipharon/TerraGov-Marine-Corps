@@ -222,6 +222,10 @@
 	accepts_bodybag = TRUE
 	base_bed_icon = "roller"
 
+/obj/structure/bed/roller/civilian
+	icon_state = "civ_roller_down"
+	base_bed_icon = "civ_roller"
+	foldabletype = /obj/item/roller/civilian
 
 /obj/item/roller
 	name = "roller bed"
@@ -231,6 +235,10 @@
 	w_class = WEIGHT_CLASS_SMALL //Fits in a backpack
 	drag_delay = 1 //Pulling something on wheels is easy
 	var/rollertype = /obj/structure/bed/roller
+
+/obj/item/roller/civilian
+	icon_state = "civ_folded"
+	rollertype = /obj/structure/bed/roller/civilian
 
 /obj/item/roller/attack_self(mob/user)
 	deploy_roller(user, user.loc)
