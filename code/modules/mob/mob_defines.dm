@@ -129,3 +129,5 @@
 	/// We also need to clear this var/do other cleanup in client/Destroy, since that happens before logout
 	/// HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 	var/client/canon_client
+	///Mask for when a client posseses a mob to mask out a section of the wall frill
+	var/image/frill_oval_mask

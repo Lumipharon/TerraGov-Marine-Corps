@@ -4,6 +4,7 @@
 		SEND_SIGNAL(canon_client, COMSIG_CLIENT_MOB_LOGOUT, src)
 	SEND_SIGNAL(src, COMSIG_MOB_LOGOUT)
 	SStgui.on_logout(src)
+	frill_oval_mask = null
 	unset_machine()
 	remove_all_indicators()
 	if(interactee)

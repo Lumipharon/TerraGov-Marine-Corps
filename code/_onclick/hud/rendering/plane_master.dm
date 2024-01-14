@@ -60,10 +60,10 @@
 
 /atom/movable/screen/plane_master/floor/backdrop(mob/living/mymob)
 	. = ..()
-	//clear_filters()
-	//if(!istype(mymob) || !mymob.eye_blurry || SEND_SIGNAL(mymob, COMSIG_LIVING_UPDATE_PLANE_BLUR) & COMPONENT_CANCEL_BLUR)
-	//	return
-	//add_filter("eye_blur", 1, gauss_blur_filter(clamp(mymob.eye_blurry * 0.1, 0.6, 3)))
+	clear_filters()
+	if(!istype(mymob) || !mymob.eye_blurry || SEND_SIGNAL(mymob, COMSIG_LIVING_UPDATE_PLANE_BLUR) & COMPONENT_CANCEL_BLUR)
+		return
+	add_filter("eye_blur", 1, gauss_blur_filter(clamp(mymob.eye_blurry * 0.1, 0.6, 3)))
 
 /atom/movable/screen/plane_master/wall
 	name = "wall plane master"
@@ -72,12 +72,34 @@
 	blend_mode = BLEND_OVERLAY
 	render_relay_plane = RENDER_PLANE_GAME
 
+///Floors inverse-masking frills.
+#define FRILL_FLOOR_CUT "frill floor cut"
+///Game plane inverse-masking frills.
+#define FRILL_GAME_CUT "frill game cut"
+
+#define FRILL_MOB_MASK "frill mob mask"
+
+/atom/movable/screen/plane_master/frill_mask
+	name = "frill mask plane master"
+	plane = FRILL_MASK_PLANE
+	appearance_flags = PLANE_MASTER
+	blend_mode = BLEND_OVERLAY
+	render_target = FRILL_MASK_RENDER_TARGET
+	render_relay_plane = null
+
 /atom/movable/screen/plane_master/frill_under
 	name = "frill under plane master"
 	plane = UNDER_FRILL_PLANE
 	appearance_flags = PLANE_MASTER
 	blend_mode = BLEND_OVERLAY
 	render_relay_plane = RENDER_PLANE_GAME
+
+/atom/movable/screen/plane_master/frill_under/backdrop(mob/mymob)
+	. = ..()
+	if(!mymob)
+		CRASH("Plane master backdrop called without a mob attached.")
+	remove_filter(FRILL_MOB_MASK)
+	add_filter(FRILL_MOB_MASK, 1, alpha_mask_filter(render_source = FRILL_MASK_RENDER_TARGET, flags = MASK_INVERSE))
 
 /atom/movable/screen/plane_master/frill
 	name = "frill plane master"
@@ -93,6 +115,34 @@
 	appearance_flags = PLANE_MASTER
 	blend_mode = BLEND_OVERLAY
 	render_relay_plane = RENDER_PLANE_GAME
+
+/atom/movable/screen/plane_master/frill/backdrop(mob/mymob)
+	. = ..()
+	if(!mymob)
+		CRASH("Plane master backdrop called without a mob attached.")
+	remove_filter(FRILL_FLOOR_CUT)
+	remove_filter(FRILL_GAME_CUT)
+	remove_filter(FRILL_MOB_MASK)
+	if(!mymob.client?.prefs)
+		return
+	//add_filter(FRILL_GAME_CUT, 1, alpha_mask_filter(render_source = EMISSIVE_BLOCKER_RENDER_TARGET, flags = MASK_INVERSE))
+	add_filter(FRILL_MOB_MASK, 1, alpha_mask_filter(render_source = FRILL_MASK_RENDER_TARGET, flags = MASK_INVERSE))
+
+/datum/keybinding/client/toggle_frills_over_floors
+	hotkey_keys = list("`")
+	name = "toggle_frills_over_floors"
+	full_name = "Toggle Frills over Floors"
+	description = "Toggles the Frill-over-Floors preference"
+	keybind_signal = COMSIG_KB_CLIENT_MINIMALHUD_DOWN
+
+/datum/keybinding/client/toggle_frills_over_floors/down(client/user)
+	. = ..()
+	if(. || !user.prefs)
+		return
+	if(length(user?.screen))
+		var/atom/movable/screen/plane_master/frill/frill = locate(/atom/movable/screen/plane_master/frill) in user.screen
+		frill.backdrop(user.mob)
+	return TRUE
 
 ///Contains most things in the game world
 /atom/movable/screen/plane_master/game_world

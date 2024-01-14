@@ -45,6 +45,11 @@
 
 	add_click_catcher()
 
+	frill_oval_mask = image('icons/effects/ovalmask.dmi', src, "primary", pixel_x = -32, pixel_y = -12)
+	frill_oval_mask.plane = FRILL_MASK_PLANE
+	frill_oval_mask.appearance_flags = RESET_TRANSFORM
+	client.images |= frill_oval_mask
+
 	if(client)
 		if(client.view_size)
 			client.view_size.reset_to_default() // Resets the client.view in case it was changed.

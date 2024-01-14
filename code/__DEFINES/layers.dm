@@ -177,6 +177,9 @@
 /// The layer you should use if you _really_ don't want an emissive overlay to be blocked.
 #define EMISSIVE_LAYER_UNBLOCKABLE 9999
 
+#define FRILL_MASK_PLANE 95
+#define FRILL_MASK_RENDER_TARGET "*FRILL_MASK_RENDER_TARGET"
+
 #define LIGHTING_BACKPLANE_LAYER 14.5
 
 #define LIGHTING_PLANE 100
