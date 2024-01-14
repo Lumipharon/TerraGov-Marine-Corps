@@ -19,17 +19,23 @@
 #define PLANE_SPACE -95
 #define PLANE_SPACE_PARALLAX -90
 
-#define GRAVITY_PULSE_PLANE -11
+#define GRAVITY_PULSE_PLANE -70
 #define GRAVITY_PULSE_RENDER_TARGET "*GRAVPULSE_RENDER_TARGET"
 
-#define OPENSPACE_LAYER 18 //Openspace layer over all
-#define OPENSPACE_PLANE -9 //Openspace plane below all turfs
-#define OPENSPACE_BACKDROP_PLANE -8 //Black square just over openspace plane to guaranteed cover all in openspace turf
+#define OPENSPACE_LAYER 600 //Openspace layer over all
+#define OPENSPACE_PLANE -61 //Openspace plane below all turfs
+#define OPENSPACE_BACKDROP_PLANE -60 //Black square just over openspace plane to guaranteed cover all in openspace turf
 
-#define FLOOR_PLANE -5
-#define GAME_PLANE -4
+#define FLOOR_PLANE -52
+#define WALL_PLANE -50 //MOJAVE SUN EDIT - Wallening Testmerge
+#define GAME_PLANE -42
 
 #define BLACKNESS_PLANE 0 //To keep from conflicts with SEE_BLACKNESS internals
+
+#define UNDER_FRILL_PLANE -12 //MOJAVE SUN EDIT - Wallening Testmerge
+#define UNDER_FRILL_RENDER_TARGET "*UNDER_RENDER_TARGET" //MOJAVE SUN EDIT - Wallening Testmerge
+#define FRILL_PLANE -11 //MOJAVE SUN EDIT - Wallening Testmerge
+#define OVER_FRILL_PLANE -10 //MOJAVE SUN EDIT - Wallening Testmerge
 
 #define SPACE_LAYER 1.8
 

@@ -314,11 +314,14 @@
 
 ///Changes the icon state based on the new junction bitmask.
 /atom/proc/set_smoothed_icon_state(new_junction)
+	SEND_SIGNAL(src, COMSIG_ATOM_SET_SMOOTHED_ICON_STATE, new_junction)
+	. = smoothing_junction
 	smoothing_junction = new_junction
 	icon_state = "[base_icon_state]-[smoothing_junction]"
 
 
 /turf/closed/set_smoothed_icon_state(new_junction)
+	. = ..()
 	if(smoothing_flags & SMOOTH_DIAGONAL_CORNERS && new_junction != smoothing_junction)
 		switch(smoothing_junction)
 			if(
@@ -332,7 +335,7 @@
 				SOUTH_JUNCTION|EAST_JUNCTION|SOUTHEAST_JUNCTION
 				)
 				icon_state = "[base_icon_state]-[smoothing_junction]-d"
-				if(!fixed_underlay) // Mutable underlays?
+				if(!fixed_underlay && new_junction != .) // Mutable underlays?
 					var/junction_dir = reverse_ndir(smoothing_junction)
 					var/turned_adjacency = REVERSE_DIR(junction_dir)
 					var/turf/neighbor_turf = get_step(src, turned_adjacency & (NORTH|SOUTH))
@@ -346,7 +349,6 @@
 									underlay_appearance.icon = DEFAULT_UNDERLAY_ICON
 									underlay_appearance.icon_state = DEFAULT_UNDERLAY_ICON_STATE
 					underlays = list(underlay_appearance)
-	return ..()
 
 
 /turf/open/floor/set_smoothed_icon_state(new_junction)

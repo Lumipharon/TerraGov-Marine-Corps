@@ -4,6 +4,7 @@
 /turf/closed
 	density = TRUE
 	opacity = TRUE
+	plane = WALL_PLANE
 
 ///Base state, for icon_state updates.
 	var/walltype
