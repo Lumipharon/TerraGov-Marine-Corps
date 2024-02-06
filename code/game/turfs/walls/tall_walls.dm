@@ -12,6 +12,27 @@
 	if(frill_icon)
 		AddElement(/datum/element/frill, frill_icon)
 
+//Framed windows
+
+/obj/structure/window/framed/tall
+	name = "reinforced window"
+	desc = "A glass window with a special rod matrice inside a wall frame. It looks rather strong. Might take a few good hits to shatter it."
+	icon = 'icons/obj/smooth_objects/tall_windows/normal_window.dmi' //these are named improperly for tgmc
+	icon_state = "window-reinforced"
+	basestate = "ship_window"
+	base_icon_state = "ship_window"
+	max_integrity = 100 //Was 600
+	reinf = TRUE
+	dir = 5
+	window_frame = /obj/structure/window_frame/mainship
+	///Top section of the wall sprite
+	var/icon/frill_icon = 'icons/obj/smooth_objects/tall_windows/window_normal_frill.dmi'
+
+/obj/structure/window/framed/tall/Initialize(mapload)
+	. = ..()
+	if(frill_icon)
+		AddElement(/datum/element/frill, frill_icon)
+
 ///frill element
 
 GLOBAL_LIST_EMPTY(frill_objects)
