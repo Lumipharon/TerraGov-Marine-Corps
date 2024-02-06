@@ -485,6 +485,24 @@
 	GLOB.patrol_point_list -= src
 	return ..()
 
+///Visual effects for deploying
+/obj/effect/landmark/patrol_point/proc/do_deploy_effect(mob/living/user, obj/obj_mover)
+	new /atom/movable/effect/rappel_rope(loc)
+
+
+/obj/effect/landmark/patrol_point/apc/do_deploy_effect(mob/living/user, obj/obj_mover)
+	//if(obj_mover)
+	//	return
+	var/atom/movable/mover = obj_mover ? obj_mover : user
+	mover.pixel_x -= 32
+	mover.dir = EAST
+	animate(mover, pixel_x = mover.pixel_x + 32, time = 0.6 SECONDS)
+
+
+/obj/effect/landmark/patrol_point/apc/tgmc_11
+	name = "TGMC exit point 11"
+	id = "TGMC_11"
+
 /obj/effect/landmark/patrol_point/tgmc_11
 	name = "TGMC exit point 11"
 	id = "TGMC_11"

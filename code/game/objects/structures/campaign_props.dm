@@ -131,3 +131,24 @@
 /obj/structure/gauss_cannon/update_overlays()
 	. = ..()
 	. += emissive_appearance(icon, "[icon_state]_emissive", alpha = src.alpha)
+
+//apc
+/obj/structure/prop/campaign/apc
+	name = "\improper APC"
+	desc = "A massive multi launch rocket system on a tracked chassis. Can unleash a tremendous amount of firepower in a short amount of time."
+	icon_state = "apc"
+	icon = 'icons/obj/structures/campaign/campaign_big.dmi'
+	bound_height = 64
+	bound_width = 128
+	pixel_y = -15
+	coverage = 100
+	density = TRUE
+
+/obj/structure/prop/campaign/apc/Initialize(mapload)
+	. = ..()
+	update_icon()
+
+/obj/structure/prop/campaign/apc/update_overlays()
+	. = ..()
+	var/image/new_overlay = image(icon, src, "apc_deploy_overlay", ABOVE_MOB_LAYER, dir)
+	. += new_overlay

@@ -67,7 +67,7 @@
 		user.trainteleport(linked_point.loc)
 		add_spawn_protection(user)
 
-	new /atom/movable/effect/rappel_rope(linked_point.loc)
+	linked_point.do_deploy_effect(user, obj_mover)
 
 	if(!user)
 		return
