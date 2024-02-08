@@ -1086,3 +1086,11 @@ directive is properly returned.
 ///Returns the hard armor for the given atom. If human and a limb is specified, gets the armor for that specific limb.
 /atom/proc/get_hard_armor(armor_type, proj_def_zone)
 	return
+
+///Setter for the `density` variable to append behavior related to its changing.
+/atom/proc/set_density(new_value)
+	SHOULD_CALL_PARENT(TRUE)
+	if(density == new_value)
+		return
+	. = density
+	density = new_value

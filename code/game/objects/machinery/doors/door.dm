@@ -36,20 +36,27 @@
 	///what airlock we are linked with
 	var/obj/machinery/door/airlock/cycle_linked_airlock
 
+	/// Do we need to keep track of a filler panel with the airlock
+	var/multi_tile
+	/// A filler object used to fill the space of multi-tile airlocks
+	var/obj/structure/fluff/airlock_filler/filler
+
 	//Multi-tile doors
 	dir = EAST
 	var/width = 1
 
 /obj/machinery/door/Initialize(mapload)
 	. = ..()
+	if(multi_tile)
+		set_bounds()
+		set_filler()
+		update_overlays()
 	if(density)
 		layer = closed_layer
 		update_flags_heat_protection(get_turf(src))
 	else
 		layer = open_layer
 
-	if(width > 1)
-		handle_multidoor()
 	var/turf/current_turf = get_turf(src)
 	current_turf.flags_atom &= ~ AI_BLOCKED
 
@@ -61,9 +68,8 @@
 		qdel(o)
 	return ..()
 
-/obj/machinery/door/proc/handle_multidoor()
-	fillers = list()
-
+///Sets the object bounds for multitile doors
+/obj/machinery/door/proc/set_bounds() //shittier version of tg but fine for now
 	if(dir in list(EAST, WEST))
 		bound_width = width * world.icon_size
 		bound_height = world.icon_size
@@ -71,10 +77,41 @@
 		bound_width = world.icon_size
 		bound_height = width * world.icon_size
 
-	var/turf/T = get_turf(src)
-	for(var/i = 2 to width)
-		T = get_step(T,dir)
-		fillers += new /obj/effect/opacifier(T, opacity)
+/obj/machinery/door/Move()
+	if(multi_tile)
+		set_filler()
+	return ..()
+
+/**
+ * Sets the bounds of the airlock. For use with multi-tile airlocks.
+ * If the airlock is multi-tile, it will set the bounds to be the size of the airlock.
+ * If the airlock doesn't already have a filler object, it will create one.
+ * If the airlock already has a filler object, it will move it to the correct location.
+ */
+/obj/machinery/door/proc/set_filler()
+	if(!multi_tile)
+		return
+	if(!filler)
+		filler = new(get_step(src, get_adjusted_dir(dir)))
+		filler.pair_airlock(src)
+	else
+		filler.loc = get_step(src, get_adjusted_dir(dir))
+
+	filler.density = density
+	filler.set_opacity(opacity)
+
+/**
+ * Checks which way the airlock is facing and adjusts the direction accordingly.
+ * For use with multi-tile airlocks.
+ *
+ * @param dir direction to adjust
+ * @return adjusted direction
+ */
+/obj/machinery/door/proc/get_adjusted_dir(dir)
+	if(dir in list(NORTH, SOUTH))
+		return EAST
+	else
+		return NORTH
 
 /obj/machinery/door/Bumped(atom/AM)
 	if(CHECK_BITFIELD(machine_stat, PANEL_OPEN) || operating)
@@ -171,6 +208,12 @@
 				s.set_up(2, 1, src)
 				s.start()
 
+/obj/machinery/door/set_density(new_value)
+	. = ..()
+	if(new_value)
+		explosion_block = initial(explosion_block)
+	else
+		explosion_block = 0
 
 /obj/machinery/door/update_icon_state()
 	. = ..()
@@ -242,6 +285,29 @@
 			O.set_opacity(TRUE)
 	operating = FALSE
 
+///Checks for mobs and prevents closing if found
+/obj/machinery/door/proc/CheckForMobs()
+	for(var/turf/checked_turf in locs)
+		if(locate(/mob/living) in checked_turf)
+			sleep(0.1 SECONDS)
+			open()
+
+///Crush anything in the door
+/obj/machinery/door/proc/crush()
+	for(var/turf/checked_turf in locs)
+		for(var/mob/living/crushed_mob in checked_turf)
+			crushed_mob.visible_message(span_warning("[src] closes on [crushed_mob], crushing [crushed_mob.p_them()]!"), span_userdanger("[src] closes on you and crushes you!"))
+			crushed_mob.apply_damage(DOOR_CRUSH_DAMAGE, BRUTE, blocked = MELEE, updating_health = TRUE)
+			crushed_mob.Paralyze(10 SECONDS)
+			if (iscarbon(M))
+				var/mob/living/carbon/C = M
+				var/datum/species/S = C.species
+				if(S?.species_flags & NO_PAIN)
+					INVOKE_ASYNC(M, TYPE_PROC_REF(/mob/living, emote), "pain")
+			var/turf/location = src.loc
+			if(istype(location, /turf))
+				location.add_mob_blood(M)
+
 /obj/machinery/door/proc/requiresID()
 	return TRUE
 
@@ -251,8 +317,49 @@
 /obj/machinery/door/proc/update_flags_heat_protection(turf/source)
 
 /obj/machinery/door/proc/autoclose()
-	if(!density && !operating && !locked && !welded && autoclose)
+	if(!QDELETED(src) && !density && !operating && !locked && !welded && autoclose)
 		close()
+
+/// Private proc that runs a series of checks to see if we should forcibly open the door. Returns TRUE if we should open the door, FALSE otherwise. Implemented in child types.
+/// In case a specific behavior isn't covered, we should default to TRUE just to be safe (simply put, this proc should have an explicit reason to return FALSE).
+/obj/machinery/door/proc/try_to_force_door_open(force_type = DEFAULT_DOOR_CHECKS)
+	return TRUE // the base "door" can always be forced open since there's no power or anything like emagging it to prevent an open, not even invoked on the base type anyways.
+
+/// Private proc that runs a series of checks to see if we should forcibly shut the door. Returns TRUE if we should shut the door, FALSE otherwise. Implemented in child types.
+/// In case a specific behavior isn't covered, we should default to TRUE just to be safe (simply put, this proc should have an explicit reason to return FALSE).
+/obj/machinery/door/proc/try_to_force_door_shut(force_type = DEFAULT_DOOR_CHECKS)
+	return TRUE // the base "door" can always be forced shut
+
+/obj/machinery/door/proc/autoclose_in(wait)
+	addtimer(CALLBACK(src, PROC_REF(autoclose)), wait, TIMER_UNIQUE | TIMER_NO_HASH_WAIT | TIMER_OVERRIDE)
+
+//multitile filler
+/obj/structure/fluff/airlock_filler
+	name = "airlock fluff"
+	desc = "You shouldn't be able to see this fluff!"
+	icon = null
+	icon_state = null
+	density = TRUE
+	opacity = TRUE
+	anchored = TRUE
+	invisibility = INVISIBILITY_MAXIMUM
+	/// The door/airlock this fluff panel is attached to
+	var/obj/machinery/door/filled_airlock
+
+
+///Create a ref to our parent airlock so we qdel when it does
+/obj/structure/fluff/airlock_filler/proc/pair_airlock(obj/machinery/door/parent_airlock)
+	if(isnull(parent_airlock))
+		stack_trace("Attempted to pair an airlock filler with no parent airlock specified!")
+		return
+
+	filled_airlock = parent_airlock
+	RegisterSignal(filled_airlock, COMSIG_QDELETING, PROC_REF(no_airlock))
+
+///Multi-tile airlocks pair with a filler panel, if one goes so does the other.
+/obj/structure/fluff/airlock_filler/proc/no_airlock()
+	SIGNAL_HANDLER
+	qdel(src)
 
 /obj/machinery/door/morgue
 	icon = 'icons/obj/doors/doormorgue.dmi'

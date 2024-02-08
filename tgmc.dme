@@ -28,6 +28,7 @@
 #include "code\__DEFINES\actions.dm"
 #include "code\__DEFINES\admin.dm"
 #include "code\__DEFINES\ai.dm"
+#include "code\__DEFINES\airlock.dm"
 #include "code\__DEFINES\alerts.dm"
 #include "code\__DEFINES\apc_defines.dm"
 #include "code\__DEFINES\area.dm"

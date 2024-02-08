@@ -121,7 +121,7 @@
 			if(lock.welded || lock.locked) //It's welded or locked, can't force that open
 				INVOKE_ASYNC(src, PROC_REF(attack_target), null, thing) //ai is cheating
 				continue
-			lock.open(TRUE)
+			INVOKE_ASYNC(lock, TYPE_PROC_REF(/obj/machinery/door, open), TRUE)
 			return COMSIG_OBSTACLE_DEALT_WITH
 		if(istype(thing, /obj/vehicle))
 			INVOKE_ASYNC(src, PROC_REF(attack_target), null, thing)

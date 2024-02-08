@@ -1,3 +1,42 @@
+//tg wallening
+/// Overlay cache.  Why isn't this just in /obj/machinery/door/airlock?  Because its used just a
+/// tiny bit in door_assembly.dm  Refactored so you don't have to make a null copy of airlock
+/// to get to the damn thing
+/// Someone, for the love of god, profile this.  Is there a reason to cache mutable_appearance
+/// if so, why are we JUST doing the airlocks when we can put this in mutable_appearance.dm for
+/// everything
+/proc/get_airlock_overlay(icon_state, icon_file, atom/offset_spokesman, em_block)
+	var/static/list/airlock_overlays = list()
+
+	var/base_icon_key = "[icon_state][REF(icon_file)]"
+	if(!(. = airlock_overlays[base_icon_key]))
+		. = airlock_overlays[base_icon_key] = mutable_appearance(icon_file, icon_state)
+	if(isnull(em_block))
+		return
+
+	var/em_block_key = "[base_icon_key][em_block]"
+	var/mutable_appearance/em_blocker = airlock_overlays[em_block_key]
+	if(!em_blocker)
+		em_blocker = airlock_overlays[em_block_key] = mutable_appearance(icon_file, icon_state, plane = EMISSIVE_PLANE, appearance_flags = EMISSIVE_APPEARANCE_FLAGS)
+		em_blocker.color = em_block ? GLOB.em_block_color : GLOB.emissive_color
+
+	return list(., em_blocker)
+
+// Before you say this is a bad implmentation, look at what it was before then ask yourself
+// "Would this be better with a global var"
+
+// Wires for the airlock are located in the datum folder, inside the wires datum folder.
+
+#define AIRLOCK_FRAME_CLOSED "closed"
+#define AIRLOCK_FRAME_CLOSING "closing"
+#define AIRLOCK_FRAME_OPEN "open"
+#define AIRLOCK_FRAME_OPENING "opening"
+/// The amount of time for the airlock deny animation to show
+#define AIRLOCK_DENY_ANIMATION_TIME (0.6 SECONDS)
+/// Time before a door closes, if not overridden
+#define DOOR_CLOSE_WAIT 60
+//
+
 /obj/machinery/door/airlock
 	name = "\improper Airlock"
 	icon = 'icons/obj/doors/Doorint.dmi'
@@ -9,6 +48,7 @@
 	active_power_usage = 360
 	flags_atom = HTML_USE_INITAL_ICON_1
 	obj_flags = CAN_BE_HIT
+	smoothing_groups = list(SMOOTH_GROUP_AIRLOCK)
 
 	var/aiControlDisabled = 0 //If 1, AI control is disabled until the AI hacks back in and disables the lock. If 2, the AI has bypassed the lock. If -1, the control is enabled but the AI had bypassed it earlier, so if it is disabled again the AI would have no trouble getting back in.
 	var/hackProof = 0 // if 1, this door can't be hacked by the AI
@@ -19,8 +59,6 @@
 	secondsElectrified = 0 //How many seconds remain until the door is no longer electrified. -1 if it is permanently electrified until someone fixes it.
 	var/aiDisabledIdScanner = 0
 	var/aiHacking = 0
-	var/obj/machinery/door/airlock/closeOther = null
-	var/closeOtherId = null
 	var/list/signalers[12]
 	var/lockdownbyai = 0
 	autoclose = 1
@@ -35,7 +73,28 @@
 	var/no_panel = 0 //the airlock has no panel that can be screwdrivered open
 	///used to determine various abandoned door effects
 	var/abandoned = FALSE
-	smoothing_groups = list(SMOOTH_GROUP_AIRLOCK)
+	///The current state of the airlock, used to construct the airlock overlays
+	var/airlock_state
+	///Overlay DMI
+	var/overlays_file = 'icons/obj/doors/airlocks/tall/overlays.dmi'
+	/// TRUE means the door will automatically close the next time it's opened.
+	var/delayed_close_requested = FALSE
+	/// Cyclelinking for airlocks that aren't on the same x or y coord as the target.
+	var/closeOtherId
+	///Linked airlock
+	var/obj/machinery/door/airlock/closeOther
+	///Door open sound
+	var/open_sound = 'sound/machines/airlock.ogg'
+	///Door open sound
+	var/close_sound = 'sound/machines/airlock.ogg'
+	///Door open sound
+	var/deny_sound = 'sound/machines/deniedbeep.ogg'
+	///Door open sound
+	var/bolt_up_sound = 'sound/machines/boltsup.ogg'
+	///Door open sound
+	var/bolt_down_sound = 'sound/machines/boltsdown.ogg'
+	///Door open sound
+	var/no_power_sound = 'sound/machines/doorclick.ogg'
 
 /obj/machinery/door/airlock/bumpopen(mob/living/user) //Airlocks now zap you when you 'bump' them open when they're electrified. --NeoFite
 	if(issilicon(user))
@@ -85,6 +144,331 @@
 			welded = TRUE
 		if(24 to 30)
 			machine_stat ^= PANEL_OPEN
+//current garbage//
+/obj/machinery/door/airlock/update_icon_state()
+	. = ..()
+	if(density)
+		if(locked && lights)
+			icon_state = "door_locked"
+		else
+			icon_state = "door_closed"
+	else
+		icon_state = "door_open"
+
+/obj/machinery/door/airlock/update_overlays()
+	. = ..()
+	if(!density)
+		return
+	if(emergency && hasPower())
+		. += image(icon, "emergency_access_on")
+	if(CHECK_BITFIELD(machine_stat, PANEL_OPEN))
+		. += image(icon, "panel_open")
+	if(welded)
+		. += image(icon, "welded")
+	if(hasPower() && unres_sides)
+		for(var/heading in list(NORTH,SOUTH,EAST,WEST))
+			if(!(unres_sides & heading))
+				continue
+			var/image/access_overlay = image('icons/obj/doors/overlays.dmi', "unres_[heading]", layer = DOOR_HELPER_LAYER, pixel_y = -4)
+			switch(heading)
+				if(NORTH)
+					access_overlay.pixel_x = 0
+					access_overlay.pixel_y = 32
+				if(SOUTH)
+					access_overlay.pixel_x = 0
+					access_overlay.pixel_y = -32
+				if(EAST)
+					access_overlay.pixel_x = 32
+					access_overlay.pixel_y = 0
+				if(WEST)
+					access_overlay.pixel_x = -32
+					access_overlay.pixel_y = 0
+			. += access_overlay
+
+/obj/machinery/door/airlock/do_animate(animation)
+	switch(animation)
+		if("opening")
+			if(overlays) overlays.Cut()
+			if(CHECK_BITFIELD(machine_stat, PANEL_OPEN))
+				spawn(2) // The only work around that works. Downside is that the door will be gone for a millisecond.
+					flick("o_door_opening", src)  //can not use flick due to BYOND bug updating overlays right before flicking
+			else
+				flick("door_opening", src)
+		if("closing")
+			if(overlays) overlays.Cut()
+			if(CHECK_BITFIELD(machine_stat, PANEL_OPEN))
+				flick("o_door_closing", src)
+			else
+				flick("door_closing", src)
+		if("spark")
+			if(density)
+				flick("door_spark", src)
+		if("deny")
+			if(density)
+				flick("door_deny", src)
+
+/obj/machinery/door/airlock/open(forced = FALSE)
+	if(!forced && (!hasPower() || wires.is_cut(WIRE_OPEN)))
+		return FALSE
+	. = ..()
+	if(!.)
+		return
+	use_power(active_power_usage)
+	if(istype(src, /obj/machinery/door/airlock/glass))
+		playsound(loc, 'sound/machines/windowdoor.ogg', 25, 1)
+	else
+		playsound(loc, 'sound/machines/airlock.ogg', 25, 0)
+	if(istype(closeOther, /obj/machinery/door/airlock) && !closeOther.density)
+		closeOther.close()
+
+/obj/machinery/door/airlock/close(forced = FALSE)
+	if(operating || welded || locked)
+		return
+	if(!forced)
+		if(!hasPower() || wires.is_cut(WIRE_BOLTS))
+			return
+	if(safe)
+		for(var/turf/turf AS in locs)
+			if(locate(/mob/living) in turf)
+				addtimer(CALLBACK(src, PROC_REF(close)), 6 SECONDS)
+				return
+
+	for(var/turf/turf in locs)
+		for(var/mob/living/M in turf)
+			M.apply_damage(DOOR_CRUSH_DAMAGE, BRUTE, blocked = MELEE)
+			M.Stun(10 SECONDS)
+			M.Paralyze(10 SECONDS)
+			if (iscarbon(M))
+				var/mob/living/carbon/C = M
+				var/datum/species/S = C.species
+				if(S?.species_flags & NO_PAIN)
+					INVOKE_ASYNC(M, TYPE_PROC_REF(/mob/living, emote), "pain")
+			var/turf/location = src.loc
+			if(istype(location, /turf))
+				location.add_mob_blood(M)
+			UPDATEHEALTH(M)
+
+	use_power(active_power_usage)	//360 W seems much more appropriate for an actuator moving an industrial door capable of crushing people
+	if(istype(src, /obj/machinery/door/airlock/glass))
+		playsound(src.loc, 'sound/machines/windowdoor.ogg', 25, 1)
+	else
+		playsound(src.loc, 'sound/machines/airlock.ogg', 25, 0)
+	for(var/turf/turf in locs)
+		var/obj/structure/window/killthis = (locate(/obj/structure/window) in turf)
+		killthis?.ex_act(2)//Smashin windows
+	return ..()
+//end garbage
+
+//tg stuff//////////////////////////////////////////////////////
+
+/obj/machinery/door/airlock/update_icon(updates=ALL, state=0, override=FALSE)
+	if(operating && !override)
+		return
+
+	if(!state)
+		state = density ? AIRLOCK_CLOSED : AIRLOCK_OPEN
+	airlock_state = state
+
+	. = ..()
+
+/obj/machinery/door/airlock/update_icon_state()
+	. = ..()
+	switch(airlock_state)
+		if(AIRLOCK_OPEN)
+			icon_state = "open_top"
+		if(AIRLOCK_CLOSED, AIRLOCK_DENY, AIRLOCK_EMAG)
+			icon_state = "closed"
+		if(AIRLOCK_OPENING)
+			icon_state = "opening"
+		if(AIRLOCK_CLOSING)
+			icon_state = "closing"
+
+
+/obj/machinery/door/airlock/update_overlays()
+	. = ..()
+
+	var/frame_state
+	var/light_state
+	switch(airlock_state)
+		if(AIRLOCK_CLOSED)
+			frame_state = AIRLOCK_FRAME_CLOSED
+			if(locked)
+				light_state = AIRLOCK_LIGHT_BOLTS
+			else if(emergency)
+				light_state = AIRLOCK_LIGHT_EMERGENCY
+		if(AIRLOCK_DENY)
+			frame_state = AIRLOCK_FRAME_CLOSED
+			light_state = AIRLOCK_LIGHT_DENIED
+		if(AIRLOCK_EMAG)
+			frame_state = AIRLOCK_FRAME_CLOSED
+		if(AIRLOCK_CLOSING)
+			frame_state = AIRLOCK_FRAME_CLOSING
+			light_state = AIRLOCK_LIGHT_CLOSING
+		if(AIRLOCK_OPEN)
+			frame_state = AIRLOCK_FRAME_OPEN
+			// If we're open we layer the bit below us "above" any mobs so they can walk through
+			. += mutable_appearance(icon, "open_bottom", ABOVE_MOB_LAYER, appearance_flags = KEEP_APART)
+		if(AIRLOCK_OPENING)
+			frame_state = AIRLOCK_FRAME_OPENING
+			light_state = AIRLOCK_LIGHT_OPENING
+
+	if(lights && hasPower())
+		. += get_airlock_overlay("lights_[light_state]", overlays_file, src, em_block = FALSE)
+
+	if(machine_stat & PANEL_OPEN)
+		. += get_airlock_overlay("panel_[frame_state]", overlays_file, src, em_block = TRUE)
+	if(frame_state == AIRLOCK_FRAME_CLOSED && welded)
+		. += get_airlock_overlay("welded", overlays_file, src, em_block = TRUE)
+
+	if(airlock_state == AIRLOCK_EMAG)
+		. += get_airlock_overlay("sparks", overlays_file, src, em_block = FALSE)
+
+	if(hasPower())
+		if(frame_state == AIRLOCK_FRAME_CLOSED)
+			if(obj_integrity < integrity_failure * max_integrity)
+				. += get_airlock_overlay("sparks_broken", overlays_file, src, em_block = FALSE)
+			else if(obj_integrity < (0.75 * max_integrity))
+				. += get_airlock_overlay("sparks_damaged", overlays_file, src, em_block = FALSE)
+		else if(frame_state == AIRLOCK_FRAME_OPEN)
+			if(obj_integrity < (0.75 * max_integrity))
+				. += get_airlock_overlay("sparks_open", overlays_file, src, em_block = FALSE)
+
+	//update_greyscale() //todo: do we use this?
+
+/obj/machinery/door/airlock/do_animate(animation)
+	switch(animation)
+		if("opening")
+			update_icon(ALL, AIRLOCK_OPENING)
+		if("closing")
+			update_icon(ALL, AIRLOCK_CLOSING)
+		if("deny")
+			if(!machine_stat)
+				update_icon(ALL, AIRLOCK_DENY)
+				playsound(src,deny_sound,50,FALSE,3)
+				addtimer(CALLBACK(src, TYPE_PROC_REF(/atom, update_icon), ALL, AIRLOCK_CLOSED), AIRLOCK_DENY_ANIMATION_TIME)
+
+/obj/machinery/door/airlock/open(forced = DEFAULT_DOOR_CHECKS)
+	if( operating || welded || locked)
+		return FALSE
+
+	if(!density)
+		return TRUE
+
+	// Since we aren't physically held shut, do extra checks to see if we should open.
+	if(!try_to_force_door_open(forced))
+		return FALSE
+
+	if(autoclose)
+		autoclose_in(normalspeed ? 8 SECONDS : 1.5 SECONDS)
+
+	if(closeOther != null && istype(closeOther, /obj/machinery/door/airlock))
+		addtimer(CALLBACK(closeOther, PROC_REF(close)), BYPASS_DOOR_CHECKS)
+
+	operating = TRUE
+	update_icon(ALL, AIRLOCK_OPENING, TRUE)
+	sleep(0.1 SECONDS)
+	set_opacity(0)
+	if(multi_tile)
+		filler.set_opacity(FALSE)
+	sleep(0.4 SECONDS)
+	set_density(FALSE)
+	if(multi_tile)
+		filler.set_density(FALSE)
+	//flags_1 &= ~PREVENT_CLICK_UNDER_1 //todo: this is useful, should port
+	sleep(0.1 SECONDS)
+	layer = DOOR_OPEN_LAYER
+	update_icon(ALL, AIRLOCK_OPEN, TRUE)
+	operating = FALSE
+	if(delayed_close_requested)
+		delayed_close_requested = FALSE
+		addtimer(CALLBACK(src, PROC_REF(close)), FORCING_DOOR_CHECKS)
+	return TRUE
+
+/// Additional checks depending on what we want to happen to door (should we try and open it normally, or do we want this open at all costs?)
+/obj/machinery/door/airlock/try_to_force_door_open(force_type = DEFAULT_DOOR_CHECKS)
+	switch(force_type)
+		if(DEFAULT_DOOR_CHECKS) // Regular behavior.
+			if(!hasPower() || wires.is_cut(WIRE_OPEN))
+				return FALSE
+			use_power(50)
+			playsound(src, open_sound, 30, TRUE)
+			return TRUE
+
+		if(FORCING_DOOR_CHECKS) // Only one check.
+			use_power(50)
+			playsound(src, open_sound, 30, TRUE)
+			return TRUE
+
+		if(BYPASS_DOOR_CHECKS) // No power usage, special sound, get it open.
+			playsound(src, open_sound, 30, TRUE)
+			return TRUE
+
+		else
+			stack_trace("Invalid forced argument '[force_type]' passed to open() on this airlock.")
+
+	// If we got here, shit's fucked, hope parent can help us out here
+	return ..()
+
+/obj/machinery/door/airlock/close(forced = DEFAULT_DOOR_CHECKS, force_crush = FALSE)
+	if(operating || welded || locked)
+		return FALSE
+	if(density)
+		return TRUE
+	if(forced == DEFAULT_DOOR_CHECKS) // Do this up here and outside of try_to_force_door_shut because if we don't have power, we shouldn't be doing any dangerous_close stuff.
+		if(!hasPower() || wires.is_cut(WIRE_BOLTS))
+			return FALSE
+
+	var/dangerous_close = !safe || force_crush
+	if(!dangerous_close)
+		for(var/turf/checked_turf in locs)
+			for(var/atom/movable/blocking in checked_turf)
+				if(blocking.density && blocking != src)
+					autoclose_in(DOOR_CLOSE_WAIT)
+					return FALSE
+
+	if(!try_to_force_door_shut(forced))
+		return FALSE
+
+	var/obj/structure/window/killthis = (locate(/obj/structure/window) in get_turf(src))
+	killthis?.ex_act(EXPLODE_HEAVY)
+	operating = TRUE
+	update_icon(ALL, AIRLOCK_CLOSING, 1)
+	layer = DOOR_CLOSED_LAYER
+	set_density(TRUE)
+	if(multi_tile)
+		filler.density = TRUE
+	//flags_1 |= PREVENT_CLICK_UNDER_1
+	sleep(0.5 SECONDS)
+	if(dangerous_close)
+		crush()
+	if(visible && !glass)
+		set_opacity(TRUE)
+		if(multi_tile)
+			filler.set_opacity(TRUE)
+	sleep(0.1 SECONDS)
+	update_icon(ALL, AIRLOCK_CLOSED, 1)
+	operating = FALSE
+	delayed_close_requested = FALSE
+	if(!dangerous_close)
+		CheckForMobs()
+	return TRUE
+
+/obj/machinery/door/airlock/try_to_force_door_shut(force_type = DEFAULT_DOOR_CHECKS)
+	switch(force_type)
+		if(DEFAULT_DOOR_CHECKS to FORCING_DOOR_CHECKS)
+			use_power(50)
+			playsound(src, close_sound, 30, TRUE)
+			return TRUE
+
+		if(BYPASS_DOOR_CHECKS)
+			playsound(src, close_sound, 30, TRUE)
+			return TRUE
+
+		else
+			stack_trace("Invalid forced argument '[force_type]' passed to close() on this airlock.")
+
+	// shit's fucked, let's hope parent has something to handle it.
+	return ..()
 
 ///connect potential airlocks to each other for cycling
 /obj/machinery/door/airlock/proc/cyclelinkairlock()
@@ -127,7 +511,7 @@
 
 
 /obj/machinery/door/airlock/hasPower()
-	return ((!secondsMainPowerLost || !secondsBackupPowerLost) && !(machine_stat & NOPOWER))
+	return ((!secondsMainPowerLost || !secondsBackupPowerLost) && !(machine_stat & no_power_sound))
 
 
 /obj/machinery/door/airlock/requiresID()
@@ -207,69 +591,6 @@
 		return 1
 	else
 		return 0
-
-/obj/machinery/door/airlock/update_icon_state()
-	. = ..()
-	if(density)
-		if(locked && lights)
-			icon_state = "door_locked"
-		else
-			icon_state = "door_closed"
-	else
-		icon_state = "door_open"
-
-/obj/machinery/door/airlock/update_overlays()
-	. = ..()
-	if(!density)
-		return
-	if(emergency && hasPower())
-		. += image(icon, "emergency_access_on")
-	if(CHECK_BITFIELD(machine_stat, PANEL_OPEN))
-		. += image(icon, "panel_open")
-	if(welded)
-		. += image(icon, "welded")
-	if(hasPower() && unres_sides)
-		for(var/heading in list(NORTH,SOUTH,EAST,WEST))
-			if(!(unres_sides & heading))
-				continue
-			var/image/access_overlay = image('icons/obj/doors/overlays.dmi', "unres_[heading]", layer = DOOR_HELPER_LAYER, pixel_y = -4)
-			switch(heading)
-				if(NORTH)
-					access_overlay.pixel_x = 0
-					access_overlay.pixel_y = 32
-				if(SOUTH)
-					access_overlay.pixel_x = 0
-					access_overlay.pixel_y = -32
-				if(EAST)
-					access_overlay.pixel_x = 32
-					access_overlay.pixel_y = 0
-				if(WEST)
-					access_overlay.pixel_x = -32
-					access_overlay.pixel_y = 0
-			. += access_overlay
-
-/obj/machinery/door/airlock/do_animate(animation)
-	switch(animation)
-		if("opening")
-			if(overlays) overlays.Cut()
-			if(CHECK_BITFIELD(machine_stat, PANEL_OPEN))
-				spawn(2) // The only work around that works. Downside is that the door will be gone for a millisecond.
-					flick("o_door_opening", src)  //can not use flick due to BYOND bug updating overlays right before flicking
-			else
-				flick("door_opening", src)
-		if("closing")
-			if(overlays) overlays.Cut()
-			if(CHECK_BITFIELD(machine_stat, PANEL_OPEN))
-				flick("o_door_closing", src)
-			else
-				flick("door_closing", src)
-		if("spark")
-			if(density)
-				flick("door_spark", src)
-		if("deny")
-			if(density)
-				flick("door_deny", src)
-
 
 
 //Prying open doors
@@ -500,57 +821,6 @@
 		to_chat(user, span_notice("You close [src]'s panel."))
 		playsound(loc, 'sound/items/screwdriver.ogg', 25, 1)
 	update_icon()
-
-/obj/machinery/door/airlock/open(forced = FALSE)
-	if(!forced && (!hasPower() || wires.is_cut(WIRE_OPEN)))
-		return FALSE
-	. = ..()
-	if(!.)
-		return
-	use_power(active_power_usage)
-	if(istype(src, /obj/machinery/door/airlock/glass))
-		playsound(loc, 'sound/machines/windowdoor.ogg', 25, 1)
-	else
-		playsound(loc, 'sound/machines/airlock.ogg', 25, 0)
-	if(istype(closeOther, /obj/machinery/door/airlock) && !closeOther.density)
-		closeOther.close()
-
-/obj/machinery/door/airlock/close(forced = FALSE)
-	if(operating || welded || locked)
-		return
-	if(!forced)
-		if(!hasPower() || wires.is_cut(WIRE_BOLTS))
-			return
-	if(safe)
-		for(var/turf/turf AS in locs)
-			if(locate(/mob/living) in turf)
-				addtimer(CALLBACK(src, PROC_REF(close)), 6 SECONDS)
-				return
-
-	for(var/turf/turf in locs)
-		for(var/mob/living/M in turf)
-			M.apply_damage(DOOR_CRUSH_DAMAGE, BRUTE, blocked = MELEE)
-			M.Stun(10 SECONDS)
-			M.Paralyze(10 SECONDS)
-			if (iscarbon(M))
-				var/mob/living/carbon/C = M
-				var/datum/species/S = C.species
-				if(S?.species_flags & NO_PAIN)
-					INVOKE_ASYNC(M, TYPE_PROC_REF(/mob/living, emote), "pain")
-			var/turf/location = src.loc
-			if(istype(location, /turf))
-				location.add_mob_blood(M)
-			UPDATEHEALTH(M)
-
-	use_power(active_power_usage)	//360 W seems much more appropriate for an actuator moving an industrial door capable of crushing people
-	if(istype(src, /obj/machinery/door/airlock/glass))
-		playsound(src.loc, 'sound/machines/windowdoor.ogg', 25, 1)
-	else
-		playsound(src.loc, 'sound/machines/airlock.ogg', 25, 0)
-	for(var/turf/turf in locs)
-		var/obj/structure/window/killthis = (locate(/obj/structure/window) in turf)
-		killthis?.ex_act(2)//Smashin windows
-	return ..()
 
 /obj/machinery/door/airlock/proc/lock(forced = FALSE)
 	if ((operating && !forced) || locked)

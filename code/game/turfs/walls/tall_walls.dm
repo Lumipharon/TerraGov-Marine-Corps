@@ -33,6 +33,12 @@
 	if(frill_icon)
 		AddElement(/datum/element/frill, frill_icon)
 
+//airlock test
+/obj/machinery/door/airlock/tall
+	name = "airlock"
+	icon = 'icons/obj/doors/airlocks/tall/security.dmi'
+	icon_state = "closed"
+
 ///frill element
 
 GLOBAL_LIST_EMPTY(frill_objects)
