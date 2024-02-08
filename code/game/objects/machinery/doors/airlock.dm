@@ -744,7 +744,7 @@
 			if(!do_after(user, fumbling_time, NONE, src, BUSY_ICON_UNSKILLED))
 				return
 
-		if(width > 1)
+		if(multi_tile)
 			to_chat(user, span_warning("Large doors seem impossible to disassemble."))
 			return
 

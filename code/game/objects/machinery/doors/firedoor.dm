@@ -321,7 +321,7 @@
 
 /obj/machinery/door/firedoor/multi_tile
 	icon = 'icons/obj/doors/DoorHazard2x1.dmi'
-	width = 2
+	multi_tile = TRUE
 
 
 /obj/machinery/door/firedoor/border_only

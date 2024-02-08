@@ -43,7 +43,6 @@
 
 	//Multi-tile doors
 	dir = EAST
-	var/width = 1
 
 /obj/machinery/door/Initialize(mapload)
 	. = ..()
@@ -67,15 +66,6 @@
 	for(var/o in fillers)
 		qdel(o)
 	return ..()
-
-///Sets the object bounds for multitile doors
-/obj/machinery/door/proc/set_bounds() //shittier version of tg but fine for now
-	if(dir in list(EAST, WEST))
-		bound_width = width * world.icon_size
-		bound_height = world.icon_size
-	else
-		bound_width = world.icon_size
-		bound_height = width * world.icon_size
 
 /obj/machinery/door/Move()
 	if(multi_tile)
@@ -299,14 +289,12 @@
 			crushed_mob.visible_message(span_warning("[src] closes on [crushed_mob], crushing [crushed_mob.p_them()]!"), span_userdanger("[src] closes on you and crushes you!"))
 			crushed_mob.apply_damage(DOOR_CRUSH_DAMAGE, BRUTE, blocked = MELEE, updating_health = TRUE)
 			crushed_mob.Paralyze(10 SECONDS)
-			if (iscarbon(M))
-				var/mob/living/carbon/C = M
-				var/datum/species/S = C.species
-				if(S?.species_flags & NO_PAIN)
-					INVOKE_ASYNC(M, TYPE_PROC_REF(/mob/living, emote), "pain")
-			var/turf/location = src.loc
-			if(istype(location, /turf))
-				location.add_mob_blood(M)
+			if(iscarbon(crushed_mob))
+				var/mob/living/carbon/carbon_mob = crushed_mob
+				var/datum/species/carbon_species = carbon_mob.species
+				if(carbon_species?.species_flags & NO_PAIN)
+					INVOKE_ASYNC(crushed_mob, TYPE_PROC_REF(/mob/living, emote), "pain")
+				checked_turf.add_mob_blood(crushed_mob)
 
 /obj/machinery/door/proc/requiresID()
 	return TRUE

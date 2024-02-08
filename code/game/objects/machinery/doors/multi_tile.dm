@@ -1,6 +1,6 @@
 //Terribly sorry for the code doubling, but things go derpy otherwise.
 /obj/machinery/door/airlock/multi_tile
-	width = 2
+	multi_tile = TRUE
 
 /obj/machinery/door/airlock/multi_tile/close() //Nasty as hell O(n^2) code but unfortunately necessary
 	for(var/turf/T in locs)
@@ -354,7 +354,6 @@
 
 /obj/machinery/door/airlock/multi_tile/mainship/dropshiprear
 	opacity = TRUE
-	width = 3
 	resistance_flags = RESIST_ALL
 	no_panel = TRUE
 	not_weldable = TRUE
@@ -396,7 +395,6 @@
 	name = "ice colony door"
 	icon = 'icons/obj/doors/icecolony.dmi'
 	icon_state = "door_closed"
-	width = 4
 	openspeed = 17
 	no_panel = TRUE
 	opacity = TRUE
