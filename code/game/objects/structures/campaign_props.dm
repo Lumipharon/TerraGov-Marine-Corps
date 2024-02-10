@@ -140,3 +140,34 @@
 /obj/structure/gauss_cannon/update_overlays()
 	. = ..()
 	. += emissive_appearance(icon, "[icon_state]_emissive", alpha = src.alpha)
+
+/obj/structure/prop/land_rover
+	name = "land_rover"
+	desc = "A light armored all terrain vehicle. Beats walking."
+	icon = 'icons/obj/vehicles/4x4.dmi'
+	icon_state = "land_rover"
+	density = TRUE
+	allow_pass_flags = PASS_AIR
+
+/obj/structure/prop/land_rover/Initialize(mapload)
+	. = ..()
+	update_icon()
+
+/obj/structure/prop/land_rover/update_icon(updates=ALL)
+	. = ..()
+	switch(dir)
+		if(NORTH, SOUTH)
+			pixel_x = -11
+			pixel_y = -12
+			bound_width = 32
+			bound_height = 64
+		if(WEST, EAST)
+			pixel_x = -6
+			pixel_y = -15
+			bound_width = 96
+			bound_height = 32
+
+/obj/structure/prop/land_rover/update_overlays()
+	. = ..()
+	var/image/new_overlay = image(icon, src, "[icon_state]_overlay", ABOVE_MOB_LAYER, dir)
+	. += new_overlay
