@@ -164,6 +164,14 @@ Needed both for a purchase list and effected list (if one perk impacts multiple 
 	owner_stats.unlock_loadout_item(/datum/loadout_item/back/machete, jobs_supported, owner, 0)
 	owner_stats.unlock_loadout_item(/datum/loadout_item/belt/energy_sword, jobs_supported, owner, 0)
 
+/datum/perk/trait/tele_assault
+	name = "Teleport assault drills"
+	desc = "Extensive training in teleporter assault doctrine grants temporary buffs when deploying via teleporter." //improve
+	ui_icon = "soft_footed"
+	traits = list(TRAIT_TELE_EXPERT)
+	jobs_supported = list(SOM_SQUAD_MARINE, SOM_SQUAD_CORPSMAN, SOM_SQUAD_ENGINEER, SOM_SQUAD_VETERAN, SOM_SQUAD_LEADER, SOM_FIELD_COMMANDER)
+	unlock_cost = 300
+
 //skill modifying perks
 /datum/perk/skill_mod
 	var/cqc

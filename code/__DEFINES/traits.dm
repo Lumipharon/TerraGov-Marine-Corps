@@ -171,6 +171,8 @@
 #define TRAIT_MEDIUM_PAIN_RESIST "medium_pain_resist"
 ///is currently riding an armored vehicle
 #define TRAIT_TANK_DESANT "tank_desant"
+///You're trained in teleporter assault doctrine
+#define TRAIT_TELE_EXPERT "tele_expert"
 
 
 /// Prevents usage of manipulation appendages (picking, holding or using items, manipulating storage).
