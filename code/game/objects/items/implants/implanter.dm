@@ -73,6 +73,10 @@
 	name = "blade implant implanter"
 	imp = /obj/item/implant/deployitem/blade
 
+/obj/item/implanter/wrist_cannon
+	name = "projectile launch system implanter"
+	imp = /obj/item/implant/deployitem/wrist_cannon
+
 /obj/item/implanter/suicide_dust
 	name = "Self-Gibbing implant"
 	imp = /obj/item/implant/suicide_dust
