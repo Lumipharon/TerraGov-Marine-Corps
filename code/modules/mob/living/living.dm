@@ -471,14 +471,21 @@
 /mob/living/proc/get_hard_acid_protection()
 	return hard_armor?.getRating(ACID)
 
+///What bright lights such as flashbangs do to a mob's vision
 /mob/proc/flash_act(intensity = 1, bypass_checks, type = /atom/movable/screen/fullscreen/flash, duration)
 	return
 
 /mob/living/carbon/flash_act(intensity = 1, bypass_checks, type = /atom/movable/screen/fullscreen/flash, duration = 40)
 	if(!has_vision())
 		return FALSE
-	if(!bypass_checks && (get_eye_protection() > intensity))
-		return FALSE
+	if(!bypass_checks)
+		var/eye_protect = get_eye_protection()
+		if(eye_protect > intensity)
+			return FALSE
+		if(eye_protect == intensity)
+			duration *= 0.5
+	if(eye_protect == EYES_FLASH_VULNERABLE)
+		duration *= 2
 	overlay_fullscreen_timer(duration, 20, "flash", type)
 	return TRUE
 
