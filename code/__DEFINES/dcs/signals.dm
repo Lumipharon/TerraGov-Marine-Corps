@@ -1030,6 +1030,8 @@
 
 //Implant abilities
 #define COMSIG_IMPLANT_ABILITY_SANDEVISTAN "implant_ability_sandevistan"
+#define COMSIG_IMPLANT_ABILITY_WRIST_CANNON "implant_ability_wrist_cannon"
+#define COMSIG_IMPLANT_ABILITY_MANTIS_BLADE "implant_ability_mantis_blade"
 
 // human modules signals for keybindings
 #define COMSIG_KB_VALI_CONFIGURE "keybinding_vali_configure"

@@ -45,6 +45,7 @@
 	icon = 'icons/obj/items/weapons.dmi'
 	icon_state = "armblade"
 	helditem = /obj/item/weapon/mantisblade
+	action_type = /datum/action/item_action/implant/mantis_blade
 
 /obj/item/implant/deployitem/blade/get_data()
 	return {"
@@ -61,6 +62,12 @@
 /obj/item/implant/deployitem/blade/fetch_item()
 	. = ..()
 	playsound(implant_owner.loc, 'sound/weapons/wristblades_off.ogg', 15, TRUE)
+
+/datum/action/item_action/implant/mantis_blade
+	desc = "Toggles your implanted mantis blade"
+	keybinding_signals = list(
+		KEYBINDING_NORMAL = COMSIG_IMPLANT_ABILITY_MANTIS_BLADE,
+	)
 
 /obj/item/weapon/mantisblade
 	name = "mantis arm blade"
@@ -90,6 +97,7 @@
 	icon = 'icons/obj/items/weapons.dmi'
 	icon_state = "armblade"
 	helditem = /obj/item/weapon/gun/launcher/wrist_cannon
+	action_type = /datum/action/item_action/implant/wrist_cannon
 
 /obj/item/implant/deployitem/wrist_cannon/get_data()
 	return {"
@@ -107,6 +115,11 @@
 	. = ..()
 	playsound(implant_owner.loc, 'sound/weapons/guns/interact/pred_plasmacaster_off.ogg', 15, TRUE)
 
+/datum/action/item_action/implant/wrist_cannon
+	desc = "Toggles your implanted PLS"
+	keybinding_signals = list(
+		KEYBINDING_NORMAL = COMSIG_IMPLANT_ABILITY_WRIST_CANNON,
+	)
 
 //rocket
 /obj/item/weapon/gun/launcher/wrist_cannon
