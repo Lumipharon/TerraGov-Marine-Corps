@@ -851,3 +851,8 @@ GLOBAL_LIST_INIT(human_body_parts, list(BODY_ZONE_HEAD,
 #define BASE_WALL_SLAM_DAMAGE 15
 ///Default damage for slamming a mob against another mob
 #define BASE_MOB_SLAM_DAMAGE 8
+
+#define EYES_FLASH_VULNERABLE -1
+#define EYES_FLASH_STANDARD 0
+#define EYES_FLASH_RESISTANT 1
+#define EYES_FLASH_IMMUNE 2

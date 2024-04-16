@@ -19,7 +19,7 @@
 	var/armor_features_flags = NONE
 
 	/// used for headgear, masks, and glasses, to see how much they protect eyes from bright lights.
-	var/eye_protection = 0
+	var/eye_protection = EYES_FLASH_STANDARD
 
 	/// Used by headgear mostly to affect accuracy
 	var/accuracy_mod = 0

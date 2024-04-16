@@ -9,7 +9,7 @@
 	toggleable = 1
 	vision_flags = SEE_MOBS
 	lighting_alpha = LIGHTING_PLANE_ALPHA_INVISIBLE
-	eye_protection = -1
+	eye_protection = EYES_FLASH_VULNERABLE
 	deactive_state = "goggles_off"
 
 /obj/item/clothing/glasses/thermal/emp_act(severity)

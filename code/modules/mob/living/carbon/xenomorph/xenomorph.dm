@@ -366,7 +366,7 @@
 	return XENO_PERM_COEFF
 
 /mob/living/carbon/xenomorph/get_eye_protection()
-	return 2
+	return EYES_FLASH_IMMUNE
 
 /mob/living/carbon/xenomorph/vomit()
 	return

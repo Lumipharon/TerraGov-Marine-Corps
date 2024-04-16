@@ -25,7 +25,7 @@
 	siemens_coefficient = 0.9
 	w_class = WEIGHT_CLASS_NORMAL
 	anti_hug = 2
-	eye_protection = 2
+	eye_protection = EYES_FLASH_IMMUNE
 	var/hug_memory = 0 //Variable to hold the "memory" of how many anti-hugs remain.  Because people were abusing the fuck out of it.
 
 /obj/item/clothing/head/welding/Initialize(mapload)
@@ -46,7 +46,7 @@
 /obj/item/clothing/head/welding/proc/flip_up()
 	DISABLE_BITFIELD(inventory_flags, COVEREYES|COVERMOUTH|BLOCKSHARPOBJ)
 	DISABLE_BITFIELD(inv_hide_flags, HIDEEARS|HIDEEYES|HIDEFACE)
-	eye_protection = 0
+	eye_protection = EYES_FLASH_STANDARD
 	hug_memory = anti_hug
 	anti_hug = 0
 	icon_state = "[initial(icon_state)]up"

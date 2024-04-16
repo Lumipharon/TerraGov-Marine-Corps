@@ -4,12 +4,6 @@
 		return M.ear_deaf || M.disabilities & DEAF
 	return FALSE
 
-/proc/is_blind(A)
-	if(isliving(A))
-		var/mob/living/M = A
-		return M.eye_blind
-	return FALSE
-
 /mob/proc/can_use_hands()
 	return
 
@@ -342,8 +336,9 @@ GLOBAL_LIST_INIT(organ_rel_size, list(
 /mob/proc/has_legs()
 	return 2
 
+///Returns a number representing how protected the mobs eyes are from bright light
 /mob/proc/get_eye_protection()
-	return 0
+	return EYES_FLASH_STANDARD
 
 /mob/proc/get_standard_bodytemperature()
 	return BODYTEMP_NORMAL

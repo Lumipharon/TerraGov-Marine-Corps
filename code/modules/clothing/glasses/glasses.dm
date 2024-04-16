@@ -234,7 +234,7 @@
 	actions_types = list(/datum/action/item_action/toggle)
 	inventory_flags = COVEREYES
 	inv_hide_flags = HIDEEYES
-	eye_protection = 2
+	eye_protection = EYES_FLASH_IMMUNE
 	activation_sound = null
 	deactivation_sound = null
 
@@ -265,7 +265,7 @@
 	DISABLE_BITFIELD(inventory_flags, COVEREYES)
 	DISABLE_BITFIELD(inv_hide_flags, HIDEEYES)
 	DISABLE_BITFIELD(armor_protection_flags, EYES)
-	eye_protection = 0
+	eye_protection = EYES_FLASH_STANDARD
 	update_icon()
 	if(user)
 		to_chat(user, "You push [src] up out of your face.")
@@ -305,7 +305,7 @@
 	name = "sunglasses"
 	icon_state = "sun"
 	item_state = "sunglasses"
-	eye_protection = 1
+	eye_protection = EYES_FLASH_RESISTANT
 
 /obj/item/clothing/glasses/sunglasses/Initialize(mapload)
 	. = ..()
@@ -317,7 +317,7 @@
 	desc = "Covers the eyes, preventing sight."
 	icon_state = "blindfold"
 	item_state = "blindfold"
-	eye_protection = 2
+	eye_protection = EYES_FLASH_IMMUNE
 
 /obj/item/clothing/glasses/sunglasses/blindfold/Initialize(mapload)
 	. = ..()
@@ -338,7 +338,7 @@
 
 /obj/item/clothing/glasses/sunglasses/fake
 	desc = "A pair of designer sunglasses. Doesn't seem like it'll block flashes."
-	eye_protection = 0
+	eye_protection = EYES_FLASH_STANDARD
 
 /obj/item/clothing/glasses/sunglasses/fake/attackby(obj/item/I, mob/user, params)
 	. = ..()
@@ -518,12 +518,14 @@
 	if(active)
 		STOP_PROCESSING(SSobj, src)
 		active_sound.stop(src)
+		eye_protection = initial(eye_protection)
 	else
 		if(!battery || battery.charge < active_energy_cost)
 			if(user)
 				balloon_alert(user, "No power")
 			return FALSE	//Don't activate
 		START_PROCESSING(SSobj, src)
+		eye_protection = EYES_FLASH_VULNERABLE
 		active_sound.start(src)
 
 	update_worn_state(!active)	//The active var has not been toggled yet, so pass the opposite value

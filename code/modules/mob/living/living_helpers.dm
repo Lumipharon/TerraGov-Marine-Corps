@@ -1,19 +1,26 @@
+///Returns damage threshold for death
 /mob/living/proc/get_death_threshold()
 	return health_threshold_dead
 
+///Returns damage threshold for death crit
 /mob/living/proc/get_crit_threshold()
 	return health_threshold_crit
 
+///Does this mob have a brain
 /mob/living/proc/has_brain()
 	return 1
 
+///Does this mob have eyes
 /mob/living/proc/has_eyes()
 	return 1
 
+///Whether this mob can see
 /mob/living/proc/has_vision()
 	if(disabilities & BLIND)
 		return FALSE
 	if(tinttotal >= TINT_BLIND)
+		return FALSE
+	if(eye_blind)
 		return FALSE
 	return has_eyes()
 

@@ -196,15 +196,9 @@
 	return 0
 
 /mob/living/carbon/human/has_vision()
-	if(disabilities & BLIND)
-		return FALSE
 	if(!species.has_organ["eyes"]) //can see through other means
 		return TRUE
-	if(!has_eyes())
-		return FALSE
-	if(tinttotal >= TINT_BLIND)
-		return FALSE
-	return TRUE
+	return ..()
 
 
 /mob/living/carbon/human/has_legs()

@@ -475,9 +475,12 @@
 	return
 
 /mob/living/carbon/flash_act(intensity = 1, bypass_checks, type = /atom/movable/screen/fullscreen/flash, duration = 40)
-	if( bypass_checks || (get_eye_protection() < intensity && !(disabilities & BLIND)) )
-		overlay_fullscreen_timer(duration, 20, "flash", type)
-		return TRUE
+	if(!has_vision())
+		return FALSE
+	if(!bypass_checks && (get_eye_protection() > intensity))
+		return FALSE
+	overlay_fullscreen_timer(duration, 20, "flash", type)
+	return TRUE
 
 /mob/living/proc/disable_lights(armor = TRUE, guns = TRUE, flares = TRUE, misc = TRUE, sparks = FALSE, silent = FALSE)
 	return FALSE

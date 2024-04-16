@@ -658,19 +658,16 @@
 		return FALSE
 	return ..()
 
-
-///get_eye_protection()
-///Returns a number between -1 to 2
 /mob/living/carbon/human/get_eye_protection()
 	var/number = 0
 
-	if(!species.has_organ["eyes"]) return 2//No eyes, can't hurt them.
-
 	var/datum/internal_organ/eyes/I = internal_organs_by_name["eyes"]
 	if(!I)
-		return 2
+		return EYES_FLASH_IMMUNE
 	if(I.robotic == ORGAN_ROBOT)
-		return 2
+		return EYES_FLASH_IMMUNE
+	if(I.robotic == ORGAN_ASSISTED)
+		number = EYES_FLASH_RESISTANT
 
 	if(istype(head, /obj/item/clothing))
 		var/obj/item/clothing/C = head

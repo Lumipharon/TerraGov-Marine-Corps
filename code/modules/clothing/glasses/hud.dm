@@ -230,7 +230,7 @@
 	desc = "Glasses worn by a spatial agent."
 	icon_state = "sun"
 	item_state = "sunglasses"
-	eye_protection = 2
+	eye_protection = EYES_FLASH_IMMUNE
 	darkness_view = 8
 	hud_type = list(DATA_HUD_MEDICAL_OBSERVER, DATA_HUD_XENO_STATUS, DATA_HUD_SECURITY_ADVANCED, DATA_HUD_SQUAD_TERRAGOV, DATA_HUD_SQUAD_SOM, DATA_HUD_ORDER)
 	vision_flags = SEE_TURFS|SEE_MOBS|SEE_OBJS

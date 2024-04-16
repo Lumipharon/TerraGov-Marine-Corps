@@ -329,7 +329,7 @@
 	soft_armor = list(MELEE = 95, BULLET = 120, LASER = 200, ENERGY = 200, BOMB = 90, BIO = 100, FIRE = 90, ACID = 95)
 	inventory_flags = COVEREYES|COVERMOUTH|BLOCKSHARPOBJ|BLOCKGASEFFECT
 	inv_hide_flags = HIDEEARS|HIDEEYES|HIDEFACE|HIDEMASK|HIDEALLHAIR
-	eye_protection = 2
+	eye_protection = EYES_FLASH_IMMUNE
 	anti_hug = 50
 	resistance_flags = UNACIDABLE
 
