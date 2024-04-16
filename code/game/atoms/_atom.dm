@@ -282,7 +282,7 @@ directive is properly returned.
 	set name = "Examine"
 	set category = "IC"
 
-	if(is_blind(src))
+	if(!has_vision())
 		to_chat(src, span_notice("Something is there but you can't see it."))
 		return
 

@@ -30,7 +30,7 @@
 	return ..()
 
 /datum/internal_organ/New(mob/living/carbon/carbon_mob)
-	..()
+	. = ..()
 	if(!istype(carbon_mob))
 		return
 
@@ -355,8 +355,23 @@
 	parent_limb = "head"
 	removed_type = /obj/item/organ/eyes
 	robotic_type = /obj/item/organ/eyes/prosthetic
-	var/eye_surgery_stage = 0 //stores which stage of the eye surgery the eye is at
 	organ_id = ORGAN_EYES
+	///stores which stage of the eye surgery the eye is at
+	var/eye_surgery_stage = 0
+	///Eye flash protect level
+	var/flash_protection = EYES_FLASH_STANDARD
+	///Any special vision flags for these eyes
+	var/vision_flags = NONE
+	///How well these eyes see in the dark
+	var/darkness_view = 2
+	///Special vision alpha for these eyes
+	var/lighting_alpha
+
+/datum/internal_organ/eyes/New(mob/living/carbon/carbon_mob)
+	. = ..()
+	if(!istype(carbon_mob))
+		return
+	carbon_mob.update_sight()
 
 /datum/internal_organ/eyes/process() //Eye damage replaces the old eye_stat var.
 	..()
@@ -368,7 +383,15 @@
 /datum/internal_organ/eyes/prosthetic
 	robotic = ORGAN_ROBOT
 	removed_type = /obj/item/organ/eyes/prosthetic
+	flash_protection = EYES_FLASH_IMMUNE
 
+/datum/internal_organ/eyes/night_vision
+	robotic = ORGAN_ROBOT
+	//removed_type = /obj/item/organ/eyes/prosthetic
+	flash_protection = EYES_FLASH_VULNERABLE
+	vision_flags = SEE_TURFS
+	darkness_view = 9
+	lighting_alpha = LIGHTING_PLANE_ALPHA_MOSTLY_VISIBLE
 
 /datum/internal_organ/appendix
 	name = "appendix"

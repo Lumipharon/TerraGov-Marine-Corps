@@ -895,7 +895,7 @@ modules/mob/living/carbon/human/life.dm if you die, you will be zoomed out.
 			animate(user.client, 3*(tileoffset/7), pixel_x = 0, pixel_y = 0)
 		return
 
-	if(is_blind(user))
+	if(!user.has_vision())
 		to_chat(user, span_warning("You are too blind to see anything."))
 		return
 

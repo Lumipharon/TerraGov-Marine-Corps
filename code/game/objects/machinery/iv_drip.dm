@@ -53,7 +53,7 @@
 
 	if(ishuman(usr))
 		var/mob/living/carbon/human/H = usr
-		if(H.stat || get_dist(H, src) > 1 || is_blind(H) || H.lying_angle)
+		if(H.stat || get_dist(H, src) > 1 || !H.has_vision() || H.lying_angle)
 			return
 
 		if(attached)

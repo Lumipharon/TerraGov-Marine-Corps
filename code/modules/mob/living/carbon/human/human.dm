@@ -661,13 +661,10 @@
 /mob/living/carbon/human/get_eye_protection()
 	var/number = 0
 
-	var/datum/internal_organ/eyes/I = internal_organs_by_name["eyes"]
-	if(!I)
+	var/datum/internal_organ/eyes/eye_organ = internal_organs_by_name["eyes"]
+	if(!eye_organ)
 		return EYES_FLASH_IMMUNE
-	if(I.robotic == ORGAN_ROBOT)
-		return EYES_FLASH_IMMUNE
-	if(I.robotic == ORGAN_ASSISTED)
-		number = EYES_FLASH_RESISTANT
+	number += eye_organ.flash_protection
 
 	if(istype(head, /obj/item/clothing))
 		var/obj/item/clothing/C = head

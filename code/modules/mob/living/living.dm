@@ -478,8 +478,8 @@
 /mob/living/carbon/flash_act(intensity = 1, bypass_checks, type = /atom/movable/screen/fullscreen/flash, duration = 40)
 	if(!has_vision())
 		return FALSE
+	var/eye_protect = get_eye_protection()
 	if(!bypass_checks)
-		var/eye_protect = get_eye_protection()
 		if(eye_protect > intensity)
 			return FALSE
 		if(eye_protect == intensity)

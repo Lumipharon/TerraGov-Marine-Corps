@@ -71,7 +71,7 @@
 	finish_charging()
 	playsound(owner, 'sound/effects/petrify_activate.ogg', 50)
 	for(var/mob/living/carbon/human/human in view(PETRIFY_RANGE, owner.loc))
-		if(is_blind(human))
+		if(!human.has_vision())
 			continue
 
 		human.notransform = TRUE

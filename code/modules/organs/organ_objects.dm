@@ -144,6 +144,12 @@
 	icon_state = "eyes-prosthetic"
 	organ_type = /datum/internal_organ/eyes/prosthetic
 
+/obj/item/organ/eyes/nvg
+	robotic = ORGAN_ROBOT
+	name = "low light occular prosthesis"
+	icon_state = "eyes-prosthetic"
+	organ_type = /datum/internal_organ/eyes/night_vision
+
 /obj/item/organ/liver/prosthetic
 	robotic = ORGAN_ROBOT
 	name = "toxin filter"

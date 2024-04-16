@@ -15,7 +15,7 @@
 	return 1
 
 ///Whether this mob can see
-/mob/living/proc/has_vision()
+/mob/living/has_vision()
 	if(disabilities & BLIND)
 		return FALSE
 	if(tinttotal >= TINT_BLIND)

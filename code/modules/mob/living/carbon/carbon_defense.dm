@@ -31,7 +31,7 @@
 	if(CHECK_BITFIELD(S.smoke_traits, SMOKE_XENO_ACID))
 		adjustOxyLoss(4 + S.strength * 2)
 	if(CHECK_BITFIELD(S.smoke_traits, SMOKE_XENO_NEURO))
-		if(!CHECK_BITFIELD(S.smoke_traits, SMOKE_NEURO_LIGHT) && !is_blind(src) && has_eyes()) //Only full neurogas blinds
+		if(!CHECK_BITFIELD(S.smoke_traits, SMOKE_NEURO_LIGHT) && has_eyes() && has_vision()) //Only full neurogas blinds
 			to_chat(src, span_danger("Your eyes sting. You can't see!"))
 			blind_eyes(2)
 			blur_eyes(4)

@@ -336,6 +336,10 @@ GLOBAL_LIST_INIT(organ_rel_size, list(
 /mob/proc/has_legs()
 	return 2
 
+///Whether this mob can see
+/mob/proc/has_vision()
+	return TRUE
+
 ///Returns a number representing how protected the mobs eyes are from bright light
 /mob/proc/get_eye_protection()
 	return EYES_FLASH_STANDARD

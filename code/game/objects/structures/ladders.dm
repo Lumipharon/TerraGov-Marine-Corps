@@ -135,7 +135,7 @@
 
 /obj/structure/ladder/check_eye(mob/user)
 	//Are we capable of looking?
-	if(user.incapacitated() || get_dist(user, src) > 1 || is_blind(user) || user.lying_angle || !user.client)
+	if(user.incapacitated() || get_dist(user, src) > 1 || !user.has_vision() || user.lying_angle || !user.client)
 		user.unset_interaction()
 
 	//Are ladder cameras ok?
@@ -170,7 +170,7 @@
 //Peeking up/down
 /obj/structure/ladder/MouseDrop(over_object, src_location, over_location)
 	if((over_object == usr && (in_range(src, usr))))
-		if(isxenolarva(usr) || isobserver(usr) || usr.incapacitated() || is_blind(usr) || usr.lying_angle)
+		if(isxenolarva(usr) || isobserver(usr) || usr.incapacitated() || !usr.has_vision() || usr.lying_angle)
 			to_chat(usr, "You can't do that in your current state.")
 			return
 		if(is_watching)

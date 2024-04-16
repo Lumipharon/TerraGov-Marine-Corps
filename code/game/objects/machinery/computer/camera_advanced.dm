@@ -100,7 +100,7 @@
 		user.unset_interaction()
 	if(isAI(user))
 		return
-	if(!Adjacent(user) || is_blind(user))
+	if(!Adjacent(user) || !user.has_vision())
 		user.unset_interaction()
 
 

@@ -349,6 +349,13 @@
 		if(species.see_in_dark)
 			see_in_dark = species.see_in_dark
 
+	var/datum/internal_organ/eyes/eye_organ = internal_organs_by_name["eyes"]
+	if(eye_organ)
+		sight |= eye_organ.vision_flags
+		see_in_dark = max(eye_organ.darkness_view, see_in_dark)
+		if(!isnull(eye_organ.lighting_alpha))
+			lighting_alpha = max(lighting_alpha, eye_organ.lighting_alpha)
+
 	if(client.eye != src)
 		var/atom/A = client.eye
 		if(A.update_remote_sight(src)) //returns 1 if we override all other sight updates.
