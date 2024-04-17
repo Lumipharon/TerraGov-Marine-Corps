@@ -85,7 +85,7 @@
 	name = "projectile launch system"
 	desc = "A compact missile weapon systen capable of being stored within a cybernetic arm."
 	icon = 'icons/obj/items/weapons.dmi'
-	icon_state = "armblade"
+	icon_state = "wrist_cannon"
 	helditem = /obj/item/weapon/gun/launcher/wrist_cannon
 	action_type = /datum/action/item_action/implant/wrist_cannon
 
@@ -115,8 +115,8 @@
 /obj/item/weapon/gun/launcher/wrist_cannon
 	name = "\improper RL-5 rocket launcher"
 	desc = "The RL-5 is the primary anti-armor used around the galaxy. Used to take out light-tanks and enemy structures, the RL-5 rocket launcher is a dangerous weapon with a variety of combat uses. Uses a variety of 84mm rockets."
-	icon = 'icons/obj/items/guns/special.dmi'
-	icon_state = "m5"
+	icon = 'icons/obj/items/weapons.dmi'
+	icon_state = "wrist_cannon"
 	item_state = "m5"
 	item_icons = list(
 		slot_l_hand_str = 'icons/mob/inhands/guns/special_left_1.dmi',
