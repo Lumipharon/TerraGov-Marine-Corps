@@ -44,7 +44,7 @@
 	desc = "A large folding blade capable of being stored within an arm."
 	icon = 'icons/obj/items/weapons.dmi'
 	icon_state = "armblade"
-	helditem = /obj/item/weapon/sword/mantisblade
+	helditem = /obj/item/weapon/sword/mantis_blade
 	action_type = /datum/action/item_action/implant/mantis_blade
 
 /obj/item/implant/deployitem/blade/get_data()
@@ -69,7 +69,7 @@
 		KEYBINDING_NORMAL = COMSIG_IMPLANT_ABILITY_MANTIS_BLADE,
 	)
 
-/obj/item/weapon/sword/mantisblade
+/obj/item/weapon/sword/mantis_blade
 	name = "mantis arm blade"
 	desc = "A wicked-looking folding blade capable of being concealed within a human's arm."
 	icon_state = "armblade"
