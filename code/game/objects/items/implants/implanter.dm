@@ -77,6 +77,10 @@
 	name = "projectile launch system implanter"
 	imp = /obj/item/implant/deployitem/wrist_cannon
 
+/obj/item/implanter/particle_lance
+	name = "particle lance implanter"
+	imp = /obj/item/implant/deployitem/wrist_cannon/particle
+
 /obj/item/implanter/suicide_dust
 	name = "Self-Gibbing implant"
 	imp = /obj/item/implant/suicide_dust

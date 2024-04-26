@@ -95,7 +95,7 @@
 	<b>Name:</b> Nanotrasen MA-12 Mantis Implant<BR>
 	<HR>
 	<b>Implant Details:</b><BR>
-	<b>Function:</b> Upon activation, the user deploys a large blade from the their arm.<BR>"}
+	<b>Function:</b> Upon activation, the user deploys a gun from the their arm.<BR>"}
 
 /obj/item/implant/deployitem/wrist_cannon/put_in_slots()
 	. = ..()
@@ -117,11 +117,7 @@
 	desc = "The RL-5 is the primary anti-armor used around the galaxy. Used to take out light-tanks and enemy structures, the RL-5 rocket launcher is a dangerous weapon with a variety of combat uses. Uses a variety of 84mm rockets."
 	icon = 'icons/obj/items/weapons.dmi'
 	icon_state = "wrist_cannon"
-	item_state = "m5"
-	item_icons = list(
-		slot_l_hand_str = 'icons/mob/inhands/guns/special_left_1.dmi',
-		slot_r_hand_str = 'icons/mob/inhands/guns/special_right_1.dmi',
-	)
+	item_state = null
 	max_shells = 5
 	caliber = CALIBER_84MM
 	load_method = MAGAZINE
@@ -160,14 +156,68 @@
 
 /datum/ammo/rocket/wrist_cannon
 	name = "high explosive rocket"
-	icon_state = "rocket_he"
+	icon_state = "apfds"
 	hud_state = "rocket_he"
 	accurate_range = 7
 	max_range = 14
-	damage = 50
-	penetration = 30
-	sundering = 30
+	damage = 20
+	penetration = 0
+	sundering = 15
 	ammo_behavior_flags = AMMO_BALLISTIC
 
 /datum/ammo/rocket/wrist_cannon/drop_nade(turf/T)
-	explosion(T, 0, 2, 4, 5)
+	explosion(T, 0, 2, 3, 4)
+
+//particle lance
+/obj/item/implant/deployitem/wrist_cannon/particle
+	name = "light particle lance"
+	desc = "A compact yet powerful energy weapon capable of being stored within a cybernetic arm."
+	helditem = /obj/item/weapon/gun/energy/wrist_particle_cannon
+
+/obj/item/weapon/gun/energy/wrist_particle_cannon
+	name = "light particle lance"
+	desc = "Desc here."
+	reload_sound = 'sound/weapons/guns/interact/rifle_reload.ogg'
+	fire_sound = 'sound/weapons/guns/fire/plasma_precision_3.ogg'
+	icon = 'icons/obj/items/weapons.dmi'
+	icon_state = "wrist_cannon"
+	rounds_per_shot = 10 //100 shots.
+	gun_features_flags = GUN_AMMO_COUNTER|GUN_AMMO_COUNT_BY_SHOTS_REMAINING|GUN_NO_PITCH_SHIFT_NEAR_EMPTY|GUN_ENERGY
+	reciever_flags = AMMO_RECIEVER_MAGAZINES|AMMO_RECIEVER_AUTO_EJECT_LOCKED
+	ammo_datum_type = /datum/ammo/energy/light_particle_cannon
+	default_ammo_type = /obj/item/cell/lasgun
+	allowed_ammo_types = list(/obj/item/cell/lasgun)
+	w_class = WEIGHT_CLASS_BULKY
+	load_method = CELL
+	gun_skill_category = SKILL_HEAVY_WEAPONS
+	muzzle_flash_color = COLOR_CYAN
+
+	windup_delay = 0.3 SECONDS
+	windup_sound = 'sound/weapons/guns/fire/laser_charge_up.ogg'
+
+	aim_slowdown = 0.3
+	wield_delay = 0.5 SECONDS
+
+	fire_delay = 3 SECONDS
+	recoil = 1
+	recoil_unwielded = 2
+	scatter = 0
+	scatter_unwielded = 8
+	accuracy_mult = 1
+	accuracy_mult_unwielded = 0.9
+
+/datum/ammo/energy/light_particle_cannon
+	name = "particle beam"
+	hud_state = "laser_efficiency"
+	damage = 60
+	penetration = 40
+	sundering = 10
+	hitscan_effect_icon = "beam_particle"
+	ammo_behavior_flags = AMMO_ENERGY|AMMO_HITSCAN|AMMO_PASS_THROUGH_MOB
+	max_range = 12
+	accurate_range = 7
+	bullet_color = COLOR_CYAN
+
+/datum/ammo/energy/light_particle_cannon/on_hit_mob(mob/M, obj/projectile/proj)
+	staggerstun(M, proj, max_range = 2, weaken = 0.3 SECONDS, knockback = 2)
+	staggerstun(M, proj, max_range = 7, stagger = 2 SECONDS, slowdown = 2)
