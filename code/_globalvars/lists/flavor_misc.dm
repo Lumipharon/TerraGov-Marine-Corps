@@ -142,6 +142,7 @@ GLOBAL_LIST_INIT(playable_squad_icons, list(
 ))
 
 GLOBAL_LIST_INIT(campaign_asset_icon_types, list(
+	"unknown",
 	"b18",
 	"gorgon",
 	"medkit",
@@ -189,6 +190,7 @@ GLOBAL_LIST_INIT(campaign_asset_icon_types, list(
 	"support_1",
 	"support_2",
 	"support_3",
+	"motorbike",
 ))
 
 GLOBAL_LIST_INIT(campaign_mission_icon_types, list(

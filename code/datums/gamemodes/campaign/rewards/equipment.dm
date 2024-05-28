@@ -317,3 +317,15 @@
 	equipment_to_spawn = list(
 		/obj/item/binoculars/fire_support/campaign/som,
 	)
+
+/datum/campaign_asset/equipment/motorbike
+	name = "Motorbike"
+	desc = "One all-terrain motorbike"
+	detailed_desc = "Activatable by squad leaders. An all-terrain vehicle built for traversing rough terrain with ease. Also comes with a jerry can for refueling."
+	ui_icon = "motorbike"
+	uses = 1
+	cost = 3
+	equipment_to_spawn = list(
+		/obj/vehicle/ridden/motorbike,
+		/obj/item/reagent_containers/jerrycan,
+	)

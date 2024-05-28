@@ -39,7 +39,7 @@
 	///Cost in attrition points if this asset is purchased
 	var/cost = 1
 	///Iconstate for UI
-	var/ui_icon = "test"
+	var/ui_icon = "unknown"
 	///Message if this asset is already active and can't be activated again
 	var/already_active_message = "Asset already active."
 	///Missions flags that prevent the use of this asset

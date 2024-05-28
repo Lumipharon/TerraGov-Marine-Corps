@@ -44,7 +44,7 @@ export const CampaignAssets = (props) => {
                   selectedReward.name === reward.name
                     ? 'green'
                     : reward.currently_active
-                      ? 'yellow'
+                      ? 'orange'
                       : reward.is_debuff
                         ? 'red'
                         : reward.uses_remaining > 0
@@ -62,7 +62,7 @@ export const CampaignAssets = (props) => {
                       selectedReward.name === reward.name
                         ? reward.icon + '_green'
                         : reward.currently_active
-                          ? reward.icon + '_yellow'
+                          ? reward.icon + '_orange'
                           : reward.is_debuff
                             ? reward.icon + '_red'
                             : reward.uses_remaining > 0
