@@ -395,7 +395,7 @@
 
 
 /obj/machinery/door/airlock/hasPower()
-	return ((!secondsMainPowerLost || !secondsBackupPowerLost) && !(machine_stat & no_power_sound))
+	return ((!secondsMainPowerLost || !secondsBackupPowerLost) && !(use_power & NO_POWER_USE))
 
 
 /obj/machinery/door/airlock/requiresID()
