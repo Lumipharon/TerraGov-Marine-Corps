@@ -12,6 +12,10 @@
 	if(frill_icon)
 		AddElement(/datum/element/frill, frill_icon)
 
+/turf/closed/wall/tall/gregor
+	icon = 'icons/turf/walls/gregor.dmi'
+	frill_icon = 'icons/turf/walls/gregor_frill.dmi'
+
 //Framed windows
 
 /obj/structure/window/framed/tall
