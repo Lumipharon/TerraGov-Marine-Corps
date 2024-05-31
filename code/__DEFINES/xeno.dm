@@ -25,6 +25,11 @@
 #define STICKY_RESIN "sticky resin"
 #define RESIN_DOOR "resin door"
 
+//Special resin defines
+#define BULLETPROOF_WALL "bulletproof resin wall"
+#define FIREPROOF_WALL "fireproof resin wall"
+#define HARDY_WALL "hardy resin wall"
+
 //Xeno reagents defines
 #define DEFILER_NEUROTOXIN "Neurotoxin"
 #define DEFILER_HEMODILE "Hemodile"
@@ -50,7 +55,6 @@
 #define PUPPET_RECALL "recall puppet"
 #define PUPPET_SEEK_CLOSEST "seeking closest and attack order" //not xeno-usable
 #define PUPPET_ATTACK "seek and attack order"
-#define PUPPET_SCOUT "scouting order"
 
 //List of weed types
 GLOBAL_LIST_INIT(weed_type_list, typecacheof(list(
@@ -83,10 +87,10 @@ GLOBAL_LIST_INIT(pheromone_images_list, list(
 
 //List of Defiler toxin types available for selection
 GLOBAL_LIST_INIT(defiler_toxin_type_list, list(
-		/datum/reagent/toxin/xeno_ozelomelyn,
+		/datum/reagent/toxin/xeno_neurotoxin,
 		/datum/reagent/toxin/xeno_hemodile,
 		/datum/reagent/toxin/xeno_transvitox,
-		/datum/reagent/toxin/xeno_neurotoxin,
+		/datum/reagent/toxin/xeno_ozelomelyn,
 		))
 
 //List of toxins improving defile's damage
@@ -101,9 +105,6 @@ GLOBAL_LIST_INIT(defiler_toxins_typecache_list, typecacheof(list(
 
 //List of Baneling chemical types available for selection
 GLOBAL_LIST_INIT(baneling_chem_type_list, list(
-		/datum/reagent/toxin/xeno_ozelomelyn,
-		/datum/reagent/toxin/xeno_hemodile,
-		/datum/reagent/toxin/xeno_transvitox,
 		/datum/reagent/toxin/xeno_neurotoxin,
 		/datum/reagent/toxin/acid,
 		))
@@ -131,12 +132,12 @@ GLOBAL_LIST_INIT(resin_images_list, list(
 		RESIN_DOOR = image('icons/Xeno/actions.dmi', icon_state = RESIN_DOOR)
 		))
 
-//List of puppeteer order images
-GLOBAL_LIST_INIT(puppeteer_order_images_list, list(
-		PUPPET_ATTACK = image('icons/Xeno/actions.dmi', icon_state = "enrage"),
-		PUPPET_SCOUT = image('icons/mob/actions.dmi', icon_state = "66"),
-		PUPPET_RECALL = image('icons/mob/actions.dmi', icon_state = "rally")
-		))
+//List of special resin structure images
+GLOBAL_LIST_INIT(resin_special_images_list, list(
+		BULLETPROOF_WALL = image('icons/Xeno/actions.dmi', icon_state = BULLETPROOF_WALL),
+		FIREPROOF_WALL = image('icons/Xeno/actions.dmi', icon_state = FIREPROOF_WALL),
+		HARDY_WALL = image('icons/Xeno/actions.dmi', icon_state = HARDY_WALL)
+))
 
 //List of puppeteer pheromone images
 GLOBAL_LIST_INIT(puppeteer_phero_images_list, list(
@@ -157,6 +158,7 @@ GLOBAL_LIST_INIT(xeno_ai_spawnable, list(
 	/mob/living/carbon/xenomorph/mantis/ai,
 	/mob/living/carbon/xenomorph/scorpion/ai,
 	/mob/living/carbon/xenomorph/nymph/ai,
+	/mob/living/carbon/xenomorph/baneling/ai,
 ))
 
 ///Heals a xeno, respecting different types of damage
@@ -204,3 +206,6 @@ GLOBAL_LIST_INIT(xeno_ai_spawnable, list(
 #define ERROR_CONSTRUCT 8
 
 #define PUPPET_WITHER_RANGE 15
+
+///Number of icon states to show health and plasma on the side UI buttons
+#define XENO_HUD_ICON_BUCKETS 16

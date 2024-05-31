@@ -77,7 +77,6 @@
 #define ROUNDSTART_TRAIT "roundstart" //cannot be removed without admin intervention
 #define SLEEPER_TRAIT "sleeper"
 #define STASIS_BAG_TRAIT "stasis_bag"
-#define BANELING_STASIS_TRAIT "baneling_stasis_trait"
 #define SPECIES_TRAIT "species" // /datum/species innate trait
 #define CRYOPOD_TRAIT "cryopod"
 #define XENO_TRAIT "xeno"
@@ -109,6 +108,7 @@
 #define PETRIFY_ABILITY_TRAIT "petrify_ability_trait"
 #define SHATTERING_ROAR_ABILITY_TRAIT "shattering_roar_ability_trait"
 #define ZERO_FORM_BEAM_ABILITY_TRAIT "zero_form_beam_ability_trait"
+#define HEATRAY_BEAM_ABILITY_TRAIT "heatray_ability_trait"
 #define VALHALLA_TRAIT "valhalla"
 #define WEIGHTBENCH_TRAIT "weightbench"
 #define BOILER_ROOTED_TRAIT "boiler_rooted"
@@ -119,6 +119,7 @@
 #define SECTOID_TRAIT "sectoid"
 #define HUGGER_TRAIT "hugger"
 #define PISTOL_LACE_TRAIT "pistol_lace"
+#define NIGHT_VISION_GOGGLES_TRAIT "night_vision_goggles"
 
 #define ABSTRACT_ITEM_TRAIT "abstract_item"
 /// A trait given by any status effect
@@ -135,6 +136,10 @@
 
 //added b grilling a food
 #define TRAIT_FOOD_GRILLED "food_grilled"
+
+//atom/movable traits
+/// Trait that tracks if something has been renamed. Typically holds a REF() to the object itself (AKA src) for wide addition/removal.
+#define TRAIT_WAS_RENAMED "was_renamed"
 
 //mob traits
 #define TRAIT_POSSESSING "possessing" // Prevents mob from being taken by ghosts
@@ -165,6 +170,13 @@
 #define TRAIT_AXE_EXPERT "axe_expert"
 ///You swing sword good
 #define TRAIT_SWORD_EXPERT "sword_expert"
+///Pain reduction light
+#define TRAIT_LIGHT_PAIN_RESIST "light_pain_resist"
+///Pain reduction medium
+#define TRAIT_MEDIUM_PAIN_RESIST "medium_pain_resist"
+///is currently riding an armored vehicle
+#define TRAIT_TANK_DESANT "tank_desant"
+
 
 /// Prevents usage of manipulation appendages (picking, holding or using items, manipulating storage).
 #define TRAIT_HANDS_BLOCKED "handsblocked"
@@ -188,7 +200,8 @@
 #define TRAIT_SEE_IN_DARK "see_in_dark" //Able to see in dark
 #define TRAIT_MUTED "muted" //target is mute and can't speak
 #define TRAIT_TURRET_HIDDEN "turret_hidden" //target gets passed over by turrets choosing a victim
-#define TRAIT_MOB_ICON_UPDATE_BLOCKED "icon_blocked" //target should not update its icon_state
+///The target xenomorph's wound overlays won't be visible
+#define TRAIT_XENOMORPH_INVISIBLE_BLOOD "invisible_blood"
 #define TRAIT_VALHALLA_XENO "valhalla_xeno"
 #define TRAIT_BULWARKED_TURF "bulwarked_turf" // turf is affected by bulwark ability
 
@@ -238,6 +251,8 @@
 
 //this mech is melee core boosted
 #define TRAIT_MELEE_CORE "melee_core"
+///stops tanks from being able to ram this mob
+#define TRAIT_STOPS_TANK_COLLISION "stops_tanks"
 
 //added to escaped humans
 #define TRAIT_HAS_ESCAPED "escaped_marine"
@@ -245,3 +260,11 @@
 
 //added to AIs firing railguns
 #define TRAIT_IS_FIRING_RAILGUN "firing_railgun"
+
+//regress and caste swap UI
+#define TRAIT_CASTE_SWAP "caste_swap"
+#define TRAIT_REGRESSING "regressing"
+#define TRAIT_STRAIN_SWAP "strain swap"
+
+///Pauses campaign mission timer
+#define CAMPAIGN_MISSION_TIMER_PAUSED "campaign_mission_timer_paused"

@@ -28,7 +28,7 @@
 	evolution_threshold = 225
 	upgrade_threshold = TIER_TWO_THRESHOLD
 
-	deevolves_to = /mob/living/carbon/xenomorph/drone
+	deevolves_to = /datum/xeno_caste/drone
 
 	// *** Flags *** //
 	caste_flags = CASTE_EVOLUTION_ALLOWED|CASTE_IS_BUILDER
@@ -62,6 +62,7 @@
 		/datum/action/ability/activable/xeno/healing_infusion,
 		/datum/action/ability/xeno_action/place_acidwell,
 		/datum/action/ability/activable/xeno/secrete_resin/hivelord,
+		/datum/action/ability/activable/xeno/secrete_special_resin,
 		/datum/action/ability/xeno_action/blessing_menu,
 		/datum/action/ability/activable/xeno/transfer_plasma/improved,
 		/datum/action/ability/activable/xeno/corrosive_acid,
@@ -97,6 +98,7 @@
 		/datum/action/ability/activable/xeno/healing_infusion,
 		/datum/action/ability/xeno_action/place_acidwell,
 		/datum/action/ability/activable/xeno/secrete_resin/hivelord,
+		/datum/action/ability/activable/xeno/secrete_special_resin,
 		/datum/action/ability/xeno_action/blessing_menu,
 		/datum/action/ability/activable/xeno/transfer_plasma/improved,
 		/datum/action/ability/activable/xeno/corrosive_acid/strong,

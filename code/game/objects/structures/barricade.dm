@@ -6,13 +6,14 @@
 	anchored = TRUE
 	density = TRUE
 	layer = BELOW_OBJ_LAYER
-	flags_atom = ON_BORDER
+	atom_flags = ON_BORDER
+	obj_flags = CAN_BE_HIT | IGNORE_DENSITY | BLOCKS_CONSTRUCTION_DIR
 	resistance_flags = XENO_DAMAGEABLE
 	allow_pass_flags = PASS_DEFENSIVE_STRUCTURE|PASSABLE|PASS_WALKOVER
 	climb_delay = 20 //Leaping a barricade is universally much faster than clumsily climbing on a table or rack
 	interaction_flags = INTERACT_CHECK_INCAPACITATED
 	max_integrity = 100
-	flags_barrier = HANDLE_BARRIER_CHANCE
+	barrier_flags = HANDLE_BARRIER_CHANCE
 	///The type of stack the barricade dropped when disassembled if any.
 	var/stack_type
 	///The amount of stack dropped when disassembled at full health
@@ -75,18 +76,20 @@
 /obj/structure/barricade/attack_animal(mob/user)
 	return attack_alien(user)
 
-/obj/structure/barricade/attack_alien(mob/living/carbon/xenomorph/X, damage_amount = X.xeno_caste.melee_damage, damage_type = BRUTE, damage_flag = "", effects = TRUE, armor_penetration = 0, isrightclick = FALSE)
-	if(X.status_flags & INCORPOREAL)
+/obj/structure/barricade/attack_alien(mob/living/carbon/xenomorph/xeno_attacker, damage_amount = xeno_attacker.xeno_caste.melee_damage, damage_type = BRUTE, armor_type = MELEE, effects = TRUE, armor_penetration = xeno_attacker.xeno_caste.melee_ap, isrightclick = FALSE)
+	if(xeno_attacker.status_flags & INCORPOREAL)
 		return FALSE
 
 	if(is_wired)
-		balloon_alert(X, "Wire slices into us")
-		X.apply_damage(10, blocked = MELEE , sharp = TRUE, updating_health = TRUE)
+		balloon_alert(xeno_attacker, "Wire slices into us")
+		xeno_attacker.apply_damage(10, blocked = MELEE , sharp = TRUE, updating_health = TRUE)
 
 	return ..()
 
 /obj/structure/barricade/attackby(obj/item/I, mob/user, params)
 	. = ..()
+	if(.)
+		return
 
 	for(var/obj/effect/xenomorph/acid/A in loc)
 		if(A.acid_t == src)
@@ -267,6 +270,8 @@
 //Item Attack
 /obj/structure/barricade/snow/attackby(obj/item/I, mob/user, params)
 	. = ..()
+	if(.)
+		return
 
 	for(var/obj/effect/xenomorph/acid/A in loc)
 		if(A.acid_t == src)
@@ -345,6 +350,8 @@
 
 /obj/structure/barricade/wooden/attackby(obj/item/I, mob/user, params)
 	. = ..()
+	if(.)
+		return
 
 	for(var/obj/effect/xenomorph/acid/A in loc)
 		if(A.acid_t == src)
@@ -437,6 +444,8 @@
 
 /obj/structure/barricade/metal/attackby(obj/item/I, mob/user, params)
 	. = ..()
+	if(.)
+		return
 
 	if(!istype(I, /obj/item/stack/sheet/metal))
 		return
@@ -594,7 +603,8 @@
 				return TRUE
 
 			var/turf/open/T = mystery_turf
-			if(!T.allow_construction) //We shouldn't be able to anchor in areas we're not supposed to build; loophole closed.
+			var/area/area = get_area(T)
+			if(!T.allow_construction || area.area_flags & NO_CONSTRUCTION) //We shouldn't be able to anchor in areas we're not supposed to build; loophole closed.
 				balloon_alert(user, "can't anchor here")
 				return TRUE
 
@@ -871,7 +881,8 @@
 				return
 
 			var/turf/open/T = mystery_turf
-			if(!T.allow_construction) //We shouldn't be able to anchor in areas we're not supposed to build; loophole closed.
+			var/area/area = get_area(T)
+			if(!T.allow_construction || area.area_flags & NO_CONSTRUCTION) //We shouldn't be able to anchor in areas we're not supposed to build; loophole closed.
 				balloon_alert(user, "can't anchor here")
 				return
 
@@ -888,6 +899,8 @@
 
 /obj/structure/barricade/plasteel/attackby(obj/item/I, mob/user, params)
 	. = ..()
+	if(.)
+		return
 
 	if(istype(I, /obj/item/stack/sheet/plasteel))
 		var/obj/item/stack/sheet/plasteel/plasteel_sheets = I
@@ -994,6 +1007,8 @@
 
 /obj/structure/barricade/sandbags/attackby(obj/item/I, mob/user, params)
 	. = ..()
+	if(.)
+		return
 
 	for(var/obj/effect/xenomorph/acid/A in loc)
 		if(A.acid_t == src)
@@ -1050,7 +1065,7 @@
 	is_wired = FALSE
 	soft_armor = list(MELEE = 35, BULLET = 30, LASER = 30, ENERGY = 30, BOMB = 25, BIO = 100, FIRE = 100, ACID = 30)
 	///Whether this item can be deployed or undeployed
-	var/flags_item = IS_DEPLOYABLE
+	var/item_flags = IS_DEPLOYABLE
 	///What it deploys into. typecast version of internal_item
 	var/obj/item/weapon/shield/riot/marine/deployable/internal_shield
 
@@ -1064,9 +1079,10 @@
 	name = internal_shield.name
 	desc = internal_shield.desc
 	//if the shield is wired, it deploys wired
-	if (internal_shield.is_wired)
+	if(internal_shield.is_wired)
 		can_wire = FALSE
 		is_wired = TRUE
+		climbable = FALSE
 
 /obj/structure/barricade/metal/deployable/get_internal_item()
 	return internal_shield
@@ -1076,8 +1092,8 @@
 
 ///Dissassembles the device
 /obj/structure/barricade/metal/deployable/proc/disassemble(mob/user)
-	if(CHECK_BITFIELD(internal_shield.flags_item, DEPLOYED_NO_PICKUP))
-		balloon_alert(user, "cannot be disassembled")
+	if(CHECK_BITFIELD(internal_shield.item_flags, DEPLOYED_NO_PICKUP))
+		balloon_alert(user, "Cannot disassemble")
 		return
 	SEND_SIGNAL(src, COMSIG_ITEM_UNDEPLOY, user)
 

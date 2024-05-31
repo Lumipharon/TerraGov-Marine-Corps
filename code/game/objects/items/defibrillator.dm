@@ -3,10 +3,10 @@
 	desc = "A handheld emergency defibrillator, used to restore fibrillating patients. Can optionally bring people back from the dead."
 	icon = 'icons/obj/items/defibrillator.dmi'
 	icon_state = "defib_full"
-	item_state = "defib"
-	flags_atom = CONDUCT
-	flags_item = NOBLUDGEON
-	flags_equip_slot = ITEM_SLOT_BELT
+	worn_icon_state = "defib"
+	atom_flags = CONDUCT
+	item_flags = NOBLUDGEON
+	equip_slot_flags = ITEM_SLOT_BELT
 	force = 5
 	throwforce = 6
 	w_class = WEIGHT_CLASS_NORMAL
@@ -14,7 +14,8 @@
 	var/ready = FALSE
 	///wether readying is needed
 	var/ready_needed = TRUE
-	var/damage_threshold = 8 //This is the maximum non-oxy damage the defibrillator will heal to get a patient above -100, in all categories
+	///The base healing number. This will be multiplied using DEFIBRILLATOR_HEALING_TIMES_SKILL.
+	var/damage_threshold = DEFIBRILLATOR_BASE_HEALING_VALUE
 	var/charge_cost = 66 //How much energy is used.
 	var/obj/item/cell/dcell = null
 	var/datum/effect_system/spark_spread/sparks
@@ -104,7 +105,7 @@
 	ready = !ready
 	user.visible_message(span_notice("[user] turns [src] [ready? "on and opens the cover" : "off and closes the cover"]."),
 	span_notice("You turn [src] [ready? "on and open the cover" : "off and close the cover"]."))
-	playsound(get_turf(src), "sparks", 25, TRUE, 4)
+	playsound(get_turf(src), SFX_SPARKS, 25, TRUE, 4)
 	if(ready)
 		playsound(get_turf(src), 'sound/items/defib_safetyOn.ogg', 30, 0)
 	else
@@ -165,15 +166,15 @@
 	var/defib_heal_amt = damage_threshold
 
 	//job knowledge requirement
-	var/skill = user.skills.getRating(SKILL_MEDICAL)
-	if(skill < SKILL_MEDICAL_PRACTICED)
+	var/medical_skill = user.skills.getRating(SKILL_MEDICAL)
+	if(medical_skill < SKILL_MEDICAL_PRACTICED)
 		user.visible_message(span_notice("[user] fumbles around figuring out how to use [src]."),
 		span_notice("You fumble around figuring out how to use [src]."))
-		var/fumbling_time = SKILL_TASK_AVERAGE - (SKILL_TASK_VERY_EASY * skill) // 3 seconds with medical skill, 5 without
+		var/fumbling_time = SKILL_TASK_AVERAGE - (SKILL_TASK_VERY_EASY * medical_skill) // 3 seconds with medical medical_skill, 5 without
 		if(!do_after(user, fumbling_time, NONE, H, BUSY_ICON_UNSKILLED))
 			return
-	else
-		defib_heal_amt *= skill * 0.5 //more healing power when used by a doctor (this means non-trained don't heal)
+
+	defib_heal_amt = DEFIBRILLATOR_HEALING_TIMES_SKILL(medical_skill)
 
 	if(!ishuman(H))
 		to_chat(user, span_warning("You can't defibrilate [H]. You don't even know where to put the paddles!"))
@@ -197,7 +198,7 @@
 		user.visible_message(span_warning("[icon2html(src, viewers(user))] \The [src] buzzes: Patient's organs are too damaged to sustain life. Deliver patient to a MD for surgical intervention."))
 		return
 
-	if((H.wear_suit && H.wear_suit.flags_atom & CONDUCT))
+	if((H.wear_suit && H.wear_suit.atom_flags & CONDUCT))
 		user.visible_message(span_warning("[icon2html(src, viewers(user))] \The [src] buzzes: Paddles registering >100,000 ohms, Possible cause: Suit or Armor interferring."))
 		return
 
@@ -231,7 +232,7 @@
 	H.visible_message(span_danger("[H]'s body convulses a bit."))
 	defib_cooldown = world.time + 10 //1 second cooldown before you can shock again
 
-	if(H.wear_suit && H.wear_suit.flags_atom & CONDUCT)
+	if(H.wear_suit && H.wear_suit.atom_flags & CONDUCT)
 		user.visible_message(span_warning("[icon2html(src, viewers(user))] \The [src] buzzes: Defibrillation failed: Paddles registering >100,000 ohms, Possible cause: Suit or Armor interferring."))
 		return
 
@@ -301,7 +302,7 @@
 	playsound(get_turf(src), 'sound/items/defib_success.ogg', 35, 0)
 	H.set_stat(UNCONSCIOUS)
 	H.emote("gasp")
-	H.chestburst = 0 //reset our chestburst state
+	H.chestburst = CARBON_NO_CHEST_BURST
 	H.regenerate_icons()
 	H.reload_fullscreens()
 	H.flash_act()
@@ -321,6 +322,7 @@
 	if(user.client)
 		var/datum/personal_statistics/personal_statistics = GLOB.personal_statistics_list[user.ckey]
 		personal_statistics.revives++
+		personal_statistics.mission_revives++
 	GLOB.round_statistics.total_human_revives[H.faction]++
 	SSblackbox.record_feedback("tally", "round_statistics", 1, "total_human_revives[H.faction]")
 	to_chat(H, span_notice("You suddenly feel a spark and your consciousness returns, dragging you back to the mortal plane."))
@@ -335,48 +337,76 @@
 	name = "emergency defibrillator"
 	desc = "A handheld emergency defibrillator, used to restore fibrillating patients. Can optionally bring people back from the dead. Appears to be a civillian model."
 	icon_state = "civ_defib_full"
-	item_state = "defib"
+	worn_icon_state = "defib"
 
-
-/obj/item/defibrillator/gloves
-	name = "advanced medical combat gloves"
-	desc = "Advanced medical gloves, these include small electrodes to defibrilate a patiant. No more bulky units!"
-	icon_state = "defib_gloves"
-	item_state = "defib_gloves"
+/obj/item/defibrillator/internal
+	icon = 'icons/obj/clothing/gloves.dmi' //even though you'll never see this directly, it shows up in the chat panel due to icon2html
 	ready = TRUE
 	ready_needed = FALSE
-	flags_equip_slot = ITEM_SLOT_GLOVES
-	w_class = WEIGHT_CLASS_SMALL
-	icon = 'icons/obj/clothing/gloves.dmi'
-	item_state_worn = TRUE
-	siemens_coefficient = 0.50
-	blood_sprite_state = "bloodyhands"
-	flags_armor_protection = HANDS
-	flags_equip_slot = ITEM_SLOT_GLOVES
-	attack_verb = "zaps"
+	///Parent item containing this defib
+	var/obj/parent_obj
+
+/obj/item/defibrillator/internal/Initialize(mapload, obj/new_parent)
+	if(!istype(new_parent))
+		return INITIALIZE_HINT_QDEL
+	parent_obj = new_parent
+	return ..()
+
+/obj/item/defibrillator/internal/Destroy()
+	parent_obj = null
+	return ..()
+
+/obj/item/defibrillator/internal/update_icon()
+	. = ..()
+	parent_obj.update_icon()
+
+/obj/item/clothing/gloves/defibrillator
+	name = "advanced medical combat gloves"
+	desc = "Advanced medical gloves, these include small electrodes to defibrilate a patient No more bulky units!"
+	icon_state = "defib_out_full"
+	worn_icon_state = "defib_gloves"
 	soft_armor = list(MELEE = 25, BULLET = 15, LASER = 10, ENERGY = 15, BOMB = 15, BIO = 5, FIRE = 15, ACID = 15)
-	flags_cold_protection = HANDS
-	flags_heat_protection = HANDS
+	cold_protection_flags = HANDS
+	heat_protection_flags = HANDS
 	min_cold_protection_temperature = GLOVES_MIN_COLD_PROTECTION_TEMPERATURE
 	max_heat_protection_temperature = GLOVES_MAX_HEAT_PROTECTION_TEMPERATURE
+	///The internal defib item
+	var/obj/item/defibrillator/internal/internal_defib
 
-/obj/item/defibrillator/gloves/equipped(mob/living/carbon/human/user, slot)
+/obj/item/clothing/gloves/defibrillator/Initialize(mapload)
+	. = ..()
+	internal_defib = new(src, src)
+	update_icon()
+
+/obj/item/clothing/gloves/defibrillator/Destroy()
+	internal_defib = null
+	return ..()
+
+/obj/item/clothing/gloves/defibrillator/equipped(mob/living/carbon/human/user, slot)
 	. = ..()
 	if(user.gloves == src)
 		RegisterSignal(user, COMSIG_HUMAN_MELEE_UNARMED_ATTACK, PROC_REF(on_unarmed_attack))
 	else
 		UnregisterSignal(user, COMSIG_HUMAN_MELEE_UNARMED_ATTACK)
 
-/obj/item/defibrillator/gloves/unequipped(mob/living/carbon/human/user, slot)
+/obj/item/clothing/gloves/defibrillator/unequipped(mob/living/carbon/human/user, slot)
 	. = ..()
 	UnregisterSignal(user, COMSIG_HUMAN_MELEE_UNARMED_ATTACK) //Unregisters in the case of getting delimbed
 
+/obj/item/clothing/gloves/defibrillator/examine(mob/user)
+	. = ..()
+	. += internal_defib.maybe_message_recharge_hint()
+
+/obj/item/clothing/gloves/defibrillator/update_icon_state()
+	. = ..()
+	if(!internal_defib) //should only happen on init
+		return
+	icon_state = internal_defib.icon_state
+
 //when you are wearing these gloves, this will call the normal attack code to begin defibing the target
-/obj/item/defibrillator/gloves/proc/on_unarmed_attack(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/obj/item/clothing/gloves/defibrillator/proc/on_unarmed_attack(mob/living/carbon/human/user, mob/living/carbon/human/target)
+	SIGNAL_HANDLER
 	if(user.a_intent != INTENT_HELP)
 		return
 	if(istype(user) && istype(target))
-		defibrillate(target, user)
-
-/obj/item/defibrillator/gloves/update_icon_state()
-	return //The parent has some behaviour we don't want
+		INVOKE_ASYNC(internal_defib, TYPE_PROC_REF(/obj/item/defibrillator, defibrillate), target, user)

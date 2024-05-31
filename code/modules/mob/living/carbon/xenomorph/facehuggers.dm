@@ -16,13 +16,13 @@
 	desc = "It has some sort of a tube at the end of its tail."
 	icon = 'icons/Xeno/Effects.dmi'
 	icon_state = "facehugger"
-	item_state = "facehugger"
+	worn_icon_state = "facehugger"
 	w_class = WEIGHT_CLASS_TINY //Note: can be picked up by aliens unlike most other items of w_class below 4
 	resistance_flags = NONE
-	flags_inventory = COVEREYES|COVERMOUTH
-	flags_armor_protection = FACE|EYES
-	flags_atom = CRITICAL_ATOM
-	flags_item = NOBLUDGEON
+	inventory_flags = COVEREYES|COVERMOUTH
+	armor_protection_flags = FACE|EYES
+	atom_flags = CRITICAL_ATOM
+	item_flags = NOBLUDGEON
 	throw_range = 1
 	worn_layer = FACEHUGGER_LAYER
 	layer = FACEHUGGER_LAYER
@@ -116,18 +116,18 @@
 
 
 //Deal with picking up facehuggers. "attack_alien" is the universal 'xenos click something while unarmed' proc.
-/obj/item/clothing/mask/facehugger/attack_alien(mob/living/carbon/xenomorph/X, damage_amount = X.xeno_caste.melee_damage, damage_type = BRUTE, damage_flag = "", effects = TRUE, armor_penetration = 0, isrightclick = FALSE)
-	if(X.status_flags & INCORPOREAL)
+/obj/item/clothing/mask/facehugger/attack_alien(mob/living/carbon/xenomorph/xeno_attacker, damage_amount = xeno_attacker.xeno_caste.melee_damage, damage_type = BRUTE, armor_type = MELEE, effects = TRUE, armor_penetration = xeno_attacker.xeno_caste.melee_ap, isrightclick = FALSE)
+	if(xeno_attacker.status_flags & INCORPOREAL)
 		return
 
-	if(!issamexenohive(X) && stat != DEAD)
-		X.do_attack_animation(src, ATTACK_EFFECT_SMASH)
-		X.visible_message("<span class='xenowarning'>[X] crushes \the [src]",
+	if(!issamexenohive(xeno_attacker) && stat != DEAD)
+		xeno_attacker.do_attack_animation(src, ATTACK_EFFECT_SMASH)
+		xeno_attacker.visible_message("<span class='xenowarning'>[xeno_attacker] crushes \the [src]",
 			"<span class='xenowarning'>We crush \the [src]")
 		kill_hugger()
 		return
 	else
-		attack_hand(X)
+		attack_hand(xeno_attacker)
 
 //ATTACK HAND IGNORING PARENT RETURN VALUE
 /obj/item/clothing/mask/facehugger/attack_hand(mob/living/user)
@@ -258,16 +258,23 @@
 			go_idle()
 		return
 
-	var/i = 10//So if we have a pile of dead bodies around, it doesn't scan everything, just ten iterations.
-	for(var/mob/living/carbon/M in view(4,src))
-		if(!i)
-			break
-		if(M.can_be_facehugged(src))
-			visible_message(span_warning("\The scuttling [src] leaps at [M]!"), null, null, 4)
-			leaping = TRUE
-			throw_at(M, 4, 1)
-			return //We found a target and will jump towards it; cancel out. If we didn't find anything, continue and try again later
-		--i
+	var/mob/living/carbon/chosen_target
+
+	for(var/mob/living/carbon/M in view(4, src))
+		// Using euclidean distance means it will prioritize cardinal directions, which are less likely to miss due to wall jank.
+		if(chosen_target && (get_dist_manhattan(src, M) > get_dist_manhattan(src, chosen_target)))
+			continue
+
+		if(!M.can_be_facehugged(src))
+			continue
+
+		chosen_target = M
+
+	if(chosen_target)
+		visible_message(span_warning("\The scuttling [src] leaps at [chosen_target]!"), null, null, 4)
+		leaping = TRUE
+		throw_at(chosen_target, 4, 1)
+		return
 
 	remove_danger_overlay() //Remove the danger overlay
 	pre_leap() //Go into the universal leap set up proc
@@ -548,7 +555,7 @@
 		reset_attach_status(FALSE)
 		return
 	if(ishuman(user))
-		var/hugsound = user.gender == FEMALE ? get_sfx("female_hugged") : get_sfx("male_hugged")
+		var/hugsound = user.gender == FEMALE ? SFX_FEMALE_HUGGED : SFX_MALE_HUGGED
 		playsound(loc, hugsound, 25, 0)
 	if(!sterile && !issynth(user))
 		var/stamina_dmg = user.maxHealth + user.max_stamina
@@ -625,24 +632,20 @@
 	kill_hugger()
 
 /obj/item/clothing/mask/facehugger/attackby(obj/item/I, mob/user, params)
-	if(I.flags_item & NOBLUDGEON || attached)
+	if(I.item_flags & NOBLUDGEON || attached)
 		return
 	kill_hugger()
 
 /obj/item/clothing/mask/facehugger/bullet_act(obj/projectile/P)
 	..()
-	if(P.ammo.flags_ammo_behavior & AMMO_XENO)
+	if(P.ammo.ammo_behavior_flags & AMMO_XENO)
 		return FALSE //Xeno spits ignore huggers.
 	if(P.damage && !(P.ammo.damage_type in list(OXY, STAMINA)))
 		kill_hugger()
 	P.ammo.on_hit_obj(src,P)
 	return TRUE
 
-/obj/item/clothing/mask/facehugger/fire_act(exposed_temperature, exposed_volume)
-	if(exposed_temperature > 300)
-		kill_hugger()
-
-/obj/item/clothing/mask/facehugger/flamer_fire_act(burnlevel)
+/obj/item/clothing/mask/facehugger/fire_act(burn_level)
 	kill_hugger()
 
 /obj/item/clothing/mask/facehugger/dropped(mob/user)
@@ -682,7 +685,7 @@
 /obj/item/clothing/mask/facehugger/combat
 	sterile = TRUE
 	combat_hugger = TRUE
-	flags_equip_slot = NONE
+	equip_slot_flags = NONE
 
 /obj/item/clothing/mask/facehugger/combat/chem_injector
 	desc = "This strange creature has a single prominent sharp proboscis."
@@ -767,7 +770,7 @@
 		return FALSE
 
 	visible_message(span_danger("[src] explodes into a mess of viscous resin!"))
-	playsound(loc, get_sfx("alien_resin_build"), 50, 1)
+	playsound(loc, SFX_ALIEN_RESIN_BUILD, 50, 1)
 
 	for(var/turf/sticky_tile AS in RANGE_TURFS(1, loc))
 		if(!locate(/obj/effect/xenomorph/spray) in sticky_tile.contents)
@@ -801,7 +804,7 @@
 
 	var/mob/living/victim = M
 	do_attack_animation(M, ATTACK_EFFECT_REDSLASH)
-	playsound(loc, "alien_claw_flesh", 25, 1)
+	playsound(loc, SFX_ALIEN_CLAW_FLESH, 25, 1)
 	var/affecting = ran_zone(null, 0)
 	if(!affecting) //Still nothing??
 		affecting = BODY_ZONE_CHEST //Gotta have a torso?!

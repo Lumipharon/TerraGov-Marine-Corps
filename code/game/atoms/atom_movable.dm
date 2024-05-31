@@ -1,7 +1,7 @@
 /atom/movable
 	layer = OBJ_LAYER
 	glide_size = 8
-	appearance_flags = TILE_BOUND|PIXEL_SCALE
+	appearance_flags = TILE_BOUND|PIXEL_SCALE|LONG_GLIDE
 	var/last_move = null
 	var/last_move_time = 0
 	var/anchored = FALSE
@@ -230,7 +230,7 @@
 	var/can_pass_diagonally = NONE
 	if (direction & (direction - 1)) //Check if the first part of the diagonal move is possible
 		moving_diagonally = TRUE
-		if(!(flags_atom & DIRLOCK))
+		if(!(atom_flags & DIRLOCK))
 			setDir(direction) //We first set the direction to prevent going through dir sensible object
 		if((direction & NORTH) && loc.Exit(src, NORTH) && get_step(loc, NORTH).Enter(src))
 			can_pass_diagonally = NORTH
@@ -246,13 +246,13 @@
 		moving_diagonally = FALSE
 		if(!get_step(loc, can_pass_diagonally)?.Exit(src, direction & ~can_pass_diagonally))
 			return Move(get_step(loc, can_pass_diagonally), can_pass_diagonally)
-		if(!(flags_atom & DIRLOCK)) //We want to set the direction to be the one of the "second" diagonal move, aka not can_pass_diagonally
+		if(!(atom_flags & DIRLOCK)) //We want to set the direction to be the one of the "second" diagonal move, aka not can_pass_diagonally
 			setDir(direction &~ can_pass_diagonally)
 
 	else
 		if(!loc.Exit(src, direction))
 			return
-		if(!(flags_atom & DIRLOCK))
+		if(!(atom_flags & DIRLOCK))
 			setDir(direction)
 
 	var/enter_return_value = newloc.Enter(src)
@@ -262,6 +262,10 @@
 		return
 
 	var/atom/oldloc = loc
+	//Early override for some cases like diagonal movement
+	if(glide_size_override)
+		set_glide_size(glide_size_override)
+
 	loc = newloc
 	oldloc.Exited(src, direction)
 
@@ -280,9 +284,6 @@
 	if(oldarea != newarea)
 		newarea.Entered(src, oldarea)
 
-	if(glide_size_override)
-		set_glide_size(glide_size_override)
-
 	Moved(oldloc, direction)
 
 	if(pulling && pulling == pullee && pulling != moving_from_pull) //we were pulling a thing and didn't lose it during our move.
@@ -293,14 +294,19 @@
 			//puller and pullee more than one tile away or in diagonal position
 			if(get_dist(src, pulling) > 1 || (pull_dir - 1) & pull_dir)
 				pulling.moving_from_pull = src
-				pulling.Move(oldloc, get_dir(pulling, oldloc), glide_size_override) //the pullee tries to reach our previous position
+				pulling.Move(oldloc, get_dir(pulling, oldloc), glide_size) //the pullee tries to reach our previous position
 				pulling.moving_from_pull = null
 			check_pulling()
+
+	//glide_size strangely enough can change mid movement animation and update correctly while the animation is playing
+	//This means that if you don't override it late like this, it will just be set back by the movement update that's called when you move turfs.
+	if(glide_size_override)
+		set_glide_size(glide_size_override)
 
 	last_move = direction
 	last_move_time = world.time
 
-	if(LAZYLEN(buckled_mobs) && !handle_buckled_mob_movement(loc, direction)) //movement failed due to buckled mob(s)
+	if(LAZYLEN(buckled_mobs) && !handle_buckled_mob_movement(loc, direction, glide_size_override)) //movement failed due to buckled mob(s)
 		return FALSE
 	return TRUE
 
@@ -416,6 +422,9 @@
 /atom/movable/proc/doMove(atom/destination)
 	. = FALSE
 	var/atom/oldloc = loc
+	var/list/old_locs
+	if(length(locs) > 1)
+		old_locs = locs
 	if(destination)
 		if(pulledby)
 			pulledby.stop_pulling()
@@ -453,7 +462,7 @@
 			if(old_area)
 				old_area.Exited(src, NONE)
 
-	Moved(oldloc, NONE, TRUE)
+	Moved(oldloc, NONE, TRUE, old_locs)
 
 /atom/movable/Exited(atom/movable/gone, direction)
 	. = ..()
@@ -475,9 +484,11 @@
 /atom/movable/proc/throw_impact(atom/hit_atom, speed, bounce = TRUE)
 	var/hit_successful
 	var/old_throw_source = throw_source
+	if(QDELETED(hit_atom))
+		return FALSE
 	hit_successful = hit_atom.hitby(src, speed)
 	if(hit_successful)
-		SEND_SIGNAL(src, COMSIG_MOVABLE_IMPACT, hit_atom)
+		SEND_SIGNAL(src, COMSIG_MOVABLE_IMPACT, hit_atom, speed)
 		if(bounce && hit_atom.density && !isliving(hit_atom))
 			INVOKE_NEXT_TICK(src, PROC_REF(throw_bounce), hit_atom, old_throw_source)
 	return hit_successful //if the throw missed, it continues
@@ -485,6 +496,8 @@
 ///Bounces the AM off hit_atom
 /atom/movable/proc/throw_bounce(atom/hit_atom, turf/old_throw_source)
 	if(QDELETED(src))
+		return
+	if(QDELETED(hit_atom))
 		return
 	if(!isturf(loc))
 		return
@@ -539,10 +552,10 @@
 	if(flying)
 		set_flying(TRUE, FLY_LAYER)
 
-	var/originally_dir_locked = flags_atom & DIRLOCK
+	var/originally_dir_locked = atom_flags & DIRLOCK
 	if(!originally_dir_locked)
 		setDir(get_dir(src, target))
-		flags_atom |= DIRLOCK
+		atom_flags |= DIRLOCK
 
 	throw_source = get_turf(src)	//store the origin turf
 
@@ -565,13 +578,14 @@
 
 	if(dist_x > dist_y)
 		var/error = dist_x/2 - dist_y
-		while(!gc_destroyed && target &&((((x < target.x && dx == EAST) || (x > target.x && dx == WEST)) && get_dist_euclide(origin, src) < range) || isspaceturf(loc)) && throwing && istype(loc, /turf))
+		while(!gc_destroyed && target &&((((x < target.x && dx == EAST) || (x > target.x && dx == WEST)) && get_dist_euclidean(origin, src) < range) || isspaceturf(loc)) && throwing && istype(loc, /turf))
 			// only stop when we've gone the whole distance (or max throw range) and are on a non-space tile, or hit something, or hit the end of the map, or someone picks it up
 			if(error < 0)
 				var/atom/step = get_step(src, dy)
 				if(!step) // going off the edge of the map makes get_step return null, don't let things go off the edge
 					break
-				Move(step)
+				if(!Move(step, glide_size_override = DELAY_TO_GLIDE_SIZE(1 / speed)))
+					throwing = FALSE
 				error += dist_x
 				dist_since_sleep++
 				if(dist_since_sleep >= speed)
@@ -581,7 +595,8 @@
 				var/atom/step = get_step(src, dx)
 				if(!step) // going off the edge of the map makes get_step return null, don't let things go off the edge
 					break
-				Move(step)
+				if(!Move(step, glide_size_override = DELAY_TO_GLIDE_SIZE(1 / speed)))
+					throwing = FALSE
 				error -= dist_y
 				dist_since_sleep++
 				if(dist_since_sleep >= speed)
@@ -589,13 +604,14 @@
 					sleep(0.1 SECONDS)
 	else
 		var/error = dist_y/2 - dist_x
-		while(!gc_destroyed && target &&((((y < target.y && dy == NORTH) || (y > target.y && dy == SOUTH)) && get_dist_euclide(origin, src) < range) || isspaceturf(loc)) && throwing && istype(loc, /turf))
+		while(!gc_destroyed && target &&((((y < target.y && dy == NORTH) || (y > target.y && dy == SOUTH)) && get_dist_euclidean(origin, src) < range) || isspaceturf(loc)) && throwing && istype(loc, /turf))
 			// only stop when we've gone the whole distance (or max throw range) and are on a non-space tile, or hit something, or hit the end of the map, or someone picks it up
 			if(error < 0)
 				var/atom/step = get_step(src, dx)
 				if(!step) // going off the edge of the map makes get_step return null, don't let things go off the edge
 					break
-				Move(step)
+				if(!Move(step, glide_size_override = DELAY_TO_GLIDE_SIZE(1 / speed)))
+					throwing = FALSE
 				error += dist_y
 				dist_since_sleep++
 				if(dist_since_sleep >= speed)
@@ -605,7 +621,8 @@
 				var/atom/step = get_step(src, dy)
 				if(!step) // going off the edge of the map makes get_step return null, don't let things go off the edge
 					break
-				Move(step)
+				if(!Move(step, glide_size_override = DELAY_TO_GLIDE_SIZE(1 / speed)))
+					throwing = FALSE
 				error -= dist_x
 				dist_since_sleep++
 				if(dist_since_sleep >= speed)
@@ -614,7 +631,7 @@
 
 	//done throwing, either because it hit something or it finished moving
 	if(!originally_dir_locked)
-		flags_atom &= ~DIRLOCK
+		atom_flags &= ~DIRLOCK
 	if(isobj(src) && throwing)
 		throw_impact(get_turf(src), speed)
 	stop_throw(flying, original_layer)
@@ -631,10 +648,10 @@
 	thrown_speed = 0
 	throw_source = null
 
-/atom/movable/proc/handle_buckled_mob_movement(NewLoc, direct)
+/atom/movable/proc/handle_buckled_mob_movement(newloc, direct, glide_size_override)
 	for(var/m in buckled_mobs)
 		var/mob/living/buckled_mob = m
-		if(buckled_mob.Move(NewLoc, direct))
+		if(buckled_mob.Move(newloc, direct, glide_size_override))
 			continue
 		forceMove(buckled_mob.loc)
 		last_move = buckled_mob.last_move
@@ -1036,7 +1053,7 @@
 	var/turf/destination_turf = get_step(pulling.loc, move_dir)
 	if(!Adjacent(destination_turf) || (destination_turf == loc && pulling.density))
 		return FALSE
-	pulling.Move(destination_turf, move_dir)
+	pulling.Move(destination_turf, move_dir, glide_size)
 	return TRUE
 
 
@@ -1076,44 +1093,17 @@
 /atom/movable/proc/is_buckled()
 	return buckled
 
-
 /atom/movable/proc/set_glide_size(target = 8)
-	if(glide_size == target)
-		return FALSE
 	SEND_SIGNAL(src, COMSIG_MOVABLE_UPDATE_GLIDE_SIZE, target)
 	glide_size = target
-	if(pulling && pulling.glide_size != target)
-		pulling.set_glide_size(target)
-	return TRUE
 
-/obj/set_glide_size(target = 8)
-	. = ..()
-	if(!.)
-		return
-	for(var/m in buckled_mobs)
-		var/mob/living/buckled_mob = m
-		if(buckled_mob.glide_size == target)
-			continue
+	for(var/mob/buckled_mob AS in buckled_mobs)
 		buckled_mob.set_glide_size(target)
-
-/obj/structure/bed/set_glide_size(target = 8)
-	. = ..()
-	if(!.)
-		return
-	if(buckled_bodybag && buckled_bodybag.glide_size != target)
-		buckled_bodybag.set_glide_size(target)
-	glide_size = target
-
 
 /atom/movable/proc/reset_glide_size()
 	if(glide_modifier_flags)
 		return
 	set_glide_size(initial(glide_size))
-
-/obj/vehicle/reset_glide_size()
-	if(glide_modifier_flags)
-		return
-	set_glide_size(DELAY_TO_GLIDE_SIZE_STATIC(move_delay))
 
 /mob/reset_glide_size()
 	if(glide_modifier_flags)

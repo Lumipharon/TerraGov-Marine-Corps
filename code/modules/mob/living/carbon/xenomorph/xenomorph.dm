@@ -5,7 +5,6 @@
 //This is so they can be easily transferred between them without copypasta
 
 /mob/living/carbon/xenomorph/Initialize(mapload)
-	setup_verbs()
 	if(mob_size == MOB_SIZE_BIG)
 		move_resist = MOVE_FORCE_EXTREMELY_STRONG
 		move_force = MOVE_FORCE_EXTREMELY_STRONG
@@ -13,7 +12,6 @@
 	light_pixel_y -= pixel_y
 	. = ..()
 	set_datum()
-	time_of_birth = world.time
 	add_inherent_verbs()
 	var/datum/action/minimap/xeno/mini = new
 	mini.give_action(src)
@@ -56,9 +54,6 @@
 
 	regenerate_icons()
 
-	hud_set_plasma()
-	med_hud_set_health()
-
 	toggle_xeno_mobhud() //This is a verb, but fuck it, it just werks
 
 	update_spits()
@@ -81,6 +76,7 @@
 
 	AddElement(/datum/element/footstep, footstep_type, mob_size >= MOB_SIZE_BIG ? 0.8 : 0.5)
 	set_jump_component()
+	AddComponent(/datum/component/seethrough_mob)
 
 /mob/living/carbon/xenomorph/register_init_signals()
 	. = ..()
@@ -109,7 +105,7 @@
 	maxHealth = xeno_caste.max_health * GLOB.xeno_stat_multiplicator_buff
 	if(restore_health_and_plasma)
 		// xenos that manage plasma through special means shouldn't gain it for free on aging
-		plasma_stored = max(plasma_stored, xeno_caste.plasma_max * xeno_caste.plasma_regen_limit)
+		set_plasma(max(plasma_stored, xeno_caste.plasma_max * xeno_caste.plasma_regen_limit))
 		health = maxHealth
 	setXenoCasteSpeed(xeno_caste.speed)
 
@@ -243,9 +239,10 @@
 /mob/living/carbon/xenomorph/examine(mob/user)
 	. = ..()
 	. += xeno_caste.caste_desc
+	. += "<span class='notice'>"
 
 	if(stat == DEAD)
-		. += "It is DEAD. Kicked the bucket. Off to that great hive in the sky."
+		. += "<span class='deadsay'>It is DEAD. Kicked the bucket. Off to that great hive in the sky.</span>"
 	else if(stat == UNCONSCIOUS)
 		. += "It quivers a bit, but barely moves."
 	else
@@ -262,6 +259,8 @@
 			if(1 to 24)
 				. += "It is heavily injured and limping badly."
 
+	. += "</span>"
+
 	if(hivenumber != XENO_HIVE_NORMAL)
 		var/datum/hive_status/hive = GLOB.hive_datums[hivenumber]
 		. += "It appears to belong to the [hive.prefix]hive"
@@ -269,7 +268,8 @@
 
 /mob/living/carbon/xenomorph/Destroy()
 	if(mind) mind.name = name //Grabs the name when the xeno is getting deleted, to reference through hive status later.
-	if(is_zoomed) zoom_out()
+	if(xeno_flags & XENO_ZOOMED)
+		zoom_out()
 
 	GLOB.alive_xeno_list -= src
 	LAZYREMOVE(GLOB.alive_xeno_list_hive[hivenumber], src)
@@ -411,7 +411,7 @@
 
 
 /mob/living/carbon/xenomorph/Moved(atom/old_loc, movement_dir)
-	if(is_zoomed)
+	if(xeno_flags & XENO_ZOOMED)
 		zoom_out()
 	handle_weeds_on_movement()
 	return ..()
@@ -468,9 +468,13 @@ Returns TRUE when loc_weeds_type changes. Returns FALSE when it doesn’t change
 	var/datum/action/ability/xeno_action/xeno_resting/resting_action = actions_by_path[/datum/action/ability/xeno_action/xeno_resting]
 	if(!resting_action || !resting_action.can_use_action())
 		return
+	if(resting)
+		if(!COOLDOWN_CHECK(src, xeno_resting_cooldown))
+			balloon_alert(src, "Cannot get up so soon after resting!")
+			return
 
-	if(!COOLDOWN_CHECK(src, xeno_resting_cooldown))
-		balloon_alert(src, "Cannot get up so soon after resting!")
+	if(!COOLDOWN_CHECK(src, xeno_unresting_cooldown))
+		balloon_alert(src, "Cannot rest so soon after getting up!")
 		return
 	return ..()
 
@@ -478,18 +482,20 @@ Returns TRUE when loc_weeds_type changes. Returns FALSE when it doesn’t change
 	. = ..()
 	if(resting)
 		COOLDOWN_START(src, xeno_resting_cooldown, XENO_RESTING_COOLDOWN)
+	else
+		COOLDOWN_START(src, xeno_unresting_cooldown, XENO_UNRESTING_COOLDOWN)
 
-/mob/living/carbon/xenomorph/set_jump_component(duration = 0.5 SECONDS, cooldown = 2 SECONDS, cost = 0, height = 16, sound = null, flags = JUMP_SHADOW, flags_pass = PASS_LOW_STRUCTURE|PASS_FIRE)
+/mob/living/carbon/xenomorph/set_jump_component(duration = 0.5 SECONDS, cooldown = 2 SECONDS, cost = 0, height = 16, sound = null, flags = JUMP_SHADOW, jump_pass_flags = PASS_LOW_STRUCTURE|PASS_FIRE|PASS_TANK)
 	var/gravity = get_gravity()
 	if(gravity < 1) //low grav
 		duration *= 2.5 - gravity
 		cooldown *= 2 - gravity
 		height *= 2 - gravity
 		if(gravity <= 0.75)
-			flags_pass |= PASS_DEFENSIVE_STRUCTURE
+			jump_pass_flags |= PASS_DEFENSIVE_STRUCTURE
 	else if(gravity > 1) //high grav
 		duration *= gravity * 0.5
 		cooldown *= gravity
 		height *= gravity * 0.5
 
-	AddComponent(/datum/component/jump, _jump_duration = duration, _jump_cooldown = cooldown, _stamina_cost = 0, _jump_height = height, _jump_sound = sound, _jump_flags = flags, _jumper_allow_pass_flags = flags_pass)
+	AddComponent(/datum/component/jump, _jump_duration = duration, _jump_cooldown = cooldown, _stamina_cost = 0, _jump_height = height, _jump_sound = sound, _jump_flags = flags, _jumper_allow_pass_flags = jump_pass_flags)

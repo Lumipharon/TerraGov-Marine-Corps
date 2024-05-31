@@ -25,10 +25,7 @@
 	evolution_threshold = 225
 	upgrade_threshold = TIER_TWO_THRESHOLD
 
-	deevolves_to = list(
-		/mob/living/carbon/xenomorph/sentinel,
-		/mob/living/carbon/xenomorph/baneling,
-	)
+	deevolves_to = /datum/xeno_caste/sentinel
 
 	// *** Flags *** //
 	caste_flags = CASTE_EVOLUTION_ALLOWED

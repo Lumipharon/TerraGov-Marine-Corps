@@ -14,10 +14,11 @@
 
 	// *** Melee Attacks *** //
 	melee_damage = 24
+	melee_ap = 5
 	attack_delay = 7
 
 	// *** Speed *** //
-	speed = -1.4
+	speed = -1.5
 	weeds_speed_mod = -0.1
 
 	// *** Plasma *** //
@@ -31,7 +32,7 @@
 	evolution_threshold = 225
 	upgrade_threshold = TIER_TWO_THRESHOLD
 
-	deevolves_to = /mob/living/carbon/xenomorph/runner
+	deevolves_to = /datum/xeno_caste/runner
 
 	// *** Flags *** //
 	caste_flags = CASTE_EVOLUTION_ALLOWED
@@ -95,6 +96,7 @@
 	upgrade_name = ""
 	caste_desc = "A fast, powerful creature. It has some kind of machinery attached to its head."
 	caste_type_path = /mob/living/carbon/xenomorph/hunter/weapon_x
+	upgrade = XENO_UPGRADE_BASETYPE
 
 	// *** Melee Attacks *** //
 	melee_damage = 26
@@ -104,9 +106,12 @@
 
 	// *** Health *** //
 	max_health = 330
+	regen_delay = 5 SECONDS
+	regen_ramp_amount = 0.03
+	sunder_recover = 1
 
 	// *** Flags *** //
-	caste_flags = CASTE_INNATE_HEALING|CASTE_INNATE_PLASMA_REGEN|CASTE_HIDE_IN_STATUS
+	caste_flags = CASTE_INNATE_HEALING|CASTE_INNATE_PLASMA_REGEN|CASTE_HIDE_IN_STATUS|CASTE_EXCLUDE_STRAINS
 	can_flags = CASTE_CAN_BE_QUEEN_HEALED|CASTE_CAN_BE_GIVEN_PLASMA|CASTE_CAN_BE_LEADER|CASTE_CAN_HEAL_WITHOUT_QUEEN
 
 	// *** Defense *** //

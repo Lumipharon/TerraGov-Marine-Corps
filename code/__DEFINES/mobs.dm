@@ -4,6 +4,12 @@
 #define AI_VOX
 
 //Mob movement define
+
+///Speed mod for walk intent
+#define MOB_WALK_MOVE_MOD 4
+///Speed mod for run intent
+#define MOB_RUN_MOVE_MOD 3
+///Move mod for going diagonally
 #define DIAG_MOVEMENT_ADDED_DELAY_MULTIPLIER 1.6
 
 
@@ -51,7 +57,6 @@
 #define ALIEN_SELECT_AFK_BUFFER 1 // How many minutes that a person can be AFK before not being allowed to be an alien.
 
 //Life variables
-#define CARBON_BREATH_DELAY 2 // The interval in life ticks between breathe()
 
 ///The amount of damage you'll take per tick when you can't breath. Default value is 1
 #define CARBON_CRIT_MAX_OXYLOSS (round(SSmobs.wait/5, 0.1))
@@ -324,6 +329,8 @@ GLOBAL_LIST_INIT(xenoupgradetiers, list(XENO_UPGRADE_BASETYPE, XENO_UPGRADE_INVA
 //How long it takes for a human to become undefibbable
 #define TIME_BEFORE_DNR 150 //In life ticks, multiply by 2 to have seconds
 
+///Default living `maxHealth`
+#define LIVING_DEFAULT_MAX_HEALTH 100
 
 //species_flags
 #define NO_BLOOD (1<<0)
@@ -386,16 +393,11 @@ GLOBAL_LIST_INIT(xenoupgradetiers, list(XENO_UPGRADE_BASETYPE, XENO_UPGRADE_INVA
 #define BLOOD_VOLUME_BAD 224
 #define BLOOD_VOLUME_SURVIVE 122
 
-#define HUMAN_MAX_PALENESS 30 //this is added to human skin tone to get value of pale_max variable
-
-
-// Human Overlay Indexes
-#define LASER_LAYER 29 //For sniper targeting laser
-#define MOTH_WINGS_LAYER 28
-#define MUTATIONS_LAYER 27
-#define DAMAGE_LAYER 26
-#define UNIFORM_LAYER 25
-#define TAIL_LAYER 24 //bs12 specific. this hack is probably gonna come back to haunt me
+// Overlay Indexes
+#define WOUND_LAYER 27
+#define MOTH_WINGS_LAYER 26
+#define DAMAGE_LAYER 25
+#define UNIFORM_LAYER 24
 #define ID_LAYER 23
 #define SHOES_LAYER 22
 #define GLOVES_LAYER 21
@@ -417,16 +419,14 @@ GLOBAL_LIST_INIT(xenoupgradetiers, list(XENO_UPGRADE_BASETYPE, XENO_UPGRADE_INVA
 #define R_HAND_LAYER 5
 #define BURST_LAYER 4 //Chestburst overlay
 #define OVERHEALTH_SHIELD_LAYER 3
-#define TARGETED_LAYER 2 //for target sprites when held at gun point, and holo cards.
-#define FIRE_LAYER 1 //If you're on fire
+#define FIRE_LAYER 2 //If you're on fire
+#define LASER_LAYER 1 //For sniper targeting laser
 
-#define TOTAL_LAYERS 29
+#define TOTAL_LAYERS 27
 
 #define MOTH_WINGS_BEHIND_LAYER 1
 
 #define TOTAL_UNDERLAYS 1
-
-#define ANTI_CHAINSTUN_TICKS 2
 
 #define BASE_GRAB_SLOWDOWN 3 //Slowdown called by /mob/setGrabState(newstate) in mob.dm when grabbing a target aggressively.
 
@@ -443,6 +443,18 @@ GLOBAL_LIST_INIT(xenoupgradetiers, list(XENO_UPGRADE_BASETYPE, XENO_UPGRADE_INVA
 
 
 //Xeno Defines
+//Xeno flags
+///Xeno is currently performing a leap/dash attack
+#define XENO_LEAPING (1<<0)
+///Hive leader
+#define XENO_LEADER (1<<1)
+///Zoomed out
+#define XENO_ZOOMED (1<<2)
+///mobhud on
+#define XENO_MOBHUD (1<<3)
+///rouny mode
+#define XENO_ROUNY (1<<4)
+
 
 #define XENO_DEFAULT_VENT_ENTER_TIME 4.5 SECONDS //Standard time for a xeno to enter a vent.
 #define XENO_DEFAULT_VENT_EXIT_TIME 2 SECONDS //Standard time for a xeno to exit a vent.
@@ -458,8 +470,6 @@ GLOBAL_LIST_INIT(xenoupgradetiers, list(XENO_UPGRADE_BASETYPE, XENO_UPGRADE_INVA
 
 #define XENO_DEADHUMAN_DRAG_SLOWDOWN 2
 #define XENO_EXPLOSION_GIB_THRESHOLD 0.95 //if your effective bomb armour is less than 5, devestating explosions will gib xenos
-
-#define KING_SUMMON_TIMER_DURATION 5 MINUTES
 
 #define SPIT_UPGRADE_BONUS(Xenomorph) (Xenomorph.upgrade_as_number() ?  0.6 : 0.45 ) //Primo damage increase
 
@@ -480,6 +490,7 @@ GLOBAL_LIST_INIT(xenoupgradetiers, list(XENO_UPGRADE_BASETYPE, XENO_UPGRADE_INVA
 #define XENO_GARGOYLE_DETECTION_COOLDOWN 30 SECONDS
 #define XENO_GARGOYLE_DETECTION_RANGE 10//How far gargoyles can detect hostiles
 #define XENO_RESTING_COOLDOWN 2 SECONDS
+#define XENO_UNRESTING_COOLDOWN 0.5 SECONDS
 
 #define XENO_HIVEMIND_DETECTION_RANGE 10 //How far out (in tiles) can the hivemind detect hostiles
 #define XENO_HIVEMIND_DETECTION_COOLDOWN 1 MINUTES
@@ -509,6 +520,7 @@ GLOBAL_LIST_INIT(xenoupgradetiers, list(XENO_UPGRADE_BASETYPE, XENO_UPGRADE_INVA
 #define CASTE_DO_NOT_ANNOUNCE_DEATH (1<<14) // xenos with this flag wont be announced to hive when dying
 #define CASTE_STAGGER_RESISTANT (1<<15) //Resistant to some forms of stagger, such as projectiles
 #define CASTE_HAS_WOUND_MASK (1<<16) //uses an alpha mask for wounded states
+#define CASTE_EXCLUDE_STRAINS (1<<17) // denotes castes/basetypes that should be excluded from being evoable as a strain
 
 // Xeno defines that affect evolution, considering making a new var for these
 #define CASTE_LEADER_TYPE (1<<16) //Whether we are a leader type caste, such as the queen, shrike or ?king?, and is affected by queen ban and playtime restrictions
@@ -623,6 +635,54 @@ GLOBAL_LIST_INIT(xenoupgradetiers, list(XENO_UPGRADE_BASETYPE, XENO_UPGRADE_INVA
 #define DEFILER_SANGUINAL_SMOKE_MULTIPLIER 0.03 //Amount the defile power is multiplied by which determines sanguinal smoke strength/size
 #define TENTACLE_ABILITY_RANGE 5
 
+// Pyrogen defines
+/// Damage per melting fire stack
+#define PYROGEN_DAMAGE_PER_STACK 2.5
+/// Amount of ticks of fire removed when helped by another human to extinguish
+#define PYROGEN_ASSIST_REMOVAL_STRENGTH 2
+/// How fast the pyrogen moves when charging using fire charge
+#define PYROGEN_CHARGESPEED 3
+/// Maximum charge distance.
+#define PYROGEN_CHARGEDISTANCE 3
+/// Damage on hitting a mob using fire charge
+#define PYROGEN_FIRECHARGE_DAMAGE 10
+/// Bonus damage per fire stack
+#define PYROGEN_FIRECHARGE_DAMAGE_PER_STACK 5
+/// Bonus damage for directly hitting someone
+#define PYROGEN_FIREBALL_DIRECT_DAMAGE 30
+/// Damage in a 3x3 AOE when we hit anything
+#define PYROGEN_FIREBALL_AOE_DAMAGE 20
+/// Fire stacks on FIREBALL burst in the 3x3 AOE
+#define PYROGEN_FIREBALL_MELTING_STACKS 2
+/// How many turfs can our fireball move
+#define PYROGEN_FIREBALL_MAXDIST 8
+/// How fast the fireball moves
+#define PYROGEN_FIREBALL_SPEED 1
+/// How much damage the fire does per tick or cross.
+#define PYROGEN_MELTING_FIRE_DAMAGE 10
+/// How many melting fire effect stacks we give per tick or cross
+#define PYROGEN_MELTING_FIRE_EFFECT_STACK 2
+/// How many  tornadoes we unleash when using the firestorm
+#define PYROGEN_FIRESTORM_TORNADE_COUNT 3
+/// Damage on fire tornado hit
+#define PYROGEN_TORNADE_HIT_DAMAGE 15
+/// melting fire stacks on fire tornado hit
+#define PYROGEN_TORNADO_MELTING_FIRE_STACKS 2
+/// damage on direct hit with the heatray
+#define PYROGEN_HEATRAY_HIT_DAMAGE 50
+/// damage per melting fire stack
+#define PYROGEN_HEATRAY_BONUS_DAMAGE_PER_MELTING_STACK 10
+/// Range for the heatray
+#define PYROGEN_HEATRAY_RANGE 7
+/// Time before the beam fires
+#define PYROGEN_HEATRAY_CHARGEUP 1 SECONDS
+/// Max duration of the heatray
+#define PYROGEN_HEATRAY_MAXDURATION 3 SECONDS
+/// Time between each refire of the pyrogen heatray (in 3 seconds it will fire 3 times)
+#define PYROGEN_HEATRAY_REFIRE_TIME 1 SECONDS
+/// Amount of stacks removed per resist.
+#define PYROGEN_MELTING_FIRE_STACKS_PER_RESIST 4
+
 //Drone defines
 #define DRONE_HEAL_RANGE 1
 #define AUTO_WEEDING_MIN_DIST 4 //How far the xeno must be from the last spot to auto weed
@@ -665,11 +725,9 @@ GLOBAL_LIST_INIT(xenoupgradetiers, list(XENO_UPGRADE_BASETYPE, XENO_UPGRADE_INVA
 #define DEFENDER_CHARGE_RANGE 4
 
 //Baneling defines
-#define BANELING_CHARGE_MAX 2
-#define BANELING_CHARGE_GAIN_TIME 240 SECONDS
-#define BANELING_CHARGE_RESPAWN_TIME 30 SECONDS
 /// Not specified in seconds because it causes smoke to last almost four times as long if done so
 #define BANELING_SMOKE_DURATION 4
+#define BANELING_SMOKE_RANGE 4
 
 //Sentinel defines
 #define SENTINEL_TOXIC_SPIT_STACKS_PER 2 //Amount of debuff stacks to be applied per spit.
@@ -698,11 +756,6 @@ GLOBAL_LIST_INIT(xenoupgradetiers, list(XENO_UPGRADE_BASETYPE, XENO_UPGRADE_INVA
 #define WRAITH_TELEPORT_DEBUFF_STAGGER_STACKS 2 SECONDS //Stagger and slow stacks applied to adjacent living hostiles before/after a teleport
 #define WRAITH_TELEPORT_DEBUFF_SLOWDOWN_STACKS 3 //Stagger and slow stacks applied to adjacent living hostiles before/after a teleport
 
-//Warrior defines
-
-#define WARRIOR_COMBO_THRESHOLD 2 //After how many abilities should warrior get an empowered cast (2 meaning the 3rd one is empowered)
-#define WARRIOR_COMBO_FADEOUT_TIME 10 SECONDS //How much time does it take for a combo to completely disappear
-
 //Larva defines
 #define LARVA_VENT_CRAWL_TIME 1 SECONDS //Larva can crawl into vents fast
 
@@ -715,6 +768,9 @@ GLOBAL_LIST_INIT(xenoupgradetiers, list(XENO_UPGRADE_BASETYPE, XENO_UPGRADE_INVA
 //Spiderling defines
 #define TIME_TO_DISSOLVE 5 SECONDS
 #define SPIDERLING_RAGE_RANGE 10 // how close a nearby human has to be in order to be targeted
+
+//Praetorian defines
+#define PRAE_CHARGEDISTANCE 5
 
 //misc
 
@@ -818,9 +874,9 @@ GLOBAL_LIST_INIT(human_body_parts, list(BODY_ZONE_HEAD,
 
 // Pheromones and buff orders
 
-#define AURA_XENO_RECOVERY "Recovery"
-#define AURA_XENO_WARDING "Warding"
-#define AURA_XENO_FRENZY "Frenzy"
+#define AURA_XENO_RECOVERY "recovery"
+#define AURA_XENO_WARDING "warding"
+#define AURA_XENO_FRENZY "frenzy"
 
 #define AURA_HUMAN_MOVE "move"
 #define AURA_HUMAN_HOLD "hold"
@@ -848,3 +904,17 @@ GLOBAL_LIST_INIT(human_body_parts, list(BODY_ZONE_HEAD,
 #define SPECIES_HUMAN "species_human"
 ///Combat robot species
 #define SPECIES_COMBAT_ROBOT "species_combat_robot"
+
+///Nextmove delay after performing an interaction with a grab on something
+#define GRAB_SLAM_DELAY 0.7 SECONDS
+///Default damage for slamming a mob against an object
+#define BASE_OBJ_SLAM_DAMAGE 10
+///Default damage for slamming a mob against a wall
+#define BASE_WALL_SLAM_DAMAGE 15
+///Default damage for slamming a mob against another mob
+#define BASE_MOB_SLAM_DAMAGE 8
+
+//chest burst defines
+#define CARBON_NO_CHEST_BURST 0
+#define CARBON_IS_CHEST_BURSTING 1
+#define CARBON_CHEST_BURSTED 2

@@ -69,7 +69,7 @@ GLOBAL_LIST_EMPTY(active_cas_targets)
 	///Overrides the minimap action minimap and marker flags
 	var/map_flags = MINIMAP_FLAG_MARINE
 	///Ref of the lase that's had an OB warning mark placed on the minimap
-	var/obj/effect/overlay/temp/laser_target/OB/marked_lase
+	var/obj/effect/overlay/temp/laser_target/ob/marked_lase
 	///Static list of CIC radial options for the camera when clicking on a marine
 	var/static/list/human_radial_options = list(
 		MESSAGE_SINGLE = image(icon = 'icons/mob/radial.dmi', icon_state = "cic_message_single"),
@@ -319,30 +319,8 @@ GLOBAL_LIST_EMPTY(active_cas_targets)
 			state = OW_MAIN
 		if("monitor")
 			state = OW_MONITOR
-		if("monitoralpha_squad")
-			state = OW_MONITOR
-			current_squad = get_squad_by_id(ALPHA_SQUAD)
-		if("monitorbravo_squad")
-			state = OW_MONITOR
-			current_squad = get_squad_by_id(BRAVO_SQUAD)
-		if("monitorcharlie_squad")
-			state = OW_MONITOR
-			current_squad = get_squad_by_id(CHARLIE_SQUAD)
-		if("monitordelta_squad")
-			state = OW_MONITOR
-			current_squad = get_squad_by_id(DELTA_SQUAD)
-		if("monitorzulu_squad")
-			state = OW_MONITOR
-			current_squad = get_squad_by_id(ZULU_SQUAD)
-		if("monitoryankee_squad")
-			state = OW_MONITOR
-			current_squad = get_squad_by_id(YANKEE_SQUAD)
-		if("monitorxray_squad")
-			state = OW_MONITOR
-			current_squad = get_squad_by_id(XRAY_SQUAD)
-		if("monitorwhiskey_squad")
-			state = OW_MONITOR
-			current_squad = get_squad_by_id(WHISKEY_SQUAD)
+			if(href_list["squad_id"])
+				current_squad = get_squad_by_id(href_list["squad_id"])
 		if("change_operator")
 			if(operator != usr)
 				if(current_squad)
@@ -505,13 +483,13 @@ GLOBAL_LIST_EMPTY(active_cas_targets)
 			state = OW_MAIN
 		if("use_cam")
 			selected_target = locate(href_list["selected_target"])
+			var/atom/cam_target = locate(href_list["cam_target"])
+			if(!cam_target)
+				return
+			var/turf/cam_target_turf = get_turf(cam_target)
+			if(!cam_target_turf)
+				return
 			if(!isAI(operator))
-				var/atom/cam_target = locate(href_list["cam_target"])
-				if(!cam_target)
-					return
-				var/turf/cam_target_turf = get_turf(cam_target)
-				if(!cam_target_turf)
-					return
 				open_prompt(operator)
 				eyeobj.setLoc(cam_target_turf)
 				if(isliving(cam_target))
@@ -519,6 +497,14 @@ GLOBAL_LIST_EMPTY(active_cas_targets)
 					track(L)
 				else
 					to_chat(operator, "[icon2html(src, operator)] [span_notice("Jumping to the latest available location of [cam_target].")]")
+			else
+				// If we are an AI
+				to_chat(operator, "[icon2html(src, operator)] [span_notice("Jumping to the latest available location of [cam_target].")]")
+				var/turf/T = get_turf(cam_target)
+				if(T)
+					var/mob/living/silicon/ai/recipientai = operator
+					recipientai.eyeobj.setLoc(T)
+					// operator.eyeobj.setLoc(get_turf(src))
 
 	updateUsrDialog()
 
@@ -548,7 +534,7 @@ GLOBAL_LIST_EMPTY(active_cas_targets)
 						dat += "<b>Squad Overwatch:</b> [S.overwatch_officer.name]<br>"
 					else
 						dat += "<b>Squad Overwatch:</b> <font color=red>NONE</font><br>"
-					dat += "<A href='?src=[text_ref(src)];operation=monitor[S.id]'>[S.name] Squad Monitor</a><br>"
+					dat += "<A href='?src=[text_ref(src)];operation=monitor;squad_id=[S.id]'>[S.name] Squad Monitor</a><br>"
 				dat += "----------------------<br>"
 				dat += "<b>Orbital Bombardment Control</b><br>"
 				dat += "<b>Current Cannon Status:</b> "
@@ -608,7 +594,7 @@ GLOBAL_LIST_EMPTY(active_cas_targets)
 						dat += "<b>Squad Overwatch:</b> [S.overwatch_officer.name]<br>"
 					else
 						dat += "<b>Squad Overwatch:</b> <font color=red>NONE</font><br>"
-					dat += "<A href='?src=[text_ref(src)];operation=monitor[S.id]'>[S.name] Squad Monitor</a><br>"
+					dat += "<A href='?src=[text_ref(src)];operation=monitor;squad_id=[S.id]'>[S.name] Squad Monitor</a><br>"
 			if(OW_MONITOR)//Info screen.
 				dat += get_squad_info()
 
@@ -662,7 +648,7 @@ GLOBAL_LIST_EMPTY(active_cas_targets)
 	addtimer(CALLBACK(src, PROC_REF(do_fire_bombard), T, operator), 3.1 SECONDS)
 
 ///Lets anyone using an overwatch console know that an OB has just been lased
-/obj/machinery/computer/camera_advanced/overwatch/proc/alert_lase(datum/source, obj/effect/overlay/temp/laser_target/OB/incoming_laser)
+/obj/machinery/computer/camera_advanced/overwatch/proc/alert_lase(datum/source, obj/effect/overlay/temp/laser_target/ob/incoming_laser)
 	SIGNAL_HANDLER
 	if(!operator)
 		return
@@ -798,7 +784,8 @@ GLOBAL_LIST_EMPTY(active_cas_targets)
 /obj/machinery/computer/camera_advanced/overwatch/proc/message_member(mob/living/target, message, mob/living/carbon/human/sender)
 	if(!target.client)
 		return
-	target.play_screen_text("<span class='maptext' style=font-size:24pt;text-align:center valign='top'><u>CIC MESSAGE FROM [sender.real_name]:</u></span><br>" + message, /atom/movable/screen/text/screen_text/command_order)
+	target.playsound_local(target, "sound/machines/dotprinter.ogg", 35)
+	target.play_screen_text("<span class='maptext' style=font-size:24pt;text-align:center valign='top'><u>CIC MESSAGE FROM [sender.real_name]:</u></span><br>" + message, /atom/movable/screen/text/screen_text/command_order, "#32cd32")
 	return TRUE
 
 ///Signal handler for radial menu
@@ -809,14 +796,14 @@ GLOBAL_LIST_EMPTY(active_cas_targets)
 ///Quick-select radial menu for Overwatch
 /obj/machinery/computer/camera_advanced/overwatch/proc/do_radial(datum/source, atom/A, params)
 	var/mob/living/carbon/human/human_target
-	var/obj/effect/overlay/temp/laser_target/OB/laser_target
+	var/obj/effect/overlay/temp/laser_target/ob/laser_target
 	var/turf/turf_target
 	var/choice
 	if(ishuman(A))
 		human_target = A
 		choice = show_radial_menu(source, human_target, human_radial_options, null, 48, null, FALSE, TRUE)
 
-	else if(istype(A, /obj/effect/overlay/temp/laser_target/OB))
+	else if(istype(A, /obj/effect/overlay/temp/laser_target/ob))
 		laser_target = A
 		choice = show_radial_menu(source, laser_target, bombardment_radial_options, null, 48, null, FALSE, TRUE)
 	else
@@ -839,7 +826,7 @@ GLOBAL_LIST_EMPTY(active_cas_targets)
 			if(marked_lase)
 				remove_mark_from_lase() //There can only be one
 				marked_lase = laser_target
-			SSminimaps.add_marker(laser_target, MINIMAP_FLAG_ALL, image('icons/UI_icons/map_blips.dmi', null, "ob_warning"))
+			SSminimaps.add_marker(laser_target, MINIMAP_FLAG_ALL, image('icons/UI_icons/map_blips.dmi', null, "ob_warning", VERY_HIGH_FLOAT_LAYER))
 			addtimer(CALLBACK(src, PROC_REF(remove_mark_from_lase)), 30 SECONDS)
 		if(FIRE_LASE)
 			selected_target = laser_target

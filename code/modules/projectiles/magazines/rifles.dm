@@ -51,6 +51,13 @@
 	default_ammo = /datum/ammo/bullet/rifle
 	max_rounds = 36
 
+/obj/item/ammo_magazine/rifle/standard_carbine/ap
+	name = "\improper AR-18 AP magazine (10x24mm)"
+	desc = "A 10mm assault carbine magazine, loaded with light armor piercing rounds."
+	icon_state = "t18_ap"
+	default_ammo = /datum/ammo/bullet/rifle/hv
+	bonus_overlay = "t18_ap"
+
 //-------------------------------------------------------
 //T12 Assault Rifle
 
@@ -63,6 +70,13 @@
 	w_class = WEIGHT_CLASS_NORMAL
 	default_ammo = /datum/ammo/bullet/rifle
 	max_rounds = 50
+
+/obj/item/ammo_magazine/rifle/standard_assaultrifle/ap
+	name = "\improper AR-12 AP magazine (10x24mm)"
+	desc = "A 10mm assault rifle magazine, loaded with light armor piercing rounds."
+	icon_state = "t12_ap"
+	default_ammo = /datum/ammo/bullet/rifle/hv
+	bonus_overlay = "t12_ap"
 
 //-------------------------------------------------------
 //T37 DMR
@@ -505,6 +519,14 @@
 	icon_state_mini = "mag_sniper_purple"
 	greyscale_colors = COLOR_AMMO_TANGLEFOOT
 
+/obj/item/ammo_magazine/rifle/tx54/smoke/acid
+	name = "\improper 20mm acid smoke grenade magazine"
+	desc = "A 20mm magazine loaded with acid grenades. For use with the GL-54 or AR-55."
+	default_ammo = /datum/ammo/tx54/smoke/acid
+	icon_state = "tx54_airburst"
+	icon_state_mini = "mag_sniper_purple"
+	greyscale_colors = COLOR_AMMO_ACID
+
 /obj/item/ammo_magazine/rifle/tx54/razor
 	name = "\improper 20mm razorburn grenade magazine"
 	desc = "A 20mm magazine loaded with razorburn grenades. For use with the GL-54 or AR-55."
@@ -639,10 +661,10 @@
 	desc = "A magazine filled with 5.56x45mm rifle rounds for the EM-88 series of firearms."
 
 //-------------------------------------------------------
-//ML-14 Assault Machiengun
+//ML-41 Assault Machiengun
 /obj/item/ammo_magazine/icc_mg
-	name = "\improper ML-14 GPMG box magazine (10x25mm)"
-	desc = "A belt box for the ML-14 assault machinegun."
+	name = "\improper ML-41 GPMG box magazine (10x26mm)"
+	desc = "A belt box for the ML-41 assault machinegun."
 	icon_state = "minimi"
 	icon_state_mini = "mag_gpmg"
 	caliber = CALIBER_10x26_CASELESS
@@ -653,11 +675,11 @@
 
 // This is a 'belt'.
 /obj/item/ammo_magazine/icc_mg/belt
-	name = "\improper ML-14 GPMG buttpack magazine (10x25mm)"
-	desc = "A buttpack for the ML-14 which carries the ammo inside."
+	name = "\improper ML-41 GPMG buttpack magazine (10x26mm)"
+	desc = "A buttpack for the ML-41 which carries the ammo inside."
 	icon_state = "minimi_belt"
-	flags_equip_slot = ITEM_SLOT_BELT
-	flags_magazine = MAGAZINE_WORN
+	equip_slot_flags = ITEM_SLOT_BELT
+	magazine_flags = MAGAZINE_WORN
 	w_class = WEIGHT_CLASS_HUGE
 	max_rounds = 750
 
@@ -667,3 +689,25 @@
 	icon_state = "box_minimi"
 	current_rounds = 500
 	max_rounds = 500
+
+// L26
+
+/obj/item/ammo_magazine/rifle/vsd_mg
+	name = "\improper L26 box mag (5.56x45mm)"
+	desc = "A 200 round box mag for the L26."
+	caliber = CALIBER_556X45
+	default_ammo = /datum/ammo/bullet/rifle/machinegun
+	icon_state = "l26"
+	icon_state_mini = "mag_gpmg"
+	bonus_overlay = "l26_100"
+	max_rounds = 200
+
+/obj/item/ammo_magazine/rifle/vsd_rifle
+	name = "\improper C550 magazine (10x27mm)"
+	desc = "A 10x27mm rifle magazine."
+	caliber = CALIBER_10x27_CASELESS
+	icon_state = "c550"
+	icon_state_mini = "mag_rifle_big"
+	w_class = WEIGHT_CLASS_NORMAL
+	default_ammo = /datum/ammo/bullet/rifle
+	max_rounds = 30

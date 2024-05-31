@@ -2297,10 +2297,6 @@
 	dir = 8
 	},
 /area/rocinante_base/ground/base_se)
-"dfF" = (
-/obj/effect/attach_point/weapon/dropship1,
-/turf/open/floor/plating/ground/concrete,
-/area/rocinante_base/surface/landing/landing_pad_one)
 "dfT" = (
 /turf/open/floor/plating,
 /area/rocinante_base/surface/building/mining_construction)
@@ -2669,14 +2665,6 @@
 	},
 /turf/open/floor/mainship/sterile/dark,
 /area/rocinante_base/surface/building/medical)
-"dJI" = (
-/obj/effect/attach_point/weapon/dropship1{
-	dir = 8
-	},
-/turf/open/floor/plating/icefloor/warnplate{
-	dir = 8
-	},
-/area/rocinante_base/surface/landing/landing_pad_two)
 "dJQ" = (
 /obj/structure/barricade/wooden{
 	dir = 8
@@ -11075,10 +11063,6 @@
 /obj/effect/landmark/corpsespawner/som,
 /turf/open/floor/mainship/mono,
 /area/rocinante_base/ground/base_cent)
-"pBb" = (
-/obj/effect/attach_point/electronics/dropship1,
-/turf/open/floor/plating/ground/concrete,
-/area/rocinante_base/surface/landing/landing_pad_two)
 "pBj" = (
 /obj/structure/cable,
 /turf/open/floor/mainship/red/corner{
@@ -12953,10 +12937,6 @@
 	dir = 4
 	},
 /area/rocinante_base/surface/building/security/command_sec)
-"sma" = (
-/obj/effect/attach_point/electronics/dropship1,
-/turf/open/floor/plating/ground/concrete,
-/area/rocinante_base/surface/landing/landing_pad_one)
 "smb" = (
 /obj/structure/cable,
 /turf/open/floor/scorched,
@@ -13536,10 +13516,6 @@
 /obj/structure/cable,
 /turf/open/floor/plating/ground/concrete/lines,
 /area/rocinante_base/ground/base_se)
-"sWJ" = (
-/obj/effect/attach_point/weapon/dropship1,
-/turf/open/floor/plating/ground/concrete,
-/area/rocinante_base/surface/landing/landing_pad_two)
 "sWR" = (
 /turf/closed/shuttle/dropship_regular/interior_wall{
 	dir = 1
@@ -14684,14 +14660,6 @@
 /obj/structure/cable,
 /turf/open/floor/mainship/red,
 /area/rocinante_base/surface/building/living/laundromat)
-"uya" = (
-/obj/effect/attach_point/weapon/dropship1{
-	dir = 8
-	},
-/turf/open/floor/plating/icefloor/warnplate{
-	dir = 8
-	},
-/area/rocinante_base/surface/landing/landing_pad_one)
 "uyb" = (
 /obj/structure/window/framed/mainship/gray,
 /turf/open/floor/plating/ground/concrete,
@@ -15720,11 +15688,6 @@
 /obj/machinery/power/apc,
 /turf/open/floor/mainship/mono,
 /area/rocinante_base/surface/building/living/janitor)
-"vOw" = (
-/obj/structure/table/black,
-/obj/item/hardpoint/treads,
-/turf/open/floor/mainship/mono,
-/area/rocinante_base/surface/building/cargo/southern_aux)
 "vPC" = (
 /obj/structure/flora/grass/tallgrass/tallgrasscorner{
 	color = "#5b7857";
@@ -18490,7 +18453,7 @@ gtL
 gtL
 gtL
 gtL
-dJI
+gtL
 gtL
 gtL
 qkG
@@ -18638,7 +18601,7 @@ rfF
 xTt
 erF
 amw
-sWJ
+erF
 erF
 erF
 erF
@@ -18790,7 +18753,7 @@ rfF
 xTt
 erF
 erF
-pBb
+erF
 erF
 erF
 erF
@@ -19702,7 +19665,7 @@ rfF
 xTt
 erF
 erF
-pBb
+erF
 erF
 erF
 erF
@@ -19854,7 +19817,7 @@ rfF
 xTt
 erF
 amw
-sWJ
+erF
 erF
 erF
 erF
@@ -22362,7 +22325,7 @@ edx
 edx
 edx
 edx
-uya
+edx
 edx
 edx
 vAH
@@ -22510,7 +22473,7 @@ vJY
 aJl
 bjX
 iEn
-dfF
+bjX
 bjX
 bjX
 bjX
@@ -22662,7 +22625,7 @@ vJY
 aJl
 bjX
 bjX
-sma
+bjX
 bjX
 bjX
 bjX
@@ -23574,7 +23537,7 @@ vJY
 aJl
 bjX
 bjX
-sma
+bjX
 bjX
 bjX
 bjX
@@ -23726,7 +23689,7 @@ vJY
 aJl
 bjX
 iEn
-dfF
+bjX
 bjX
 bjX
 bjX
@@ -34481,7 +34444,7 @@ gnj
 jaw
 jaw
 jaw
-vOw
+lJq
 tao
 oVs
 pEm
@@ -34633,7 +34596,7 @@ gnj
 aSY
 gOG
 cQP
-vOw
+lJq
 oVs
 oVs
 pEm

@@ -68,6 +68,11 @@
 	icon = 'icons/obj/items/candle.dmi'
 	icon_state = "candle4"
 
+/obj/item/trash/can
+	name = "crushed can"
+	icon_state = "cola"
+	resistance_flags = NONE
+
 /obj/item/trash/liquidfood
 	name = "\improper \"LiquidFood\" ration"
 	icon_state = "liquidfood"
@@ -148,9 +153,9 @@
 	desc = "An empty box from a chunk bar. Significantly less heavy."
 	icon_state = "chunk_trash"
 
-/obj/item/trash/barcardine
-	name = "barcardine bar wrapper"
-	desc = "An empty wrapper from a barcardine bar. You notice the inside has several medical labels. You're not sure if you care or not about that."
+/obj/item/trash/barcaridine
+	name = "barcaridine bar wrapper"
+	desc = "An empty wrapper from a barcaridine bar. You notice the inside has several medical labels. You're not sure if you care or not about that."
 	icon_state = "barcardine_trash"
 
 /obj/item/trash/berrybar

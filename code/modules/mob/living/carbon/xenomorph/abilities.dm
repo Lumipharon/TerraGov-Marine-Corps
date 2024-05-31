@@ -6,7 +6,7 @@
 	name = "Rest"
 	action_icon_state = "resting"
 	desc = "Rest on weeds to regenerate health and plasma."
-	use_state_flags = ABILITY_USE_LYING|ABILITY_USE_CRESTED|ABILITY_USE_AGILITY|ABILITY_USE_CLOSEDTURF
+	use_state_flags = ABILITY_USE_LYING|ABILITY_USE_CRESTED|ABILITY_USE_SOLIDOBJECT
 	keybinding_signals = list(
 		KEYBINDING_NORMAL = COMSIG_XENOABILITY_REST,
 	)
@@ -57,7 +57,7 @@
 /datum/action/ability/activable/xeno/plant_weeds/proc/plant_weeds(atom/A)
 	var/turf/T = get_turf(A)
 
-	if(!T.check_alien_construction(owner, FALSE))
+	if(!T.check_alien_construction(owner, FALSE, weed_type))
 		return fail_activate()
 
 	if(locate(/obj/structure/xeno/trap) in T)
@@ -76,7 +76,7 @@
 		span_xenonotice("We regurgitate a pulsating node and plant it on the ground!"), null, 5)
 	new weed_type(T)
 	last_weeded_turf = T
-	playsound(T, "alien_resin_build", 25)
+	playsound(T, SFX_ALIEN_RESIN_BUILD, 25)
 	GLOB.round_statistics.weeds_planted++
 	SSblackbox.record_feedback("tally", "round_statistics", 1, "weeds_planted")
 	if(owner.client)
@@ -158,7 +158,7 @@
 
 /datum/action/ability/activable/xeno/plant_weeds/ranged/can_use_ability(atom/A, silent = FALSE, override_flags)
 	var/area/area = get_area(A)
-	if(area.flags_area & MARINE_BASE)
+	if(area.area_flags & MARINE_BASE)
 		if(!silent)
 			to_chat(owner, span_xenowarning("You cannot weed here!"))
 		return FALSE
@@ -221,7 +221,7 @@
 /// Extra handling for adding the action for draggin functionality (for instant building)
 /datum/action/ability/activable/xeno/secrete_resin/give_action(mob/living/L)
 	. = ..()
-	if(!CHECK_BITFIELD(SSticker.mode?.flags_round_type, MODE_ALLOW_XENO_QUICKBUILD) || !SSresinshaping.active)
+	if(!CHECK_BITFIELD(SSticker.mode?.round_type_flags, MODE_ALLOW_XENO_QUICKBUILD) || !SSresinshaping.active)
 		return
 
 	var/mutable_appearance/build_maptext = mutable_appearance(icon = null,icon_state = null, layer = ACTION_LAYER_MAPTEXT)
@@ -237,7 +237,7 @@
 
 /// Extra handling to remove the stuff needed for dragging
 /datum/action/ability/activable/xeno/secrete_resin/remove_action(mob/living/carbon/xenomorph/X)
-	if(!CHECK_BITFIELD(SSticker.mode?.flags_round_type, MODE_ALLOW_XENO_QUICKBUILD))
+	if(!CHECK_BITFIELD(SSticker.mode?.round_type_flags, MODE_ALLOW_XENO_QUICKBUILD))
 		return ..()
 	UnregisterSignal(owner, list(COMSIG_MOB_MOUSEDRAG, COMSIG_MOB_MOUSEUP, COMSIG_MOB_MOUSEDOWN))
 	UnregisterSignal(SSdcs, list(COMSIG_GLOB_OPEN_SHUTTERS_EARLY, COMSIG_GLOB_OPEN_TIMED_SHUTTERS_LATE,COMSIG_GLOB_OPEN_TIMED_SHUTTERS_XENO_HIVEMIND,COMSIG_GLOB_TADPOLE_LAUNCHED,COMSIG_GLOB_DROPPOD_LANDED))
@@ -248,7 +248,7 @@
 	var/mob/living/carbon/xenomorph/X = owner
 	var/atom/A = X.selected_resin
 	action_icon_state = initial(A.name)
-	if(SSmonitor.gamestate == SHUTTERS_CLOSED && CHECK_BITFIELD(SSticker.mode?.flags_round_type, MODE_ALLOW_XENO_QUICKBUILD) && SSresinshaping.active)
+	if(SSmonitor.gamestate == SHUTTERS_CLOSED && CHECK_BITFIELD(SSticker.mode?.round_type_flags, MODE_ALLOW_XENO_QUICKBUILD) && SSresinshaping.active)
 		button.cut_overlay(visual_references[VREF_MUTABLE_BUILDING_COUNTER])
 		var/mutable_appearance/number = visual_references[VREF_MUTABLE_BUILDING_COUNTER]
 		number.maptext = MAPTEXT("[SSresinshaping.quickbuild_points_by_hive[owner.get_xeno_hivenumber()]]")
@@ -290,7 +290,7 @@
 
 /datum/action/ability/activable/xeno/secrete_resin/use_ability(atom/A)
 	var/mob/living/carbon/xenomorph/xowner = owner
-	if(SSmonitor.gamestate == SHUTTERS_CLOSED && CHECK_BITFIELD(SSticker.mode?.flags_round_type, MODE_ALLOW_XENO_QUICKBUILD) && SSresinshaping.active)
+	if(SSmonitor.gamestate == SHUTTERS_CLOSED && CHECK_BITFIELD(SSticker.mode?.round_type_flags, MODE_ALLOW_XENO_QUICKBUILD) && SSresinshaping.active)
 		preshutter_build_resin(A)
 	else if(get_dist(owner, A) > xowner.xeno_caste.resin_max_range) //Maximum range is defined in the castedatum with resin_max_range, defaults to 0
 		build_resin(get_turf(owner))
@@ -322,7 +322,7 @@
 		return
 
 	var/mob/living/carbon/xenomorph/X = owner
-	switch(is_valid_for_resin_structure(T, X.selected_resin == /obj/structure/mineral_door/resin))
+	switch(is_valid_for_resin_structure(T, X.selected_resin == /obj/structure/mineral_door/resin, X.selected_resin))
 		if(ERROR_CANT_WEED)
 			owner.balloon_alert(owner, span_notice("This spot cannot support a garden!"))
 			return
@@ -365,7 +365,7 @@
 
 /datum/action/ability/activable/xeno/secrete_resin/proc/build_resin(turf/T)
 	var/mob/living/carbon/xenomorph/X = owner
-	switch(is_valid_for_resin_structure(T, X.selected_resin == /obj/structure/mineral_door/resin))
+	switch(is_valid_for_resin_structure(T, X.selected_resin == /obj/structure/mineral_door/resin, X.selected_resin))
 		if(ERROR_CANT_WEED)
 			owner.balloon_alert(owner, span_notice("This spot cannot support a garden!"))
 			return
@@ -394,7 +394,7 @@
 		return fail_activate()
 	if(!do_after(X, get_wait(), NONE, T, BUSY_ICON_BUILD))
 		return fail_activate()
-	switch(is_valid_for_resin_structure(T, X.selected_resin == /obj/structure/mineral_door/resin))
+	switch(is_valid_for_resin_structure(T, X.selected_resin == /obj/structure/mineral_door/resin, X.selected_resin))
 		if(ERROR_CANT_WEED)
 			owner.balloon_alert(owner, span_notice("This spot cannot support a garden!"))
 			return
@@ -421,7 +421,7 @@
 	var/atom/AM = X.selected_resin
 	X.visible_message(span_xenowarning("\The [X] regurgitates a thick substance and shapes it into \a [initial(AM.name)]!"), \
 	span_xenonotice("We regurgitate some resin and shape it into \a [initial(AM.name)]."), null, 5)
-	playsound(owner.loc, "alien_resin_build", 25)
+	playsound(owner.loc, SFX_ALIEN_RESIN_BUILD, 25)
 	var/atom/new_resin
 	if(ispath(X.selected_resin, /turf)) // We should change turfs, not spawn them in directly
 		var/list/baseturfs = islist(T.baseturfs) ? T.baseturfs : list(T.baseturfs)
@@ -436,6 +436,169 @@
 	if(new_resin)
 		add_cooldown(SSmonitor.gamestate == SHUTTERS_CLOSED ? get_cooldown()/2 : get_cooldown())
 		succeed_activate(SSmonitor.gamestate == SHUTTERS_CLOSED ? ability_cost/2 : ability_cost)
+	ability_cost = initial(ability_cost) //Reset the plasma cost
+	owner.record_structures_built()
+
+// Secrete Special Resin
+/datum/action/ability/activable/xeno/secrete_special_resin
+	name = "Secrete Special Resin"
+	action_icon_state = RESIN_WALL
+	desc = "Builds whatever special resin you selected"
+	target_flags = ABILITY_TURF_TARGET
+	ability_cost = 75
+	action_type = ACTION_TOGGLE
+	keybinding_signals = list(
+		KEYBINDING_NORMAL = COMSIG_XENOABILITY_SECRETE_SPECIAL_RESIN,
+	)
+	///Minimum time to build a special resin structure
+	var/base_wait = 2 SECONDS
+	///Multiplicator factor to add to the building time, depends on the health of builder.
+	var/scaling_wait = 1 SECONDS
+	///List of buildable structures. Order corresponds with resin_special_images_list.
+	var/list/buildable_special_structures = list(
+		/turf/closed/wall/resin/regenerating/special/bulletproof,
+		/turf/closed/wall/resin/regenerating/special/fireproof,
+		/turf/closed/wall/resin/regenerating/special/hardy,
+	)
+
+/datum/action/ability/activable/xeno/secrete_special_resin/give_action(mob/living/L)
+	. = ..()
+	var/mutable_appearance/build_maptext = mutable_appearance(icon = null,icon_state = null, layer = ACTION_LAYER_MAPTEXT)
+	build_maptext.pixel_x = 0
+	build_maptext.pixel_y = 25
+	build_maptext.maptext = MAPTEXT(GLOB.hive_datums[owner.get_xeno_hivenumber()].special_build_points)
+	visual_references[VREF_MUTABLE_SPECIAL_RESIN_COUNTER] = build_maptext
+
+/datum/action/ability/activable/xeno/secrete_special_resin/update_button_icon()
+	var/mob/living/carbon/xenomorph/X = owner
+	var/atom/A = X.selected_special_resin
+	action_icon_state = initial(A.name)
+	button.cut_overlay(visual_references[VREF_MUTABLE_SPECIAL_RESIN_COUNTER])
+	var/mutable_appearance/number = visual_references[VREF_MUTABLE_SPECIAL_RESIN_COUNTER]
+	number.maptext = MAPTEXT("[GLOB.hive_datums[owner.get_xeno_hivenumber()].special_build_points]")
+	visual_references[VREF_MUTABLE_SPECIAL_RESIN_COUNTER] = number
+	button.add_overlay(visual_references[VREF_MUTABLE_SPECIAL_RESIN_COUNTER])
+	return ..()
+
+/datum/action/ability/activable/xeno/secrete_special_resin/action_activate()
+	//Left click on the secrete resin button opens up radial menu (new type of changing structures).
+	var/mob/living/carbon/xenomorph/X = owner
+	if(X.selected_ability != src)
+		return ..()
+	. = ..()
+	var/resin_choice = show_radial_menu(owner, owner, GLOB.resin_special_images_list, radius = 35)
+	if(!resin_choice)
+		return
+	var/i = GLOB.resin_special_images_list.Find(resin_choice)
+	X.selected_special_resin = buildable_special_structures[i]
+	var/atom/A = X.selected_special_resin
+	X.balloon_alert(X, initial(A.name))
+	update_button_icon()
+
+/datum/action/ability/activable/xeno/secrete_special_resin/alternate_action_activate()
+	//Right click on secrete resin button cycles through to the next construction type (old method of changing structures).
+	var/mob/living/carbon/xenomorph/X = owner
+	if(X.selected_ability != src)
+		return ..()
+	var/i = buildable_special_structures.Find(X.selected_special_resin)
+	if(length(buildable_special_structures) == i)
+		X.selected_special_resin = buildable_special_structures[1]
+	else
+		X.selected_special_resin = buildable_special_structures[i+1]
+	var/atom/A = X.selected_special_resin
+	X.balloon_alert(X, initial(A.name))
+	update_button_icon()
+
+/datum/action/ability/activable/xeno/secrete_special_resin/use_ability(atom/A)
+	var/mob/living/carbon/xenomorph/xowner = owner
+	if(get_dist(owner, A) > xowner.xeno_caste.resin_max_range) //Maximum range is defined in the castedatum with resin_max_range, defaults to 0
+		build_special_resin(get_turf(owner))
+	else
+		build_special_resin(get_turf(A))
+
+/datum/action/ability/activable/xeno/secrete_special_resin/proc/get_wait()
+	. = base_wait
+	if(!scaling_wait)
+		return
+	var/mob/living/carbon/xenomorph/X = owner
+
+	return (base_wait + scaling_wait - max(0, (scaling_wait * X.health / X.maxHealth)))
+
+/datum/action/ability/activable/xeno/secrete_special_resin/proc/build_special_resin(turf/T)
+	var/mob/living/carbon/xenomorph/X = owner
+	if(GLOB.hive_datums[owner.get_xeno_hivenumber()].special_build_points <= 0)
+		owner.balloon_alert(owner, span_notice("There is not enough special build points to build this structure!"))
+		return
+	switch(is_valid_for_resin_structure(T, X.selected_special_resin == /obj/structure/mineral_door/resin, X.selected_special_resin))
+		if(ERROR_CANT_WEED)
+			owner.balloon_alert(owner, span_notice("This spot cannot support a garden!"))
+			return
+		if(ERROR_NO_WEED)
+			owner.balloon_alert(owner, span_notice("This spot has no weeds to serve as support!"))
+			return
+		if(ERROR_NO_SUPPORT)
+			owner.balloon_alert(owner, span_notice("This spot has no adjaecent support for the structure!"))
+			return
+		if(ERROR_NOT_ALLOWED)
+			owner.balloon_alert(owner, span_notice("The queen mother prohibits us from building here."))
+			return
+		if(ERROR_BLOCKER)
+			owner.balloon_alert(owner, span_notice("There's another xenomorph blocking the spot!"))
+			return
+		if(ERROR_FOG)
+			owner.balloon_alert(owner, span_notice("The fog will prevent the resin from ever taking shape!"))
+			return
+		if(ERROR_CONSTRUCT)
+			return
+		if(TRUE)
+			return
+	if(!line_of_sight(owner, T))
+		owner.balloon_alert(owner, span_notice("You cannot secrete resin without line of sight!"))
+		return fail_activate()
+	if(!do_after(X, get_wait(), NONE, T, BUSY_ICON_BUILD))
+		return fail_activate()
+	if(GLOB.hive_datums[owner.get_xeno_hivenumber()].special_build_points <= 0)
+		owner.balloon_alert(owner, span_notice("There is not enough special build points to build this structure!"))
+		return
+	switch(is_valid_for_resin_structure(T, X.selected_special_resin == /obj/structure/mineral_door/resin, X.selected_special_resin))
+		if(ERROR_CANT_WEED)
+			owner.balloon_alert(owner, span_notice("This spot cannot support a garden!"))
+			return
+		if(ERROR_NO_WEED)
+			owner.balloon_alert(owner, span_notice("This spot has no weeds to serve as support!"))
+			return
+		if(ERROR_NO_SUPPORT)
+			owner.balloon_alert(owner, span_notice("This spot has no adjaecent support for the structure!"))
+			return
+		if(ERROR_NOT_ALLOWED)
+			owner.balloon_alert(owner, span_notice("The queen mother prohibits us from building here."))
+			return
+		if(ERROR_BLOCKER)
+			owner.balloon_alert(owner, span_notice("There's another xenomorph blocking the spot!"))
+			return
+		if(ERROR_FOG)
+			owner.balloon_alert(owner, span_notice("The fog will prevent the resin from ever taking shape!"))
+			return
+		if(ERROR_CONSTRUCT)
+			return
+		if(TRUE)
+			return
+	var/atom/AM = X.selected_special_resin
+	X.visible_message(span_xenowarning("\The [X] regurgitates a thick substance and shapes it into \a [initial(AM.name)]!"), \
+	span_xenonotice("We regurgitate some resin and shape it into \a [initial(AM.name)]."), null, 5)
+	playsound(owner.loc, SFX_ALIEN_RESIN_BUILD, 25)
+	var/atom/new_resin
+	if(ispath(X.selected_resin, /turf)) // We should change turfs, not spawn them in directly
+		var/list/baseturfs = islist(T.baseturfs) ? T.baseturfs : list(T.baseturfs)
+		baseturfs |= T.type
+		T.ChangeTurf(X.selected_special_resin, baseturfs)
+		new_resin = T
+	else
+		new_resin = new X.selected_special_resin(T)
+	if(new_resin)
+		add_cooldown(SSmonitor.gamestate == SHUTTERS_CLOSED ? get_cooldown()/2 : get_cooldown())
+		succeed_activate(SSmonitor.gamestate == SHUTTERS_CLOSED ? ability_cost/2 : ability_cost)
+		GLOB.hive_datums[owner.get_xeno_hivenumber()].special_build_points--
 	ability_cost = initial(ability_cost) //Reset the plasma cost
 	owner.record_structures_built()
 
@@ -459,7 +622,7 @@
 	QDEL_NULL(X.current_aura)
 	X.current_aura = SSaura.add_emitter(X, phero_choice, 6 + X.xeno_caste.aura_strength * 2, X.xeno_caste.aura_strength, -1, X.faction, X.hivenumber)
 	X.balloon_alert(X, "[phero_choice]")
-	playsound(X.loc, "alien_drool", 25)
+	playsound(X.loc, SFX_ALIEN_DROOL, 25)
 
 	if(isxenoqueen(X))
 		X.hive?.update_leader_pheromones()
@@ -555,7 +718,7 @@
 	to_chat(X, span_notice("We start focusing our plasma towards [target]."))
 	new /obj/effect/temp_visual/transfer_plasma(get_turf(X)) //Cool SFX that confirms our source and our target
 	new /obj/effect/temp_visual/transfer_plasma(get_turf(target)) //Cool SFX that confirms our source and our target
-	playsound(X, "alien_drool", 25)
+	playsound(X, SFX_ALIEN_DROOL, 25)
 
 	X.face_atom(target) //Face our target so we don't look silly
 
@@ -580,7 +743,7 @@
 	target.gain_plasma(amount)
 	to_chat(target, span_xenodanger("[X] has transfered [amount] units of plasma to us. We now have [target.plasma_stored]/[target.xeno_caste.plasma_max]."))
 	to_chat(X, span_xenodanger("We have transferred [amount] units of plasma to [target]. We now have [X.plasma_stored]/[X.xeno_caste.plasma_max]."))
-	playsound(X, "alien_drool", 25)
+	playsound(X, SFX_ALIEN_DROOL, 25)
 
 
 // ***************************************
@@ -600,7 +763,7 @@
 
 /datum/action/ability/activable/xeno/corrosive_acid/can_use_ability(atom/A, silent = FALSE, override_flags)
 	var/obj/effect/xenomorph/acid/current_acid_type = acid_type
-	if(SSmonitor.gamestate == SHUTTERS_CLOSED && CHECK_BITFIELD(SSticker.mode?.flags_round_type, MODE_ALLOW_XENO_QUICKBUILD) && SSresinshaping.active)
+	if(SSmonitor.gamestate == SHUTTERS_CLOSED && CHECK_BITFIELD(SSticker.mode?.round_type_flags, MODE_ALLOW_XENO_QUICKBUILD) && SSresinshaping.active)
 		current_acid_type = /obj/effect/xenomorph/acid/strong //if it is before shutters open, everyone gets strong acid
 	// Check if it's an acid object we're upgrading
 	if (istype(A, /obj/effect/xenomorph/acid))
@@ -629,7 +792,7 @@
 /datum/action/ability/activable/xeno/corrosive_acid/use_ability(atom/A)
 	var/mob/living/carbon/xenomorph/X = owner
 	var/obj/effect/xenomorph/acid/current_acid_type = acid_type
-	if(SSmonitor.gamestate == SHUTTERS_CLOSED && CHECK_BITFIELD(SSticker.mode?.flags_round_type, MODE_ALLOW_XENO_QUICKBUILD) && SSresinshaping.active)
+	if(SSmonitor.gamestate == SHUTTERS_CLOSED && CHECK_BITFIELD(SSticker.mode?.round_type_flags, MODE_ALLOW_XENO_QUICKBUILD) && SSresinshaping.active)
 		current_acid_type = /obj/effect/xenomorph/acid/strong //if it is before shutters open, everyone gets strong acid
 	// Check if it's an acid object we're upgrading
 	if(istype(A, /obj/effect/xenomorph/acid))
@@ -717,7 +880,7 @@
 	keybinding_signals = list(
 		KEYBINDING_NORMAL = COMSIG_XENOABILITY_XENO_SPIT,
 	)
-	use_state_flags = ABILITY_USE_LYING|ABILITY_USE_BUCKLED|ABILITY_DO_AFTER_ATTACK
+	use_state_flags = ABILITY_USE_LYING|ABILITY_USE_BUCKLED|ABILITY_DO_AFTER_ATTACK|ABILITY_USE_STAGGERED
 	target_flags = ABILITY_MOB_TARGET
 	///Current target that the xeno is targeting. This is for aiming.
 	var/current_target
@@ -812,7 +975,7 @@
 	ability_cost = X.ammo.spit_cost
 	newspit.generate_bullet(X.ammo, X.ammo.damage * SPIT_UPGRADE_BONUS(X))
 	newspit.def_zone = X.get_limbzone_target()
-	newspit.fire_at(current_target, X, null, X.ammo.max_range, X.ammo.shell_speed)
+	newspit.fire_at(current_target, X, X, X.ammo.max_range, X.ammo.shell_speed)
 
 	if(can_use_ability(current_target) && X.client) //X.client to make sure autospit doesn't continue for non player mobs.
 		succeed_activate()
@@ -1021,7 +1184,7 @@
 	var/mob/living/carbon/xenomorph/xeno = owner
 	var/turf/current_turf = get_turf(owner)
 
-	if(!current_turf.check_alien_construction(owner))
+	if(!current_turf.check_alien_construction(owner, planned_building = /obj/alien/egg/hugger))
 		return fail_activate()
 
 	if(!xeno.loc_weeds_type)
@@ -1108,8 +1271,8 @@
 
 /mob/living/carbon/xenomorph/proc/add_abilities()
 	for(var/action_path in xeno_caste.actions)
-		var/datum/action/ability/xeno_action/action = new action_path()
-		if(!SSticker.mode || SSticker.mode.flags_xeno_abilities & action.gamemode_flags)
+		var/datum/action/ability/xeno_action/action = new action_path(src)
+		if(!SSticker.mode || SSticker.mode.xeno_abilities_flags & action.gamemode_flags)
 			action.give_action(src)
 
 
@@ -1127,12 +1290,12 @@
 	name = "Psy drain"
 	action_icon_state = "headbite"
 	desc = "Drain the victim of its life force to gain larva and psych points"
+	ability_cost = 50
 	use_state_flags = ABILITY_USE_STAGGERED|ABILITY_USE_FORTIFIED|ABILITY_USE_CRESTED //can't use while staggered, defender fortified or crest down
 	keybinding_signals = list(
 		KEYBINDING_NORMAL = COMSIG_XENOABILITY_HEADBITE,
 	)
 	gamemode_flags = ABILITY_NUCLEARWAR
-	ability_cost = 100
 	///How much larva points it gives (8 points for one larva in distress)
 	var/larva_point_reward = 1
 
@@ -1321,7 +1484,7 @@
 	keybinding_signals = list(
 		KEYBINDING_NORMAL = COMSIG_XENOABILITY_BLESSINGSMENU,
 	)
-	use_state_flags = ABILITY_USE_LYING|ABILITY_USE_CRESTED|ABILITY_USE_AGILITY
+	use_state_flags = ABILITY_USE_LYING|ABILITY_USE_CRESTED
 
 /datum/action/ability/xeno_action/blessing_menu/should_show()
 	return FALSE // Blessings meni now done through hive status UI!

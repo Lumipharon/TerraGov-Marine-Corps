@@ -26,7 +26,7 @@
 	X.create_stomp() //Adds the visual effect. Wom wom wom
 
 	for(var/mob/living/M in range(1, get_turf(X)))
-		if(X.issamexenohive(M) || M.stat == DEAD || isnestedhost(M))
+		if(X.issamexenohive(M) || M.stat == DEAD || isnestedhost(M) || !X.Adjacent(M))
 			continue
 		var/distance = get_dist(M, X)
 		var/damage = X.xeno_caste.stomp_damage/max(1, distance + 1)
@@ -105,6 +105,9 @@
 		for(var/obj/effect/forcefield/fog/fog in throw_origin)
 			A.balloon_alert(X, "Cannot, fog")
 			return fail_activate()
+	if(isarmoredvehicle(A))
+		A.balloon_alert(X, "Too heavy!")
+		return fail_activate()
 	if(isliving(A))
 		var/mob/living/L = A
 		if(L.mob_size >= MOB_SIZE_BIG) //Penalize toss distance for big creatures
@@ -173,6 +176,8 @@
 	keybinding_signals = list(
 		KEYBINDING_NORMAL = COMSIG_XENOABILITY_ADVANCE,
 	)
+	///Max charge range
+	var/advance_range = 7
 
 /datum/action/ability/activable/xeno/advance/on_cooldown_finish()
 	to_chat(owner, span_xenowarning("<b>We can now rapidly charge forward again.</b>"))
@@ -184,7 +189,7 @@
 	if(!.)
 		return FALSE
 
-	if(get_dist(owner, A) > 7)
+	if(get_dist(owner, A) > advance_range)
 		return FALSE
 
 
@@ -192,26 +197,26 @@
 	var/mob/living/carbon/xenomorph/X = owner
 	X.face_atom(A)
 	X.set_canmove(FALSE)
-	if(!do_after(X, 10, NONE, X, BUSY_ICON_DANGER))
+	if(!do_after(X, 1 SECONDS, NONE, X, BUSY_ICON_DANGER) || (QDELETED(A)) || X.z != A.z)
 		if(!X.stat)
 			X.set_canmove(TRUE)
 		return fail_activate()
 	X.set_canmove(TRUE)
 
 	var/datum/action/ability/xeno_action/ready_charge/charge = X.actions_by_path[/datum/action/ability/xeno_action/ready_charge]
-	var/aimdir = get_dir(X,A)
+	var/aimdir = get_dir(X, A)
 	if(charge)
 		charge.charge_on(FALSE)
 		charge.do_stop_momentum(FALSE) //Reset charge so next_move_limit check_momentum() does not cuck us and 0 out steps_taken
 		charge.do_start_crushing()
 		charge.valid_steps_taken = charge.max_steps_buildup - 1
 		charge.charge_dir = aimdir //Set dir so check_momentum() does not cuck us
-	for(var/i=0 to get_dist(X, A))
+	for(var/i=0 to max(get_dist(X, A), advance_range))
 		if(i % 2)
-			playsound(X, "alien_charge", 50)
-			new /obj/effect/temp_visual/xenomorph/afterimage(get_turf(X), X)
+			playsound(X, SFX_ALIEN_CHARGE, 50)
+			new /obj/effect/temp_visual/after_image(get_turf(X), X)
 		X.Move(get_step(X, aimdir), aimdir)
-		aimdir = get_dir(X,A)
+		aimdir = get_dir(X, A)
 	succeed_activate()
 	add_cooldown()
 

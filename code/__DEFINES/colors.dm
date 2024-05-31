@@ -1,3 +1,15 @@
+//different types of atom colorations
+/// Only used by rare effects like greentext coloring mobs and when admins varedit color
+#define ADMIN_COLOUR_PRIORITY 1
+/// e.g. purple effect of the revenant on a mob, black effect when mob electrocuted
+#define TEMPORARY_COLOUR_PRIORITY 2
+/// Color splashed onto an atom (e.g. paint on turf)
+#define WASHABLE_COLOUR_PRIORITY 3
+/// Color inherent to the atom (e.g. blob color)
+#define FIXED_COLOUR_PRIORITY 4
+///how many colour priority levels there are.
+#define COLOUR_PRIORITY_AMOUNT 4
+
 #define COLOR_INPUT_DISABLED "#F0F0F0"
 #define COLOR_INPUT_ENABLED "#D3B5B5"
 
@@ -20,6 +32,7 @@
 #define COLOR_GRAY "#808080"
 #define COLOR_FLOORTILE_GRAY "#8D8B8B"
 #define COLOR_ALMOST_BLACK "#333333"
+#define COLOR_NEARLY_ALL_BLACK "#111111"
 #define COLOR_BLACK "#000000"
 #define COLOR_HALF_TRANSPARENT_BLACK "#0000007A"
 #define COLOR_TRANSPARENT_SHADOW "#03020781"
@@ -254,6 +267,8 @@ Important note: colors can end up significantly different from the basic html pi
 #define LIGHT_COLOR_FLAME "#F88818"
 /// Rich and bright blue. rgb(0, 183, 255)
 #define LIGHT_COLOR_BLUE_FLAME "#00b8ff"
+///Strong red orange
+#define LIGHT_COLOR_RED_ORANGE "#ff2802"
 
 //Ammo and grenade colors
 #define COLOR_AMMO_AIRBURST "#2272eb"
@@ -261,6 +276,7 @@ Important note: colors can end up significantly different from the basic html pi
 #define COLOR_AMMO_TACTICAL_SMOKE "#2F7B00"
 #define COLOR_AMMO_SMOKE "#0F98BD"
 #define COLOR_AMMO_TANGLEFOOT "#AA1FDC"
+#define COLOR_AMMO_ACID "#25dc1f"
 #define COLOR_AMMO_RAZORBURN "#FBF236"
 #define COLOR_AMMO_HIGH_EXPLOSIVE "#b02323"
 
@@ -275,3 +291,8 @@ Important note: colors can end up significantly different from the basic html pi
 #define LIGHT_COLOR_EMISSIVE_RED "#fa6464"
 #define LIGHT_COLOR_EMISSIVE_YELLOW "#f0fa64"
 #define LIGHT_COLOR_EMISSIVE_ORANGE "#faac64"
+
+//Colors used by special resin walls.
+#define COLLOR_WALL_BULLETPROOF "#ed99f6"
+#define COLOR_WALL_FIREPROOF "#ff696e"
+#define COLOR_WALL_HARDY "#6699ff"

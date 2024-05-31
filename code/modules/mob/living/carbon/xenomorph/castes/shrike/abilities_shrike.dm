@@ -160,7 +160,7 @@
 	add_cooldown()
 	addtimer(CALLBACK(owner, TYPE_PROC_REF(/mob, update_icons)), 1 SECONDS)
 	var/mob/living/carbon/xenomorph/xeno = owner
-	owner.icon_state = "[xeno.xeno_caste.caste_name][xeno.is_a_rouny ? " rouny" : ""] Screeching"
+	owner.icon_state = "[xeno.xeno_caste.caste_name][(xeno.xeno_flags & XENO_ROUNY) ? " rouny" : ""] Screeching"
 	if(target) // Keybind use doesn't have a target
 		owner.face_atom(target)
 
@@ -205,7 +205,7 @@
 	span_xenowarning("We send out a huge blast of psychic energy!"))
 
 	playsound(owner,'sound/effects/bamf.ogg', 75, TRUE)
-	playsound(owner, "alien_roar", 50)
+	playsound(owner, SFX_ALIEN_ROAR, 50)
 
 			//Held facehuggers get killed for balance reasons
 	if(istype(owner.r_hand, /obj/item/clothing/mask/facehugger))
@@ -318,6 +318,7 @@
 	keybinding_signals = list(
 		KEYBINDING_NORMAL = COMSIG_XENOABILITY_PLACE_ACID_WELL,
 	)
+	use_state_flags = ABILITY_USE_LYING
 
 /datum/action/ability/xeno_action/place_acidwell/can_use_action(silent = FALSE, override_flags)
 	. = ..()
@@ -333,7 +334,7 @@
 			to_chat(owner, span_warning("We can only shape on weeds. We must find some resin before we start building!"))
 		return FALSE
 
-	if(!T.check_alien_construction(owner, silent))
+	if(!T.check_alien_construction(owner, silent, /obj/structure/xeno/acidwell))
 		return FALSE
 
 	if(!T.check_disallow_alien_fortification(owner, silent))
@@ -343,7 +344,7 @@
 	var/turf/T = get_turf(owner)
 	succeed_activate()
 
-	playsound(T, "alien_resin_build", 25)
+	playsound(T, SFX_ALIEN_RESIN_BUILD, 25)
 	new /obj/structure/xeno/acidwell(T, owner)
 
 	to_chat(owner, span_xenonotice("We place an acid well; it can be filled with more acid."))

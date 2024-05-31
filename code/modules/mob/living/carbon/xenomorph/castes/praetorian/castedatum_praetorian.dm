@@ -24,7 +24,7 @@
 	// *** Evolution *** //
 	upgrade_threshold = TIER_THREE_THRESHOLD
 
-	deevolves_to = /mob/living/carbon/xenomorph/spitter
+	deevolves_to = /datum/xeno_caste/spitter
 
 	// *** Flags *** //
 	can_flags = CASTE_CAN_BE_QUEEN_HEALED|CASTE_CAN_BE_GIVEN_PLASMA|CASTE_CAN_BE_LEADER
@@ -81,7 +81,7 @@
 		/datum/action/ability/activable/xeno/corrosive_acid,
 		/datum/action/ability/activable/xeno/xeno_spit,
 		/datum/action/ability/activable/xeno/spray_acid/cone,
-		/datum/action/ability/activable/xeno/acid_dash,
+		/datum/action/ability/activable/xeno/charge/acid_dash,
 		/datum/action/ability/xeno_action/pheromones,
 		/datum/action/ability/xeno_action/pheromones/emit_recovery,
 		/datum/action/ability/xeno_action/pheromones/emit_warding,
