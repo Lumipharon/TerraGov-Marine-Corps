@@ -18,10 +18,8 @@ GLOBAL_DATUM_INIT(welding_sparks_prepdoor, /mutable_appearance, mutable_appearan
 	///The iconstate that the items use for blood on blood.dmi when drawn on the mob.
 	var/blood_sprite_state
 
-
-	var/item_state = null //if you don't want to use icon_state for onmob inhand/belt/back/ear/suitstorage/glove sprite.
-						//e.g. most headsets have different icon_state but they all use the same sprite when shown on the mob's ears.
-						//also useful for items with many icon_state values when you don't want to make an inhand sprite for each value.
+	///Icon state for mob worn overlays, if null the normal icon_state will be used.
+	var/worn_icon_state = null
 	///The icon state used to represent this image in "icons/obj/items/items_mini.dmi" Used in /obj/item/storage/box/visual to display tiny items in the box
 	var/icon_state_mini = "item"
 	///Byond tick delay between left click attacks
@@ -97,13 +95,13 @@ GLOBAL_DATUM_INIT(welding_sparks_prepdoor, /mutable_appearance, mutable_appearan
 
 	//** These specify item/icon overrides for _slots_
 
-	///>Lazylist< that overrides the default item_state for particular slots.
-	var/list/item_state_slots
+	///>Lazylist< that overrides the default worn_icon_state for particular slots.
+	var/list/worn_item_state_slots
 	///>LazyList< Used to specify the icon file to be used when the item is worn in a certain slot. icon_override or sprite_sheets are set they will take precendence over this, assuming they apply to the slot in question.
-	var/list/item_icons
+	var/list/worn_icon_list
 	///specific layer for on-mob icon.
 	var/worn_layer
-	///tells if the item shall use item_state for non-inhands, needed due to some items using item_state only for inhands and not worn.
+	///tells if the item shall use worn_icon_state for non-inhands, needed due to some items using worn_icon_state only for inhands and not worn.
 	var/item_state_worn = FALSE
 	///overrides the icon file which the item will be used to render on mob, if its in hands it will add _l or _r to the state depending if its on left or right hand.
 	var/icon_override = null
@@ -201,8 +199,22 @@ GLOBAL_DATUM_INIT(welding_sparks_prepdoor, /mutable_appearance, mutable_appearan
 	return
 
 /obj/item/proc/update_item_state(mob/user)
-	item_state = "[initial(icon_state)][item_flags & WIELDED ? "_w" : ""]"
+	worn_icon_state = "[initial(icon_state)][item_flags & WIELDED ? "_w" : ""]"
 
+/**
+ * Checks if an item is allowed to be used on an atom/target
+ * Returns TRUE if allowed.
+ *
+ * Args:
+ * target_self - Whether we will check if we (src) are in target, preventing people from using items on themselves.
+ * not_inside - Whether target (or target's loc) has to be a turf.
+ */
+/obj/item/proc/check_allowed_items(atom/target, not_inside = FALSE, target_self = FALSE)
+	if(!target_self && (src in target))
+		return FALSE
+	if(not_inside && !isturf(target.loc) && !isturf(target))
+		return FALSE
+	return TRUE
 
 //user: The mob that is suiciding
 //damagetype: The type of damage the item will inflict on the user
@@ -241,6 +253,7 @@ GLOBAL_DATUM_INIT(welding_sparks_prepdoor, /mutable_appearance, mutable_appearan
 
 /obj/item/examine(mob/user)
 	. = ..()
+	. += EXAMINE_SECTION_BREAK
 	. += "[gender == PLURAL ? "They are" : "It is"] a [weight_class_to_text(w_class)] item."
 
 /obj/item/attack_ghost(mob/dead/observer/user)
@@ -285,23 +298,23 @@ GLOBAL_DATUM_INIT(welding_sparks_prepdoor, /mutable_appearance, mutable_appearan
 	. = ..()
 	if(current_variant)
 		icon_state = initial(icon_state) + "_[current_variant]"
-		item_state = initial(item_state) + "_[current_variant]"
+		worn_icon_state = initial(worn_icon_state) + "_[current_variant]"
 
 // Due to storage type consolidation this should get used more now.
 // I have cleaned it up a little, but it could probably use more.  -Sayu
-/obj/item/attackby(obj/item/I, mob/user, params)
-	if(istype(I, /obj/item/facepaint) && colorable_allowed != NONE)
-		color_item(I, user)
+/obj/item/attackby(obj/item/attacking_item, mob/user, params)
+	if(istype(attacking_item, /obj/item/facepaint) && colorable_allowed != NONE)
+		color_item(attacking_item, user)
 		return TRUE
 
 	. = ..()
 	if(.)
 		return TRUE
 
-	if(!istype(I, /obj/item/storage))
+	if(!istype(attacking_item, /obj/item/storage))
 		return
 
-	var/obj/item/storage/S = I
+	var/obj/item/storage/S = attacking_item
 
 	if(!S.storage_datum.use_to_pickup || !isturf(loc))
 		return
@@ -330,9 +343,9 @@ GLOBAL_DATUM_INIT(welding_sparks_prepdoor, /mutable_appearance, mutable_appearan
 	else if(S.storage_datum.can_be_inserted(src, user))
 		S.storage_datum.handle_item_insertion(src, FALSE, user)
 
-/obj/item/attackby_alternate(obj/item/I, mob/user, params)
-	if(istype(I, /obj/item/facepaint))
-		alternate_color_item(I, user)
+/obj/item/attackby_alternate(obj/item/attacking_item, mob/user, params)
+	if(istype(attacking_item, /obj/item/facepaint))
+		alternate_color_item(attacking_item, user)
 		return TRUE
 
 	. = ..()
@@ -372,7 +385,7 @@ GLOBAL_DATUM_INIT(welding_sparks_prepdoor, /mutable_appearance, mutable_appearan
 		return
 	user.visible_message(span_danger("Corrosive substances seethe all over [user] as it retrieves the acid-soaked [src]!"),
 	span_danger("Corrosive substances burn and seethe all over you upon retrieving the acid-soaked [src]!"))
-	playsound(user, "acid_hit", 25)
+	playsound(user, SFX_ACID_HIT, 25)
 	var/mob/living/carbon/human/H = user
 	H.emote("pain")
 	var/raw_damage = current_acid.acid_damage * 0.25 //It's spread over 4 areas.
@@ -713,7 +726,9 @@ GLOBAL_DATUM_INIT(welding_sparks_prepdoor, /mutable_appearance, mutable_appearan
 	return
 
 /obj/item/proc/update_item_sprites()
-	switch(SSmapping.configs[GROUND_MAP].armor_style)
+	//we call the config directly for pregame where mode isn't set yet
+	var/armor_style = SSticker.mode ? SSticker.mode.get_map_color_variant() : SSmapping.configs[GROUND_MAP].armor_style
+	switch(armor_style)
 		if(MAP_ARMOR_STYLE_JUNGLE)
 			if(item_map_variant_flags & ITEM_JUNGLE_VARIANT)
 				if(colorable_allowed & PRESET_COLORS_ALLOWED)
@@ -722,7 +737,7 @@ GLOBAL_DATUM_INIT(welding_sparks_prepdoor, /mutable_appearance, mutable_appearan
 					current_variant = JUNGLE_VARIANT
 				else
 					icon_state = "m_[icon_state]"
-					item_state = "m_[item_state]"
+					worn_icon_state = "m_[worn_icon_state]"
 		if(MAP_ARMOR_STYLE_ICE)
 			if(item_map_variant_flags & ITEM_ICE_VARIANT)
 				if(colorable_allowed & PRESET_COLORS_ALLOWED)
@@ -731,7 +746,7 @@ GLOBAL_DATUM_INIT(welding_sparks_prepdoor, /mutable_appearance, mutable_appearan
 					current_variant = SNOW_VARIANT
 				else
 					icon_state = "s_[icon_state]"
-					item_state = "s_[item_state]"
+					worn_icon_state = "s_[worn_icon_state]"
 		if(MAP_ARMOR_STYLE_PRISON)
 			if(item_map_variant_flags & ITEM_PRISON_VARIANT)
 				if(colorable_allowed & PRESET_COLORS_ALLOWED)
@@ -740,16 +755,13 @@ GLOBAL_DATUM_INIT(welding_sparks_prepdoor, /mutable_appearance, mutable_appearan
 					current_variant = PRISON_VARIANT
 				else
 					icon_state = "k_[icon_state]"
-					item_state = "k_[item_state]"
+					worn_icon_state = "k_[worn_icon_state]"
 		if(MAP_ARMOR_STYLE_DESERT)
 			if(item_map_variant_flags & ITEM_DESERT_VARIANT)
 				if(colorable_allowed & PRESET_COLORS_ALLOWED)
 					greyscale_colors = ARMOR_PALETTE_DESERT
 				else if(colorable_allowed & ICON_STATE_VARIANTS_ALLOWED)
 					current_variant = DESERT_VARIANT
-
-	if(SSmapping.configs[GROUND_MAP].environment_traits[MAP_COLD] && (item_map_variant_flags & ITEM_ICE_PROTECTION))
-		min_cold_protection_temperature = ICE_PLANET_MIN_COLD_PROTECTION_TEMPERATURE
 
 	if(!greyscale_colors)
 		return
@@ -1104,19 +1116,15 @@ modules/mob/living/carbon/human/life.dm if you die, you will be zoomed out.
 					if(!W.reagents)
 						break
 					W.reagents.reaction(atm)
-					if(istype(atm, /obj/flamer_fire))
-						var/obj/flamer_fire/FF = atm
-						if(FF.firelevel > 20)
-							FF.firelevel -= 20
-							FF.updateicon()
-						else
-							qdel(atm)
+					if(isfire(atm))
+						var/obj/fire/FF = atm
+						FF.set_fire(FF.burn_ticks - 20)
 						continue
 					if(isliving(atm)) //For extinguishing mobs on fire
 						var/mob/living/M = atm
 						M.ExtinguishMob()
 						for(var/obj/item/clothing/mask/cigarette/C in M.contents)
-							if(C.item_state == C.icon_on)
+							if(C.worn_icon_state == C.icon_on)
 								C.die()
 				if(W.loc == my_target)
 					break
@@ -1177,9 +1185,10 @@ modules/mob/living/carbon/human/life.dm if you die, you will be zoomed out.
 /obj/item/proc/tool_use_check(mob/living/user, amount)
 	return !amount
 
-
-// Generic use proc. Depending on the item, it uses up fuel, charges, sheets, etc.
-// Returns TRUE on success, FALSE on failure.
+/**
+ * Generic use proc. Depending on the item, it uses up fuel, charges, sheets, etc.
+ * Returns TRUE on success, FALSE on failure.
+ */
 /obj/item/proc/use(used)
 	return !used
 
@@ -1266,7 +1275,7 @@ modules/mob/living/carbon/human/life.dm if you die, you will be zoomed out.
 		return
 
 	//3: slot-specific sprite sheets
-	. = LAZYACCESS(item_icons, slot_name)
+	. = LAZYACCESS(worn_icon_list, slot_name)
 	if(.)
 		return
 
@@ -1281,14 +1290,14 @@ modules/mob/living/carbon/human/life.dm if you die, you will be zoomed out.
 /obj/item/proc/get_worn_icon_state(slot_name, inhands)
 
 	//1: slot-specific sprite sheets
-	. = LAZYACCESS(item_state_slots, slot_name)
+	. = LAZYACCESS(worn_item_state_slots, slot_name)
 	if(.)
 		return
 
-	//2: item_state variable, some items use it for worn sprite, others for inhands.
+	//2: worn_icon_state variable, some items use it for worn sprite, others for inhands.
 	if(inhands || item_state_worn)
-		if(item_state)
-			return item_state
+		if(worn_icon_state)
+			return worn_icon_state
 
 	//3: icon_state variable
 	if(icon_state)
@@ -1505,3 +1514,14 @@ modules/mob/living/carbon/human/life.dm if you die, you will be zoomed out.
 ///Returns whether this is considered beneficial if embedded in a mob
 /obj/item/proc/is_beneficial_implant()
 	return FALSE
+
+///Mult on submerge height for changing the alpha of submerged items
+#define ITEM_LIQUID_TURF_ALPHA_MULT 11
+
+/obj/item/set_submerge_level(turf/new_loc, turf/old_loc, submerge_icon, submerge_icon_state, duration)
+	var/old_alpha_mod = istype(old_loc) ? old_loc.get_submerge_height(TRUE) : 0
+	var/new_alpha_mod = istype(new_loc) ? new_loc.get_submerge_height(TRUE) : 0
+
+	alpha -= (new_alpha_mod - old_alpha_mod) * ITEM_LIQUID_TURF_ALPHA_MULT
+
+#undef ITEM_LIQUID_TURF_ALPHA_MULT

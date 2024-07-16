@@ -174,6 +174,8 @@
 	accuracy   *= rand(95 - ammo.accuracy_var_low, 105 + ammo.accuracy_var_high) * 0.01 //Rand only works with integers.
 	damage_falloff = ammo.damage_falloff
 	armor_type = ammo.armor_type
+	proj_max_range = ammo.max_range
+	projectile_speed = ammo.shell_speed
 
 //Target, firer, shot from. Ie the gun
 /obj/projectile/proc/fire_at(atom/target, mob/living/shooter, atom/source, range, speed, angle, recursivity, suppress_light = FALSE, atom/loc_override = source, scan_loc = FALSE)
@@ -196,7 +198,8 @@
 		firer = shooter
 	if(source)
 		shot_from = source
-	loc = loc_override
+	if(loc_override)
+		loc = loc_override
 	if(!isturf(loc))
 		forceMove(get_turf(src))
 	starting_turf = loc
@@ -303,7 +306,7 @@
 	if(ammo.bonus_projectiles_amount && !recursivity) //Recursivity check in case the bonus projectiles have bonus projectiles of their own. Let's not loop infinitely.
 		ammo.fire_bonus_projectiles(src, shooter, source, range, speed, dir_angle, target)
 
-	if(source.Adjacent(target) && PROJECTILE_HIT_CHECK(target, src, null, FALSE, null))
+	if(source.Adjacent(target) && PROJECTILE_HIT_CHECK(target, src, null, FALSE, hit_atoms))
 		target.do_projectile_hit(src)
 		if((!ismob(target) || !(ammo.ammo_behavior_flags & AMMO_PASS_THROUGH_MOB)) && !(ammo.ammo_behavior_flags & AMMO_PASS_THROUGH_MOVABLE))
 			qdel(src)
@@ -688,7 +691,7 @@ So if we are on the 32th absolute pixel coordinate we are on tile 1, but if we a
 	bullet_act(proj)
 
 /obj/machinery/deployable/mounted/projectile_hit(obj/projectile/proj, cardinal_move, uncrossing)
-	if(operator?.wear_id.iff_signal & proj.iff_signal)
+	if(operator?.wear_id?.iff_signal & proj.iff_signal)
 		return FALSE
 	if(src == proj.original_target)
 		return TRUE
@@ -804,8 +807,7 @@ So if we are on the 32th absolute pixel coordinate we are on tile 1, but if we a
 			var/pitch = 0
 			if(proj.ammo.ammo_behavior_flags & AMMO_SOUND_PITCH)
 				pitch = 55000
-			playsound_local(get_turf(src), proj.ammo.sound_miss, 75, 1, frequency = pitch)
-
+			playsound_local(get_turf(src), proj.ammo.sound_miss, 75, TRUE, frequency = pitch)
 	return FALSE
 
 
@@ -880,14 +882,8 @@ So if we are on the 32th absolute pixel coordinate we are on tile 1, but if we a
 		add_slowdown(SNIPER_LASER_SLOWDOWN_STACKS)
 
 	//friendly fire reduces the damage of the projectile, so only applies the multiplier if a hit is confirmed
-	if(proj.firer)
-		if(proj.firer?.faction == faction)
-			damage *= proj.friendly_fire_multiplier
-
-		if(iscarbon(proj.firer))
-			var/mob/living/carbon/shooter_carbon = proj.firer
-			if(shooter_carbon.IsStaggered())
-				damage *= STAGGER_DAMAGE_MULTIPLIER //Since we hate RNG, stagger reduces damage by a % instead of reducing accuracy; consider it a 'glancing' hit due to being disoriented.
+	if(proj.firer && proj.firer.faction == faction)
+		damage *= proj.friendly_fire_multiplier
 
 	damage = check_shields(COMBAT_PROJ_ATTACK, damage, proj.ammo.armor_type, FALSE, proj.penetration)
 	if(!damage)
@@ -955,7 +951,8 @@ So if we are on the 32th absolute pixel coordinate we are on tile 1, but if we a
 		firer = shooter
 	if(source)
 		shot_from = source
-	loc = loc_override
+	if(loc_override)
+		loc = loc_override
 	if(!isturf(loc))
 		forceMove(get_turf(src))
 	starting_turf = loc
@@ -970,6 +967,7 @@ So if we are on the 32th absolute pixel coordinate we are on tile 1, but if we a
 		dir_angle = round(Get_Pixel_Angle((ABS_COOR(target.x) - apx), (ABS_COOR(target.y) - apy))) //Using absolute pixel coordinates.
 	else
 		dir_angle = angle
+	setDir(angle2dir(dir_angle))
 
 	if(!recursivity)	//Recursivity check in case the bonus projectiles have bonus projectiles of their own. Let's not loop infinitely.
 		record_projectile_fire(shooter)
@@ -978,7 +976,7 @@ So if we are on the 32th absolute pixel coordinate we are on tile 1, but if we a
 		if(ammo.bonus_projectiles_amount)
 			ammo.fire_bonus_projectiles(src, shooter, source, range, speed, dir_angle, target)
 
-	if(source.Adjacent(target) && PROJECTILE_HIT_CHECK(target, src, null, FALSE, null))
+	if(source.Adjacent(target) && PROJECTILE_HIT_CHECK(target, src, null, FALSE, hit_atoms))
 		target.do_projectile_hit(src)
 		if((!ismob(target) || !(ammo.ammo_behavior_flags & AMMO_PASS_THROUGH_MOB)) && !(ammo.ammo_behavior_flags & AMMO_PASS_THROUGH_MOVABLE))
 			qdel(src)
@@ -1028,6 +1026,8 @@ So if we are on the 32th absolute pixel coordinate we are on tile 1, but if we a
 			laser_effects += new /atom/movable/hitscan_projectile_effect(PROJ_ABS_PIXEL_TO_TURF(apx, apy, z), dir_angle, apx % 32 - 16, apy % 32 - 16, 1.1, effect_icon, ammo.bullet_color)
 			continue //Pixel movement only, didn't manage to change turf.
 		var/movement_dir = get_dir(last_processed_turf, next_turf)
+		if(dir != movement_dir)
+			setDir(movement_dir)
 
 		if(ISDIAGONALDIR(movement_dir)) //Diagonal case. We need to check the turf to cross to get there.
 			if(!x_offset || !y_offset) //Unless a coder screws up this won't happen. Buf if they do it will cause an infinite processing loop due to division by zero, so better safe than sorry.
@@ -1371,7 +1371,7 @@ So if we are on the 32th absolute pixel coordinate we are on tile 1, but if we a
 
 			proj.fire_at(null, firer, source, range, speed, current_angle, scan_loc = TRUE)
 		if(fire_sound)
-			playsound(source, fire_sound, 60, TRUE)
+			playsound(source, fire_sound, GUN_FIRE_SOUND_VOLUME, TRUE)
 		return
 
 	angle_between_bullets = 360 / (length(bullets) / rotations)
@@ -1384,7 +1384,7 @@ So if we are on the 32th absolute pixel coordinate we are on tile 1, but if we a
 
 		proj.fire_at(null, firer, source, range, speed, current_angle, scan_loc = TRUE)
 		if(play_sound % 3 && fire_sound)
-			playsound(source, fire_sound, 60, FALSE)
+			playsound(source, fire_sound, GUN_FIRE_SOUND_VOLUME, FALSE)
 		stoplag(1)
 
 #undef BULLET_FEEDBACK_PEN

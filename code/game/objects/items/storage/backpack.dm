@@ -6,11 +6,12 @@
 	name = "backpack"
 	desc = "You wear this on your back and put items into it."
 	icon_state = "backpack"
-	item_icons = list(
+	icon = 'icons/obj/items/storage/backpack.dmi'
+	worn_icon_list = list(
 		slot_l_hand_str = 'icons/mob/inhands/equipment/backpacks_left.dmi',
 		slot_r_hand_str = 'icons/mob/inhands/equipment/backpacks_right.dmi',
 	)
-	item_state = "backpack"
+	worn_icon_state = "backpack"
 	sprite_sheets = list(
 		"Combat Robot" = 'icons/mob/species/robot/backpack.dmi',
 		"Sterling Combat Robot" = 'icons/mob/species/robot/backpack.dmi',
@@ -62,7 +63,7 @@
 	name = "Santa's Gift Bag"
 	desc = "Space Santa uses this to deliver toys to all the nice children in space in Christmas! Wow, it's pretty big!"
 	icon_state = "giftbag0"
-	item_state = "giftbag"
+	worn_icon_state = "giftbag"
 	w_class = WEIGHT_CLASS_BULKY
 	storage_type = /datum/storage/backpack/santabag
 
@@ -95,7 +96,7 @@
 	name = "industrial backpack"
 	desc = "It's a tough backpack for the daily grind of station life."
 	icon_state = "engiepack"
-	item_state = "engiepack"
+	worn_icon_state = "engiepack"
 
 /obj/item/storage/backpack/toxins
 	name = "laboratory backpack"
@@ -140,7 +141,7 @@
 	name = "mining satchel"
 	desc = "A satchel with origins dating back to the mining colonies."
 	icon_state = "som_satchel"
-	item_state = "som_satchel"
+	worn_icon_state = "som_satchel"
 
 /obj/item/storage/backpack/satchel/norm
 	name = "satchel"
@@ -234,7 +235,7 @@
 	name = "\improper lightweight IMP backpack"
 	desc = "The standard-issue pack of the TGMC forces. Designed to slug gear into the battlefield."
 	icon_state = "marinepack"
-	item_state = "marinepack"
+	worn_icon_state = "marinepack"
 
 /obj/item/storage/backpack/marine/standard
 	name = "\improper lightweight IMP backpack"
@@ -244,7 +245,7 @@
 	name = "\improper TGMC corpsman backpack"
 	desc = "The standard-issue backpack worn by TGMC corpsmen. You can recharge defibrillators by plugging them in."
 	icon_state = "marinepackm"
-	item_state = "marinepackm"
+	worn_icon_state = "marinepackm"
 	var/obj/item/cell/high/cell //Starts with a high capacity energy cell.
 	var/icon_skin
 
@@ -306,6 +307,7 @@
 			if(charge_difference) //If the defib has less than max charge, recharge it.
 				use_charge(user, charge_difference) //consume an appropriate amount of charge
 				defib.dcell.charge += min(charge_difference, cell.charge) //Recharge the defibrillator battery with the lower of the difference between its present and max cap, or the remaining charge
+				defib.update_icon()
 			else
 				to_chat(user, span_warning("This defibrillator is already at maximum charge!"))
 		else
@@ -330,14 +332,14 @@
 	name = "\improper TGMC technician backpack"
 	desc = "The standard-issue backpack worn by TGMC technicians. Specially equipped to hold sentry gun and HSG-102 emplacement parts."
 	icon_state = "marinepackt"
-	item_state = "marinepackt"
+	worn_icon_state = "marinepackt"
 	storage_type = /datum/storage/backpack/tech
 
 /obj/item/storage/backpack/marine/satchel
 	name = "\improper TGMC satchel"
 	desc = "A heavy-duty satchel carried by some TGMC soldiers and support personnel."
 	icon_state = "marinesat"
-	item_state = "marinesat"
+	worn_icon_state = "marinesat"
 	storage_type = /datum/storage/backpack/satchel
 
 /obj/item/storage/backpack/marine/satchel/green
@@ -348,7 +350,7 @@
 	name = "\improper TGMC corpsman satchel"
 	desc = "A heavy-duty satchel carried by some TGMC corpsmen. You can recharge defibrillators by plugging them in."
 	icon_state = "marinesatm"
-	item_state = "marinesatm"
+	worn_icon_state = "marinesatm"
 	storage_type = /datum/storage/backpack/satchel
 	cell = /obj/item/cell/apc
 
@@ -356,7 +358,7 @@
 	name = "\improper TGMC technician satchel"
 	desc = "A heavy-duty satchel carried by some TGMC technicians. Can hold the ST-580 point defense sentry and ammo."
 	icon_state = "marinesatt"
-	item_state = "marinesatt"
+	worn_icon_state = "marinesatt"
 	storage_type = /datum/storage/backpack/satchel/tech
 
 /obj/item/storage/backpack/marine/smock
@@ -365,31 +367,101 @@
 	icon_state = "smock"
 	storage_type = /datum/storage/backpack/no_delay
 
+/obj/item/storage/backpack/marine/duffelbag
+	name = "\improper TGMC Duffelbag"
+	desc = "A hard to reach backpack with no draw delay but is hard to access. \
+	Any squadmates can easily access the storage with right-click."
+	icon = 'icons/obj/items/storage/duffelbag.dmi'
+	icon_state = "duffel"
+	worn_icon_state = "duffel"
+	storage_type = /datum/storage/backpack/duffelbag
+
+/obj/item/storage/backpack/marine/duffelbag/equipped(mob/equipper, slot)
+	. = ..()
+	if(slot == SLOT_BACK)
+		RegisterSignal(equipper, COMSIG_CLICK_RIGHT, PROC_REF(on_rclick_duffel_wearer))
+		RegisterSignal(equipper, COMSIG_MOVABLE_MOVED, PROC_REF(on_wearer_move))
+		for(var/mob/M AS in storage_datum.content_watchers)
+			storage_datum.close(M)
+
+/obj/item/storage/backpack/marine/duffelbag/unequipped(mob/unequipper, slot)
+	. = ..()
+	UnregisterSignal(unequipper, list(COMSIG_CLICK_RIGHT, COMSIG_MOVABLE_MOVED))
+
+/obj/item/storage/backpack/marine/duffelbag/Adjacent(atom/neighbor, atom/target, atom/movable/mover)
+	if(item_flags & IN_INVENTORY && loc.Adjacent(neighbor)) //Special check to ensure that worn duffels are adjacent
+		return TRUE
+	return ..()
+
+///Allows non-wearers to access this inventory
+/obj/item/storage/backpack/marine/duffelbag/proc/on_rclick_duffel_wearer(datum/source, mob/clicker)
+	SIGNAL_HANDLER
+	if(clicker == loc || !source.Adjacent(clicker)) //Wearer can't use this to bypass restrictions
+		return
+	storage_datum.open(clicker)
+
+///Closes the duffelbag when our wearer moves if it's worn on user's back
+/obj/item/storage/backpack/marine/duffelbag/proc/on_wearer_move(datum/source)
+	SIGNAL_HANDLER
+	if(!iscarbon(source))
+		return
+	var/mob/living/carbon/carbon_user = source
+	if(carbon_user.back == src && carbon_user.s_active == storage_datum)
+		storage_datum.close(carbon_user)
+
+/datum/storage/backpack/duffelbag
+	access_delay = 0
+
+/datum/storage/backpack/duffelbag/put_storage_in_hand(datum/source, obj/over_object, mob/living/carbon/human/user)
+	//Taking off the duffelbag has a channel
+	if(user.back != parent || !do_after(user, 3 SECONDS))
+		return
+
+	switch(over_object.name)
+		if("r_hand")
+			INVOKE_ASYNC(src, PROC_REF(put_item_in_r_hand), source, user)
+		if("l_hand")
+			INVOKE_ASYNC(src, PROC_REF(put_item_in_l_hand), source, user)
+
+/datum/storage/backpack/duffelbag/open(mob/user)
+	if(!iscarbon(user))
+		return TRUE
+	var/mob/living/carbon/carbon_user = user
+	if(carbon_user.back == parent && !do_after(carbon_user, 2 SECONDS))
+		return TRUE
+	return ..()
+
+/datum/storage/backpack/duffelbag/attempt_draw_object(mob/living/carbon/user, start_from_left)
+	if(user.back == parent && user.s_active != src)
+		to_chat(user, span_notice("You can't grab anything out of [parent] while it's on your back."))
+		return
+	return ..()
+
 //CLOAKS
 
 /obj/item/storage/backpack/marine/satchel/officer_cloak
 	name = "Officer Cloak"
 	desc = "A dashing cloak as befitting an officer."
 	icon_state = "officer_cloak" //with thanks to Baystation12
-	item_state = "officer_cloak" //with thanks to Baystation12
+	worn_icon_state = "officer_cloak" //with thanks to Baystation12
 
 /obj/item/storage/backpack/marine/satchel/captain_cloak
 	name = "Captain's Cloak"
 	desc = "An opulent cloak detailed with your many accomplishments."
 	icon_state = "commander_cloak" //with thanks to Baystation12
-	item_state = "commander_cloak" //with thanks to Baystation12
+	worn_icon_state = "commander_cloak" //with thanks to Baystation12
 
 /obj/item/storage/backpack/marine/satchel/officer_cloak_red
 	name = "Officer Cloak - Red"
 	desc = "A dashing cloak as befitting an officer, with fancy red trim."
 	icon_state = "officer_cloak_red" //with thanks to Baystation12
-	item_state = "officer_cloak_red" //with thanks to Baystation12
+	worn_icon_state = "officer_cloak_red" //with thanks to Baystation12
 
 /obj/item/storage/backpack/marine/satchel/captain_cloak_red
 	name = "Captain's Cloak - Red"
 	desc = "An opulent cloak detailed with your many accomplishments, with fancy red trim."
 	icon_state = "commander_cloak_red" //with thanks to Baystation12
-	item_state = "commander_cloak_red" //with thanks to Baystation12
+	worn_icon_state = "commander_cloak_red" //with thanks to Baystation12
 
 
 // Scout Cloak
@@ -666,7 +738,7 @@
 	name = "\improper TGMC technician welderpack"
 	desc = "A specialized backpack worn by TGMC technicians. It carries a fueltank for quick welder refueling."
 	icon_state = "engineerpack"
-	item_state = "engineerpack"
+	worn_icon_state = "engineerpack"
 	var/max_fuel = 260
 	storage_type = /datum/storage/backpack/satchel
 
@@ -740,6 +812,12 @@
 	. = ..()
 	. += "[reagents.total_volume] units of fuel left!"
 
+/obj/item/storage/backpack/marine/engineerpack/som
+	name = "\improper SOM technician welderpack"
+	desc = "A specialized backpack worn by SOM technicians. It carries a fueltank for quick welder refueling."
+	icon_state = "som_engineer_pack"
+	worn_icon_state = "som_engineer_pack"
+	storage_type = /datum/storage/backpack/satchel
 
 /obj/item/storage/backpack/lightpack
 	name = "\improper lightweight combat pack"
@@ -763,7 +841,7 @@
 	name = "mining rucksack"
 	desc = "A rucksack with origins dating back to the mining colonies."
 	icon_state = "som_lightpack"
-	item_state = "som_lightpack"
+	worn_icon_state = "som_lightpack"
 
 /obj/item/storage/backpack/lightpack/icc
 	name = "\improper Modello/190"
@@ -774,3 +852,8 @@
 	name = "\improper Modello/190"
 	desc = "A small lightweight buttpack made for use in a wide variety of operations, made with a synthetic black fibre."
 	icon_state = "icc_bag_guard"
+
+/obj/item/storage/backpack/lightpack/vsd
+	name = "\improper Crasher branded combat backpack"
+	desc = "A backpack design from 21st century still proves to be a good design in the 25th century."
+	icon_state = "vsd_bag0"

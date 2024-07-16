@@ -2,10 +2,10 @@
 	name = "generic autoinjector"
 	desc = "An autoinjector containing... table salt? <i>\"For any client assistance, please contact the coderbus\" is written on the back.</i>"
 	icon_state = "autoinjector"
-	item_state = "hypo"
+	worn_icon_state = "hypo"
 	w_class = WEIGHT_CLASS_TINY
 	skilllock = 0
-	init_reagent_flags = DRAWABLE
+	reagent_flags = DRAWABLE
 	amount_per_transfer_from_this = 10
 	volume = 30
 	list_reagents = list(/datum/reagent/consumable/sodiumchloride = 30)
@@ -27,6 +27,8 @@
 		. += span_notice("It is currently loaded.")
 	else
 		. += span_notice("It is spent.")
+
+	. += span_notice("Use to inject into yourself. Unique Action to configure injection amount.")
 
 /obj/item/reagent_containers/hypospray/autoinjector/fillable
 	desc = "An autoinjector loaded with... something, consult the doctor who gave this to you."
@@ -284,6 +286,7 @@
 	list_reagents = list(
 		/datum/reagent/medicine/saline_glucose = 30,
 	)
+	description_overlay = "Is"
 
 /obj/item/reagent_containers/hypospray/autoinjector/roulettium
 	name = "roulettium autoinjector"

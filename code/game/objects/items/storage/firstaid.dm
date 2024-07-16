@@ -11,7 +11,7 @@
 	name = "first-aid kit"
 	desc = "It's an emergency medical kit for those serious boo-boos."
 	icon = 'icons/obj/items/storage/firstaid.dmi'
-	item_icons = list(
+	worn_icon_list = list(
 		slot_l_hand_str = 'icons/mob/inhands/equipment/medkits_left.dmi',
 		slot_r_hand_str = 'icons/mob/inhands/equipment/medkits_right.dmi',
 	)
@@ -56,7 +56,7 @@
 	name = "fire first-aid kit"
 	desc = "It's an emergency medical kit for when the toxins lab <i>-spontaneously-</i> burns down."
 	icon_state = "firefirstaid"
-	item_state = "firefirstaid"
+	worn_icon_state = "firefirstaid"
 
 /obj/item/storage/firstaid/fire/fill_firstaid_kit()
 	new /obj/item/healthanalyzer(src)
@@ -70,7 +70,7 @@
 
 /obj/item/storage/firstaid/regular
 	icon_state = "firstaid"
-	item_state = "firstaid"
+	worn_icon_state = "firstaid"
 
 /obj/item/storage/firstaid/regular/fill_firstaid_kit()
 	new /obj/item/healthanalyzer(src)
@@ -86,7 +86,7 @@
 	name = "toxin first aid"
 	desc = "Used to treat when you have a high amount of toxins in your body."
 	icon_state = "antitoxfirstaid"
-	item_state = "antitoxfirstaid"
+	worn_icon_state = "antitoxfirstaid"
 
 /obj/item/storage/firstaid/toxin/fill_firstaid_kit()
 	new /obj/item/healthanalyzer(src)
@@ -101,7 +101,7 @@
 	name = "oxygen deprivation first aid"
 	desc = "A box full of oxygen goodies."
 	icon_state = "o2firstaid"
-	item_state = "o2firstaid"
+	worn_icon_state = "o2firstaid"
 
 /obj/item/storage/firstaid/o2/fill_firstaid_kit()
 	new /obj/item/healthanalyzer(src)
@@ -117,7 +117,7 @@
 	name = "advanced first-aid kit"
 	desc = "Contains advanced medical treatments."
 	icon_state = "advfirstaid"
-	item_state = "advfirstaid"
+	worn_icon_state = "advfirstaid"
 
 /obj/item/storage/firstaid/adv/fill_firstaid_kit()
 	new /obj/item/healthanalyzer(src)
@@ -133,7 +133,7 @@
 	name = "radiation first-aid kit"
 	desc = "Contains treatment for radiation exposure"
 	icon_state = "purplefirstaid"
-	item_state = "purplefirstaid"
+	worn_icon_state = "purplefirstaid"
 
 /obj/item/storage/firstaid/rad/fill_firstaid_kit()
 	new /obj/item/healthanalyzer(src)
@@ -153,6 +153,7 @@
 	name = "syringe case"
 	desc = "It's a medical case for storing syringes and bottles."
 	icon_state = "syringe_case"
+	icon = 'icons/obj/items/storage/firstaid.dmi'
 	throw_speed = 2
 	throw_range = 8
 	w_class = WEIGHT_CLASS_SMALL
@@ -262,11 +263,11 @@
 	desc = "It's an airtight container for storing medication."
 	icon_state = "pill_canister"
 	icon = 'icons/obj/items/chemistry.dmi'
-	item_icons = list(
+	worn_icon_list = list(
 		slot_l_hand_str = 'icons/mob/inhands/equipment/medical_left.dmi',
 		slot_r_hand_str = 'icons/mob/inhands/equipment/medical_right.dmi',
 	)
-	item_state = "contsolid"
+	worn_icon_state = "contsolid"
 	w_class = WEIGHT_CLASS_SMALL
 	greyscale_config = /datum/greyscale_config/pillbottle
 	greyscale_colors = "#d9cd07#f2cdbb" //default colors
@@ -511,14 +512,11 @@
 	. = ..()
 	storage_datum.max_storage_space = 7
 
-/obj/item/storage/pill_bottle/attackby(obj/item/I, mob/user, params)
-	. = ..()
-	if(.)
-		return
-	if(!istype(I, /obj/item/facepaint) || isnull(greyscale_config))
-		return
+/obj/item/storage/pill_bottle/attackby(obj/item/attacking_item, mob/user, params)
+	if(!istype(attacking_item, /obj/item/facepaint) || isnull(greyscale_config))
+		return ..()
 
-	var/obj/item/facepaint/paint = I
+	var/obj/item/facepaint/paint = attacking_item
 	if(paint.uses < 1)
 		to_chat(user, span_warning("\the [paint] is out of color!"))
 		return

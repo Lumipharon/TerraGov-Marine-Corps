@@ -83,6 +83,7 @@
 			/obj/item/storage/holster/blade/machete/full = -1,
 			/obj/item/storage/holster/blade/machete/full_harvester = -1,
 			/obj/item/weapon/twohanded/spear/tactical = -1,
+			/obj/item/weapon/twohanded/spear/tactical/harvester = -1,
 			/obj/item/weapon/twohanded/glaive/harvester = -1,
 			/obj/item/weapon/powerfist = -1,
 			/obj/item/weapon/shield/riot/marine/deployable = 6,
@@ -302,6 +303,7 @@
 			/obj/item/storage/holster/blade/machete/full = -1,
 			/obj/item/storage/holster/blade/machete/full_harvester = -1,
 			/obj/item/weapon/twohanded/spear/tactical = -1,
+			/obj/item/weapon/twohanded/spear/tactical/harvester = -1,
 			/obj/item/weapon/twohanded/glaive/harvester = -1,
 			/obj/item/weapon/powerfist = -1,
 			/obj/item/weapon/shield/riot/marine/deployable = 6,
@@ -505,6 +507,7 @@
 			/obj/item/storage/holster/blade/machete/full = -1,
 			/obj/item/storage/holster/blade/machete/full_harvester = -1,
 			/obj/item/weapon/twohanded/spear/tactical = -1,
+			/obj/item/weapon/twohanded/spear/tactical/harvester = -1,
 			/obj/item/weapon/twohanded/glaive/harvester = -1,
 			/obj/item/weapon/powerfist = -1,
 			/obj/item/weapon/shield/riot/marine = -1,
@@ -561,6 +564,7 @@
 			/obj/item/ammo_magazine/flamer_tank/large = -1,
 			/obj/item/ammo_magazine/flamer_tank/backtank = -1,
 			/obj/item/jetpack_marine = -1,
+			/obj/item/bodybag/tarp = -1,
 		),
 		"Heavy Weapons" = list(
 			/obj/structure/closet/crate/mortar_ammo/mortar_kit = -1,
@@ -771,6 +775,7 @@
 			/obj/item/storage/box/visual/magazine/compact/plasma_pistol/full = -1,
 			/obj/item/storage/box/visual/magazine/compact/standard_smg/full = -1,
 			/obj/item/storage/box/visual/magazine/compact/standard_machinepistol/full = -1,
+			/obj/item/storage/box/visual/magazine/compact/standard_heavysmg/full = -1,
 			/obj/item/storage/box/visual/magazine/compact/standard_assaultrifle/full = -1,
 			/obj/item/storage/box/visual/magazine/compact/standard_carbine/full = -1,
 			/obj/item/storage/box/visual/magazine/compact/standard_skirmishrifle/full = -1,
@@ -1028,8 +1033,8 @@
 	name = "\improper Surplus Armor Equipment Vendor"
 	desc = "An automated equipment rack hooked up to a colossal storage of armor and accessories. Nanotrasen designed a new vendor that utilizes bluespace technology to send surplus equipment from outer colonies' sweatshops to your hands! Be grateful."
 	icon_state = "surplus_armor"
-	icon_vend = "surplus-vend"
-	icon_deny = "surplus_armor-deny"
+	icon_vend = "surplus_armor_vend"
+	icon_deny = "surplus_armor_deny"
 	isshared = TRUE
 	wrenchable = FALSE
 	product_ads = "You are out of uniform, marine! Where is your armor? Don't have any? You expect me to believe that, maggot?;Why wear heavy armor and unable to chase the enemy when you can go light and zoom by your peers?;Thank your armor later when you didn't die!;I remember PAS, do you remember PAS?;Time to paint the rainbow!;So many selections to choose from!"
@@ -1182,8 +1187,8 @@
 	name = "\improper Surplus Clothing Vendor"
 	desc = "An automated equipment rack hooked up to a colossal storage of clothing and accessories. Nanotrasen designed a new vendor that utilizes bluespace technology to send surplus equipment from outer colonies' sweatshops to your hands! Be grateful."
 	icon_state = "surplus_clothes"
-	icon_vend = "surplus-vend"
-	icon_deny = "surplus_clothes-deny"
+	icon_vend = "surplus_clothes_vend"
+	icon_deny = "surplus_clothes_deny"
 	wrenchable = FALSE
 	isshared = TRUE
 	product_ads = "Be the musician that you parents never approve you of.;You gotta look good when you're in the battlefield.;We have all types of hats here!;What did one hat say to the other on the hiking trip? I'll wait here, you go on ahead;Sometimes, a beret is better than a helmet.;Drip is the priority, marine."
@@ -1201,7 +1206,7 @@
 			/obj/item/clothing/under/marine/striped = -1,
 			/obj/item/clothing/under/marine/jaeger = -1,
 			/obj/item/clothing/under/marine/squad/neck/delta = -1,
-			/obj/item/clothing/under/marine/squad/neck/charile = -1,
+			/obj/item/clothing/under/marine/squad/neck/charlie = -1,
 			/obj/item/clothing/under/marine/squad/neck/bravo = -1,
 			/obj/item/clothing/under/marine/squad/neck/alpha = -1,
 			/obj/item/clothing/gloves/marine = -1,
@@ -1298,6 +1303,7 @@
 			/obj/item/storage/backpack/marine/standard = -1,
 			/obj/item/storage/backpack/marine/satchel = -1,
 			/obj/item/tool/weldpack/marinestandard = -1,
+			/obj/item/storage/backpack/marine/duffelbag = -1,
 		),
 		"Instruments" = list(
 			/obj/item/instrument/violin = -1,
@@ -1436,6 +1442,7 @@
 			/obj/item/ammo_magazine/rocket/sadar/wp/unguided = -1,
 			/obj/item/weapon/gun/shotgun/zx76 = -1,
 			/obj/item/ammo_magazine/shotgun/incendiary = -1,
+			/obj/item/ammo_magazine/shotgun/beanbag = -1,
 			/obj/item/weapon/gun/minigun/valhalla = -1,
 			/obj/item/ammo_magazine/minigun_powerpack = -1,
 			/obj/item/weapon/gun/launcher/rocket/oneuse = -1,
@@ -1546,9 +1553,30 @@
 			/obj/item/implanter/blade = -1,
 		),
 		"Assault Vehicle" = list(
+			/obj/item/armored_weapon = -1,
+			/obj/item/armored_weapon/ltaap = -1,
+			/obj/item/armored_weapon/secondary_weapon = -1,
+			/obj/item/armored_weapon/secondary_flamer = -1,
 			/obj/item/ammo_magazine/tank/ltb_cannon = -1,
+			/obj/item/ammo_magazine/tank/ltb_cannon/apfds = -1,
+			/obj/item/ammo_magazine/tank/ltb_cannon/canister = -1,
 			/obj/item/ammo_magazine/tank/ltaap_chaingun = -1,
 			/obj/item/ammo_magazine/tank/secondary_cupola = -1,
+			/obj/item/ammo_magazine/tank/secondary_flamer_tank = -1,
+			/obj/item/tank_module/overdrive = -1,
+			/obj/item/tank_module/ability/zoom = -1,
+			/obj/item/tank_module/ability/smoke_launcher = -1,
+			/obj/item/tank_module/interior/medical = -1,
+		),
+		"SOM Assault Vehicle" = list(
+			/obj/item/armored_weapon/volkite_carronade = -1,
+			/obj/item/armored_weapon/particle_lance = -1,
+			/obj/item/armored_weapon/coilgun = -1,
+			/obj/item/armored_weapon/secondary_mlrs = -1,
+			/obj/item/ammo_magazine/tank/volkite_carronade = -1,
+			/obj/item/ammo_magazine/tank/particle_lance = -1,
+			/obj/item/ammo_magazine/tank/coilgun = -1,
+			/obj/item/ammo_magazine/tank/secondary_mlrs = -1,
 		),
 	)
 
@@ -1691,6 +1719,23 @@
 			/obj/item/ammo_magazine/smg/m25/ap = -1,
 			/obj/item/weapon/gun/rifle/m412/elite = -1,
 			/obj/item/ammo_magazine/rifle/ap = -1,
+		),
+		"Syndicate" = list(
+			/obj/item/weapon/gun/rifle/vsd_rifle = -1,
+			/obj/item/ammo_magazine/rifle/vsd_rifle = -1,
+			/obj/item/weapon/gun/rifle/vsd_lmg = -1,
+			/obj/item/ammo_magazine/rifle/vsd_mg = -1,
+			/obj/item/weapon/gun/shotgun/pump/ksg = -1,
+			/obj/item/weapon/gun/smg/vsd_pdw = -1,
+			/obj/item/ammo_magazine/smg/vsd_pdw = -1,
+			/obj/item/weapon/gun/pistol/vsd_pistol = -1,
+			/obj/item/ammo_magazine/pistol/vsd_pistol = -1,
+			/obj/item/weapon/gun/pistol/xmdivider = -1,
+			/obj/item/ammo_magazine/pistol/xmdivider = -1,
+			/obj/item/weapon/gun/launcher/rocket/vsd = -1,
+			/obj/item/ammo_magazine/rocket/vsd/he = -1,
+			/obj/item/ammo_magazine/rocket/vsd/incendiary = -1,
+			/obj/item/ammo_magazine/rocket/vsd/chemical = -1,
 		),
 		"Misc" = list(
 			/obj/item/weapon/gun/shotgun/double = -1,

@@ -1,6 +1,5 @@
 /obj/item/whistle
 	name = "\improper whistle"
-	icon = 'icons/Marine/marine-navigation.dmi'
 	desc = "A metal pea-whistle. Can be blown while held, or worn in the mouth"
 	icon_state = "whistle"
 	w_class = WEIGHT_CLASS_TINY
@@ -15,7 +14,6 @@
 	. = ..()
 	whistle_playsound(user)
 
-
 /obj/item/whistle/attackby(obj/item/I, mob/user, params)
 	. = ..()
 	if(.)
@@ -24,14 +22,12 @@
 	if(user.wear_mask == src)
 		whistle_playsound(user)
 
-
 /obj/item/whistle/attack_hand(mob/living/user)
 	. = ..()
 	if(.)
 		return
 	if(user.wear_mask == src)
 		whistle_playsound(user)
-
 
 /obj/item/whistle/proc/whistle_playsound(mob/user as mob)
 	if(TIMER_COOLDOWN_CHECK(user, COOLDOWN_WHISTLE_BLOW))
@@ -51,17 +47,15 @@
 
 	TIMER_COOLDOWN_START(user, COOLDOWN_WHISTLE_BLOW, 3 SECONDS)
 
-
 /obj/item/hailer
 	name = "hailer"
 	desc = "Used by obese officers to save their breath for running."
 	icon = 'icons/obj/assemblies/new_assemblies.dmi'
 	icon_state = "voice"
-	item_state = "flashbang"	//looks exactly like a flash (and nothing like a flashbang)
+	worn_icon_state = "flashbang"	//looks exactly like a flash (and nothing like a flashbang)
 	w_class = WEIGHT_CLASS_TINY
 	atom_flags = CONDUCT
 	var/spamcheck = FALSE
-
 
 /obj/item/hailer/attack_self(mob/user)
 	if(spamcheck)

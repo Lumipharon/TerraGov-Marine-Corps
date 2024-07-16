@@ -5,12 +5,12 @@
 	name = "drink"
 	desc = "yummy"
 	icon = 'icons/obj/items/drinks.dmi'
-	item_icons = list(
+	worn_icon_list = list(
 		slot_l_hand_str = 'icons/mob/inhands/items/drinks_left.dmi',
 		slot_r_hand_str = 'icons/mob/inhands/items/drinks_right.dmi',
 	)
 	icon_state = null
-	init_reagent_flags = OPENCONTAINER_NOUNIT
+	reagent_flags = OPENCONTAINER_NOUNIT
 	var/gulp_size = 5 //This is now officially broken ... need to think of a nice way to fix it.
 	possible_transfer_amounts = list(5,10,15,20,30,60)
 	volume = 50
@@ -106,7 +106,7 @@
 	desc = "You're winner!"
 	name = "golden cup"
 	icon_state = "golden_cup"
-	item_state = "" //nope :(
+	worn_icon_state = "" //nope :(
 	w_class = WEIGHT_CLASS_BULKY
 	force = 14
 	throwforce = 10
@@ -128,52 +128,52 @@
 	name = "Space Milk"
 	desc = "It's milk. White and nutritious goodness!"
 	icon_state = "milk"
-	item_state = "carton"
+	worn_icon_state = "carton"
 	center_of_mass = list("x"=16, "y"=9)
-	list_reagents = list(/datum/reagent/consumable/drink/milk = 50)
+	list_reagents = list(/datum/reagent/consumable/milk = 50)
 
 /obj/item/reagent_containers/food/drinks/soymilk
 	name = "soy milk"
 	desc = "It's soy milk. White and nutritious goodness!"
 	icon_state = "soymilk"
-	item_state = "carton"
+	worn_icon_state = "carton"
 	center_of_mass = list("x"=16, "y"=9)
-	list_reagents = list(/datum/reagent/consumable/drink/milk/soymilk = 50)
+	list_reagents = list(/datum/reagent/consumable/soymilk = 50)
 
 /obj/item/reagent_containers/food/drinks/coffee
 	name = "\improper Coffee"
 	desc = "Careful, the beverage you're about to enjoy is extremely hot."
 	icon_state = "coffee"
 	center_of_mass = list("x"=15, "y"=10)
-	list_reagents = list(/datum/reagent/consumable/drink/coffee = 30)
+	list_reagents = list(/datum/reagent/consumable/coffee = 30)
 
 /obj/item/reagent_containers/food/drinks/coffee/cafe_latte
 	name = "\improper Cafe Latte"
 	desc = "The beverage you're about to enjoy is hot."
-	list_reagents = list(/datum/reagent/consumable/drink/coffee/cafe_latte = 30)
+	list_reagents = list(/datum/reagent/consumable/coffee/cafe_latte = 30)
 
 /obj/item/reagent_containers/food/drinks/tea
 	name = "\improper Duke Purple Tea"
 	desc = "An insult to Duke Purple is an insult to the Space Queen! Any proper gentleman will fight you, if you sully this tea."
 	icon_state = "teacup"
-	item_state = "coffee"
+	worn_icon_state = "coffee"
 	center_of_mass = list("x"=16, "y"=14)
-	list_reagents = list(/datum/reagent/consumable/drink/tea = 30)
+	list_reagents = list(/datum/reagent/consumable/tea = 30)
 
 /obj/item/reagent_containers/food/drinks/ice
 	name = "ice cup"
 	desc = "Careful, cold ice, do not chew."
 	icon_state = "coffee"
 	center_of_mass = list("x"=15, "y"=10)
-	list_reagents = list(/datum/reagent/consumable/drink/cold/ice = 30)
+	list_reagents = list(/datum/reagent/consumable/ice = 30)
 
 /obj/item/reagent_containers/food/drinks/h_chocolate
 	name = "\improper Dutch hot coco"
 	desc = "Made in Space South America."
 	icon_state = "hot_coco"
-	item_state = "coffee"
+	worn_icon_state = "coffee"
 	center_of_mass = list("x"=15, "y"=13)
-	list_reagents = list(/datum/reagent/consumable/drink/hot_coco = 30)
+	list_reagents = list(/datum/reagent/consumable/hot_coco = 30)
 
 /obj/item/reagent_containers/food/drinks/dry_ramen
 	name = "cup ramen"
@@ -196,6 +196,16 @@
 	else
 		icon_state = "water_cup_e"
 
+/obj/item/reagent_containers/food/drinks/coconutmilk
+	name = "coconut drink"
+	desc = "It's an opened coconut with a straw stuck inside. Tasty and nutritious goodness!"
+	icon_state = "coconut_drink_2"
+	center_of_mass = list("x"=16, "y"=9)
+	list_reagents = list(/datum/reagent/consumable/milk = 50)
+
+/obj/item/reagent_containers/food/drinks/coconutmilk/green
+	desc = "It's an opened coconut with a straw stuck inside. This one even has an umbrella, fancy."
+	icon_state = "coconut_drink_1"
 
 //////////////////////////drinkingglass and shaker//
 //Note by Darem: This code handles the mixing of drinks. New drinks go in three places: In Chemistry-Reagents.dm (for the drink
@@ -250,4 +260,4 @@
 	icon_state = "britcup"
 	volume = 30
 	center_of_mass = list("x"=15, "y"=13)
-	list_reagents = list(/datum/reagent/consumable/drink/tea = 30)
+	list_reagents = list(/datum/reagent/consumable/tea = 30)

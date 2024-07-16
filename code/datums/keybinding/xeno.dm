@@ -252,6 +252,13 @@
 	keybind_signal = COMSIG_XENOABILITY_BOMBARD
 	hotkey_keys = list("R")
 
+/datum/keybinding/xeno/acid_shroud
+	name = "acid_shroud"
+	full_name = "Boiler: Acid Shroud"
+	description = "Create a smokescreen for a getaway."
+	keybind_signal = COMSIG_XENOABILITY_ACID_SHROUD
+	hotkey_keys = list("Q")
+
 /datum/keybinding/xeno/plow_charge
 	name = "plow_charge"
 	full_name = "Bull: Plow Charge"
@@ -1115,6 +1122,12 @@
 	description = "Rush forward in the selected direction, damaging enemies caught in a wide path."
 	keybind_signal = COMSIG_XENOABILITY_LANDSLIDE
 
+/datum/keybinding/xeno/cancel_landslide
+	name = "Cancel Landslide"
+	full_name = "Behemoth: Cancel Landslide"
+	description = "Cancels landslide without having to select the ability"
+	keybind_signal = COMSIG_XENOABILITY_CANCEL_LANDSLIDE
+
 /datum/keybinding/xeno/earth_riser
 	name = "Earth Riser"
 	full_name = "Behemoth: Earth Riser"
@@ -1138,3 +1151,27 @@
 	full_name = "Behemoth: Primal Wrath"
 	description = "Unleash your wrath. Enhances your abilities, changing their functionality and allowing them to apply a damage over time debuff."
 	keybind_signal = COMSIG_XENOABILITY_PRIMAL_WRATH
+
+/datum/keybinding/xeno/firecharge
+	name = "Fire Charge"
+	full_name = "Pyrogen: Fire Charge"
+	description = "Charge forward and attack a marine, extinguishing them if they're on fire, but dealing extra burn damage depending on how many firestacks they have."
+	keybind_signal = COMSIG_XENOABILITY_FIRECHARGE
+
+/datum/keybinding/xeno/firenado
+	name = "Fire Storm"
+	full_name = "Pyrogen: Fire Storm"
+	description = "Unleash 3 firenados that will slowly move towards your targeted turf."
+	keybind_signal = COMSIG_XENOABILITY_FIRENADO
+
+/datum/keybinding/xeno/fireball
+	name = "Fireball"
+	full_name = "Pyrogen: Fireball"
+	description = "Unleash a fireball after a small windup."
+	keybind_signal = COMSIG_XENOABILITY_FIREBALL
+
+/datum/keybinding/xeno/heatray
+	name = "Heatray"
+	full_name = "Pyrogen: Heatray"
+	description = "After a windup, unleash a heat ray that will cook any marine it comes across."
+	keybind_signal = COMSIG_XENOABILITY_HEATRAY

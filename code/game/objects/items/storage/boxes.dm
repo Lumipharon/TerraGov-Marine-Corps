@@ -43,7 +43,8 @@
 	name = "box"
 	desc = "It's just an ordinary box."
 	icon_state = "box"
-	item_state = "syringe_kit"
+	icon = 'icons/obj/items/storage/box.dmi'
+	worn_icon_state = "syringe_kit"
 	w_class = WEIGHT_CLASS_BULKY //Changed becuase of in-game abuse
 	var/obj/item/spawn_type
 	var/spawn_number
@@ -115,7 +116,7 @@
 	name = "box of emp grenades"
 	desc = "A box with 5 emp grenades."
 	icon_state = "flashbang"
-	spawn_type = /obj/item/explosive/grenade/empgrenade
+	spawn_type = /obj/item/explosive/grenade/emp
 	spawn_number = 5
 
 /obj/item/storage/box/rxglasses
@@ -129,7 +130,7 @@
 /obj/item/storage/box/drinkingglasses
 	name = "box of drinking glasses"
 	desc = "It has a picture of drinking glasses on it."
-	spawn_type = /obj/item/reagent_containers/food/drinks/drinkingglass
+	spawn_type = /obj/item/reagent_containers/cup/glass/drinkingglass
 	spawn_number = 6
 
 /obj/item/storage/box/condimentbottles
@@ -233,7 +234,7 @@
 	desc = "A small box of 'Space-Proof' premium matches."
 	icon = 'icons/obj/items/cigarettes.dmi'
 	icon_state = "matchbox"
-	item_state = "zippo"
+	worn_icon_state = "zippo"
 	w_class = WEIGHT_CLASS_TINY
 	equip_slot_flags = ITEM_SLOT_BELT
 	spawn_type = /obj/item/tool/match
@@ -271,10 +272,9 @@
 
 /obj/item/storage/box/lights
 	name = "box of replacement bulbs"
-	icon = 'icons/obj/items/storage/storage.dmi'
 	icon_state = "light"
 	desc = "This box is shaped on the inside so that only light tubes and bulbs fit."
-	item_state = "syringe_kit"
+	worn_icon_state = "syringe_kit"
 	spawn_type = /obj/item/light_bulb/bulb
 	spawn_number = 21
 	storage_type = /datum/storage/box/lights
@@ -466,7 +466,7 @@
 	desc = "This box is able to hold a wide variety of supplies."
 	icon = 'icons/obj/items/storage/storage_boxes.dmi'
 	icon_state = "mag_box"
-	item_state = "mag_box"
+	worn_icon_state = "mag_box"
 	w_class = WEIGHT_CLASS_HUGE
 	slowdown = 0.4 // Big unhandly box
 	///Assoc list of how much weight every item type takes. Used to determine how many overlays to make.
@@ -814,6 +814,21 @@
 /obj/item/storage/box/visual/magazine/compact/pepperball/full
 	spawn_number = 30
 	spawn_type = /obj/item/ammo_magazine/rifle/pepperball
+
+
+/obj/item/storage/box/visual/magazine/compact/standard_heavysmg
+	name = "SMG-45 magazine box"
+	desc = "A box specifically designed to hold a large amount of SMG-45 magazines."
+
+/obj/item/storage/box/visual/magazine/compact/standard_heavysmg/Initialize(mapload, ...)
+	. = ..()
+	storage_datum.set_holdable(can_hold_list = list(
+		/obj/item/ammo_magazine/smg/standard_heavysmg,
+	))
+
+/obj/item/storage/box/visual/magazine/compact/standard_heavysmg/full
+	spawn_number = 40
+	spawn_type = /obj/item/ammo_magazine/smg/standard_heavysmg
 
 // -Rifle-
 

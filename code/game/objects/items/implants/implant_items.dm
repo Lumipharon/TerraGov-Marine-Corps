@@ -42,7 +42,7 @@
 /obj/item/implant/deployitem/blade
 	name = "mantis blade implant"
 	desc = "A large folding blade capable of being stored within an arm."
-	icon = 'icons/obj/items/weapons.dmi'
+	icon = 'icons/obj/items/weapons/swords.dmi'
 	icon_state = "armblade"
 	helditem = /obj/item/weapon/sword/mantis_blade
 	action_type = /datum/action/item_action/implant/mantis_blade
@@ -73,7 +73,7 @@
 	name = "mantis arm blade"
 	desc = "A wicked-looking folding blade capable of being concealed within a human's arm."
 	icon_state = "armblade"
-	item_state = "armblade"
+	worn_icon_state = "armblade"
 	force = 75
 	attack_speed = 8
 	equip_slot_flags = NONE

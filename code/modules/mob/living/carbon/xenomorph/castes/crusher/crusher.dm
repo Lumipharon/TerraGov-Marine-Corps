@@ -1,5 +1,5 @@
 /mob/living/carbon/xenomorph/crusher
-	caste_base_type = /mob/living/carbon/xenomorph/crusher
+	caste_base_type = /datum/xeno_caste/crusher
 	name = "Crusher"
 	desc = "A huge alien with an enormous armored head crest."
 	icon = 'icons/Xeno/castes/crusher.dmi'
@@ -13,12 +13,8 @@
 	drag_delay = 6 //pulling a big dead xeno is hard
 	mob_size = MOB_SIZE_BIG
 	buckle_flags = CAN_BUCKLE
-
 	pixel_x = -16
 	pixel_y = -3
-	old_x = -16
-	old_y = -3
-
 
 /mob/living/carbon/xenomorph/crusher/handle_special_state()
 	if(is_charging >= CHARGE_ON)

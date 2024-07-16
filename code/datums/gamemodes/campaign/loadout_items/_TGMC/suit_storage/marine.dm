@@ -50,7 +50,7 @@
 	desc = "Equipped with a red dot sight, bayonet and miniflamer. The Terra Experimental laser rifle, is a powerful and flexible weapon thanks to a variety of firemodes. \
 	Has good mobility and excellent falloff, although lacks the power offered by weapons with an underbarrel grenade launcher.\
 	Uses TE power cells that are shared across all TGMC laser weaponry."
-	ui_icon = "lasergun"
+	ui_icon = "ter"
 	item_typepath = /obj/item/weapon/gun/energy/lasgun/lasrifle/standard_marine_rifle/rifleman
 
 /datum/loadout_item/suit_store/main_gun/marine/laser_rifle/post_equip(mob/living/carbon/human/wearer, datum/outfit/quick/loadout)
@@ -144,7 +144,7 @@
 	name = "BR-64"
 	desc = "Equipped with red dot sight, extended barrel and underbarrel grenade launcher. \
 	The BR-64 is considered a 'light' marksmen rifle, with good stopping power it can apply effective damage at any range, while still having respectible handling and mobility. Uses 10x26.5smm caseless ammunition."
-	ui_icon = "ballistic"
+	ui_icon = "t64"
 	item_typepath = /obj/item/weapon/gun/rifle/standard_br/standard
 
 /datum/loadout_item/suit_store/main_gun/marine/battle_rifle/post_equip(mob/living/carbon/human/wearer, datum/outfit/quick/loadout)
@@ -168,7 +168,7 @@
 	desc = "Equipped with red dot sight, extended barrel and underbarrel grenade launcher. \
 	The AR-21 is an less common rifle in the TGMC, attempting to bridge the gap between lighter, lower calibre rifles and heavier rifles like the BR-64. \
 	Its compromises between the two groups means it fails to particularly outshine any of them, but never the less is a respective and flexible rifle."
-	ui_icon = "ballistic"
+	ui_icon = "t21"
 	item_typepath = /obj/item/weapon/gun/rifle/standard_skirmishrifle/standard
 
 /datum/loadout_item/suit_store/main_gun/marine/skirmish_rifle/post_equip(mob/living/carbon/human/wearer, datum/outfit/quick/loadout)
@@ -303,7 +303,7 @@
 	desc = "Equipped with a mag harness, bayonet and underbarrel grenade launcher. The Terra Experimental machine laser gun is a more flexible weapon than its ballistic counterparts. \
 	It has better mobility and handling than ballistic machineguns, which combined with its variable firemodes and underbarrel weaponry makes it effective in a variety of situations, \
 	but still ultimately excels at apply sustained supporting fire. Uses TE power cells that are shared across all TGMC laser weaponry."
-	ui_icon = "lasergun"
+	ui_icon = "tem"
 	item_typepath = /obj/item/weapon/gun/energy/lasgun/lasrifle/standard_marine_mlaser/patrol
 
 /datum/loadout_item/suit_store/main_gun/marine/laser_mg/post_equip(mob/living/carbon/human/wearer, datum/outfit/quick/loadout)
@@ -441,7 +441,7 @@
 	desc = "Equipped with a red dot sight and underbarrel grenade launcher. The TerraGov laser carbine is the high tech equivilent to the AR-18, with extremely good mobility and handling, and powerful medium range damage. \
 	Variable firemodes gives it additional flexibility over its ballistic counterpart. Uses TE power cells that are shared across all TGMC laser weaponry."
 	req_desc = "Requires a light armour suit."
-	ui_icon = "lasergun"
+	ui_icon = "tec"
 	item_typepath = /obj/item/weapon/gun/energy/lasgun/lasrifle/standard_marine_carbine/scout
 
 /datum/loadout_item/suit_store/main_gun/marine/laser_carbine/post_equip(mob/living/carbon/human/wearer, datum/outfit/quick/loadout)
@@ -599,7 +599,7 @@
 	It has great mobility and handling, excellent accuracy and perfect damage application at range. Combined with innate IFF and a variety of high powered ammo types, the BR-8 is a weapon to be feared.  \
 	Takes specialized overpressured 10x28mm rounds."
 	req_desc = "Requires a light armour suit."
-	ui_icon = "scout"
+	ui_icon = "tx8"
 	item_typepath = /obj/item/weapon/gun/rifle/tx8/scout
 	item_whitelist = list(
 		/obj/item/clothing/suit/modular/xenonauten/light/shield = ITEM_SLOT_OCLOTHING,
@@ -675,12 +675,49 @@
 	wearer.equip_to_slot_or_del(new /obj/item/tool/extinguisher/mini, SLOT_IN_ACCESSORY)
 	return ..()
 
+/datum/loadout_item/suit_store/machete_shield
+	name = "Machete & shield"
+	desc = "A large leather scabbard carrying a M2132 machete. It can be strapped to the back, waist or armor. Extremely dangerous against human opponents - if you can get close enough. \
+	The defensive shield provides incredible resilience, allowing the user to soak up tremendous amounts of damage while they or their team mates push the enemy."
+	ui_icon = "machete"
+	item_typepath = /obj/item/storage/holster/blade/machete/full_alt
+	jobs_supported = list(SQUAD_MARINE)
+	loadout_item_flags = NONE
+
+/datum/loadout_item/suit_store/machete_shield/post_equip(mob/living/carbon/human/wearer, datum/outfit/quick/loadout)
+	. = ..()
+	wearer.equip_to_slot_or_del(new /obj/item/weapon/shield/riot/marine, SLOT_L_HAND)
+
+	wearer.equip_to_slot_or_del(new /obj/item/explosive/grenade, SLOT_IN_ACCESSORY)
+	wearer.equip_to_slot_or_del(new /obj/item/explosive/grenade, SLOT_IN_ACCESSORY)
+	wearer.equip_to_slot_or_del(new /obj/item/tool/extinguisher/mini, SLOT_IN_ACCESSORY)
+	wearer.equip_to_slot_or_del(new /obj/item/storage/box/MRE, SLOT_IN_ACCESSORY)
+	wearer.equip_to_slot_or_del(new /obj/item/explosive/grenade/smokebomb, SLOT_IN_ACCESSORY)
+
+	if(!isstorageobj(wearer.back))
+		return ..()
+	wearer.equip_to_slot_or_del(new /obj/item/explosive/grenade, SLOT_IN_BACKPACK)
+	wearer.equip_to_slot_or_del(new /obj/item/reagent_containers/hypospray/autoinjector/combat_advanced, SLOT_IN_BACKPACK)
+	wearer.equip_to_slot_or_del(new /obj/item/reagent_containers/hypospray/autoinjector/synaptizine, SLOT_IN_BACKPACK)
+	wearer.equip_to_slot_or_del(new /obj/item/explosive/plastique, SLOT_IN_BACKPACK)
+	wearer.equip_to_slot_or_del(new /obj/item/explosive/plastique, SLOT_IN_BACKPACK)
+	wearer.equip_to_slot_or_del(new /obj/item/ammo_magazine/pistol/standard_heavypistol, SLOT_IN_BACKPACK)
+	wearer.equip_to_slot_or_del(new /obj/item/ammo_magazine/pistol/standard_heavypistol, SLOT_IN_BACKPACK)
+	wearer.equip_to_slot_or_del(new /obj/item/ammo_magazine/pistol/standard_heavypistol, SLOT_IN_BACKPACK)
+	wearer.equip_to_slot_or_del(new /obj/item/weapon/gun/pistol/standard_heavypistol/tactical(wearer), SLOT_IN_BACKPACK)
+	if(!istype(wearer.back, /obj/item/storage/backpack/marine/satchel))
+		wearer.equip_to_slot_or_del(new /obj/item/reagent_containers/hypospray/autoinjector/combat_advanced, SLOT_IN_BACKPACK)
+		wearer.equip_to_slot_or_del(new /obj/item/explosive/grenade, SLOT_IN_BACKPACK)
+		wearer.equip_to_slot_or_del(new /obj/item/explosive/grenade/flashbang/stun, SLOT_IN_BACKPACK)
+		wearer.equip_to_slot_or_del(new /obj/item/explosive/grenade/flashbang/stun, SLOT_IN_BACKPACK)
+		wearer.equip_to_slot_or_del(new /obj/item/explosive/grenade/smokebomb, SLOT_IN_BACKPACK)
+
 /datum/loadout_item/suit_store/main_gun/marine/mag_gl
 	name = "GL-54"
 	desc = "Equipped with a motion sensor. The GL-54 is a magazine fed, semi-automatic grenade launcher designed to shoot airbursting smart grenades. \
 	A powerful support weapon, but unwieldy at close range where it can be easily overwhelmed. \
 	Comes with a variety of 20mm grenade types."
-	ui_icon = "ballistic"
+	ui_icon = "tx54"
 	purchase_cost = 75
 	quantity = 2
 	item_typepath = /obj/item/weapon/gun/rifle/tx54/motion_sensor

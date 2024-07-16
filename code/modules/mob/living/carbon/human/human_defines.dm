@@ -140,11 +140,16 @@
 	var/datum/squad/assigned_squad
 	///Used to help determine the severity icon state for our damage hud overlays
 	var/damageoverlaytemp = 0
+	///chestburst state
+	var/chestburst = CARBON_NO_CHEST_BURST
 	///The cooldown for being pushed by xenos on harm intent
 	COOLDOWN_DECLARE(xeno_push_delay)
 
 	/// This is the cooldown on suffering additional effects for when shock gets high
 	COOLDOWN_DECLARE(last_shock_effect)
+
+	/// Height of the mob
+	VAR_PROTECTED/mob_height = HUMAN_HEIGHT_MEDIUM
 
 ///copies over clothing preferences like underwear to another human
 /mob/living/carbon/human/proc/copy_clothing_prefs(mob/living/carbon/human/destination)

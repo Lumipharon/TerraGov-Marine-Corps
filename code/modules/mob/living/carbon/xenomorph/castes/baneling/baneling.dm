@@ -1,5 +1,5 @@
 /mob/living/carbon/xenomorph/baneling
-	caste_base_type = /mob/living/carbon/xenomorph/baneling
+	caste_base_type = /datum/xeno_caste/baneling
 	name = "Baneling"
 	desc = "An oozy, squishy alien that can roll in agile speeds, storing various dangerous chemicals in its sac..."
 	icon = 'icons/Xeno/castes/baneling.dmi'
@@ -11,7 +11,6 @@
 	tier = XENO_TIER_MINION
 	upgrade = XENO_UPGRADE_BASETYPE
 	pixel_x = -16
-	old_x = -16
 
 /mob/living/carbon/xenomorph/baneling/UnarmedAttack(atom/A, has_proximity, modifiers)
 	/// We dont wanna be able to slash while balling

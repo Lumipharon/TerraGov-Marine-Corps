@@ -41,9 +41,21 @@
 
 //tactical reloads
 /obj/item/weapon/gun/afterattack(atom/target, mob/user, has_proximity, click_parameters)
-	if(istype(target, /obj/item/ammo_magazine) || istype(target, /obj/item/cell))
+	. = ..()
+	if(!has_proximity)
+		return
+
+	if(isammomagazine(target))
+		var/obj/item/ammo_magazine/mag_to_reload = target
+		if(mag_to_reload.magazine_flags & MAGAZINE_WORN)
+			return
 		tactical_reload(target, user)
-	return ..()
+
+	if(islascell(target))
+		var/obj/item/cell/lasgun/cell_to_reload = target
+		if(cell_to_reload.magazine_features_flags & MAGAZINE_WORN)
+			return
+		tactical_reload(target, user)
 
 /obj/item/weapon/gun/mob_can_equip(mob/user, slot, warning = TRUE, override_nodrop = FALSE, bitslot = FALSE)
 	//Cannot equip wielded items or items burst firing.
@@ -207,7 +219,8 @@ As sniper rifles have both and weapon mods can change them as well. ..() deals w
 		return target
 	if(!istype(target, /atom/movable/screen/click_catcher))
 		return null
-	return params2turf(modifiers["screen-loc"], get_turf(user), user.client)
+	var/loctoget = user.client?.eye ? user.client.eye : user
+	return params2turf(modifiers["screen-loc"], get_turf(loctoget), user.client)
 
 //----------------------------------------------------------
 					//				   \\
@@ -644,7 +657,7 @@ As sniper rifles have both and weapon mods can change them as well. ..() deals w
 		REMOVE_TRAIT(src, TRAIT_GUN_AUTO_AIM_MODE, GUN_TRAIT)
 
 /obj/item/weapon/gun/proc/toggle_aim_mode(mob/living/carbon/human/user)
-	var/static/image/aim_mode_visual = image('icons/mob/hud.dmi', null, "aim_mode")
+	var/static/image/aim_mode_visual = image('icons/mob/hud/human.dmi', null, "aim_mode")
 
 	if(HAS_TRAIT(src, TRAIT_GUN_IS_AIMING))
 		user.overlays -= aim_mode_visual

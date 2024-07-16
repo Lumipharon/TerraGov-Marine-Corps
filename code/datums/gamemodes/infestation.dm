@@ -25,7 +25,7 @@
 	for(var/turf/T AS in GLOB.xeno_resin_wall_turfs)
 		T.ChangeTurf(/turf/closed/wall/resin/regenerating, T.type)
 	for(var/i in GLOB.xeno_resin_door_turfs)
-		new /obj/structure/mineral_door/resin(i)
+		new /obj/structure/door/resin(i)
 	for(var/i in GLOB.xeno_tunnel_spawn_turfs)
 		var/obj/structure/xeno/tunnel/new_tunnel = new /obj/structure/xeno/tunnel(i, XENO_HIVE_NORMAL)
 		new_tunnel.name = "[get_area_name(new_tunnel)] tunnel"
@@ -102,7 +102,7 @@
 	var/numHostsTransitr = BIOSCAN_DELTA(numHostsTransit, delta)
 	var/numXenosTransitr = BIOSCAN_DELTA(numXenosTransit, delta)
 
-	var/sound/S = sound(get_sfx("queen"), channel = CHANNEL_ANNOUNCEMENTS, volume = 50)
+	var/sound/S = sound(get_sfx(SFX_QUEEN), channel = CHANNEL_ANNOUNCEMENTS, volume = 50)
 	if(announce_xenos)
 		for(var/i in GLOB.alive_xeno_list_hive[XENO_HIVE_NORMAL])
 			var/mob/M = i
@@ -153,8 +153,7 @@
 [numHostsPlanet] human\s on the planet.
 [numHostsShip] human\s on the ship.
 [numHostsTransit] human\s in transit."},
-			color_override = "purple",
-			minor = TRUE
+			color_override = "purple"
 		))
 
 	message_admins("Bioscan - Humans: [numHostsPlanet] on the planet[hostLocationP ? ". Location:[hostLocationP]":""]. [numHostsShipr] on the ship.[hostLocationS ? " Location: [hostLocationS].":""]. [numHostsTransitr] in transit.")
@@ -215,7 +214,17 @@
 
 /datum/game_mode/infestation/declare_completion()
 	. = ..()
-	to_chat(world, span_round_header("|[round_finished]|"))
+	log_game("[round_finished]\nGame mode: [name]\nRound time: [duration2text()]\nEnd round player population: [length(GLOB.clients)]\nTotal xenos spawned: [GLOB.round_statistics.total_xenos_created]\nTotal humans spawned: [GLOB.round_statistics.total_humans_created]")
+
+/datum/game_mode/infestation/end_round_fluff()
+	send_ooc_announcement(
+		sender_override = "Round Concluded",
+		title = round_finished,
+		text = "Thus ends the story of the brave men and women of the TerraGov Marine Corps, and their struggle on [SSmapping.configs[GROUND_MAP].map_name]...",
+		play_sound = FALSE,
+		style = "game"
+	)
+
 	var/sound/xeno_track
 	var/sound/human_track
 	var/sound/ghost_track
@@ -268,8 +277,6 @@
 
 		SEND_SOUND(M, ghost_track)
 
-	log_game("[round_finished]\nGame mode: [name]\nRound time: [duration2text()]\nEnd round player population: [length(GLOB.clients)]\nTotal xenos spawned: [GLOB.round_statistics.total_xenos_created]\nTotal humans spawned: [GLOB.round_statistics.total_humans_created]")
-
 /datum/game_mode/infestation/can_start(bypass_checks = FALSE)
 	. = ..()
 	if(!.)
@@ -301,6 +308,7 @@
 		title = "High Command Update",
 		subtitle = "Good morning, marines.",
 		message = "Cryosleep disengaged by TGMC High Command.<br><br>ATTN: [SSmapping.configs[SHIP_MAP].map_name].<br>[SSmapping.configs[GROUND_MAP].announce_text]",
+		sound = 'sound/AI/ares_online.ogg',
 		color_override = "red"
 	)
 

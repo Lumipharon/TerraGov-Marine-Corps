@@ -107,7 +107,7 @@
 	xeno_attacker.do_attack_animation(src, ATTACK_EFFECT_CLAW)
 	xeno_attacker.visible_message(span_xenonotice("\The [xeno_attacker] tears down \the [src]!"), \
 	span_xenonotice("We tear down \the [src]."))
-	playsound(src, "alien_resin_break", 25)
+	playsound(src, SFX_ALIEN_RESIN_BREAK, 25)
 	take_damage(max_integrity) // Ensure its destroyed
 
 
@@ -138,7 +138,7 @@
 
 	damage *= max(0, multiplier)
 	take_damage(damage, BRUTE, MELEE)
-	playsound(src, "alien_resin_break", 25)
+	playsound(src, SFX_ALIEN_RESIN_BREAK, 25)
 
 /turf/closed/wall/resin/dismantle_wall(devastated = 0, explode = 0)
 	ScrapeAway()
@@ -152,7 +152,7 @@
 			T = get_step(src, i)
 			if(!istype(T))
 				continue
-			for(var/obj/structure/mineral_door/resin/R in T)
+			for(var/obj/structure/door/resin/R in T)
 				R.check_resin_support()
 
 /**

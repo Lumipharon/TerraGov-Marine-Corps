@@ -77,6 +77,7 @@
 	item_whitelist = list(
 		/obj/item/weapon/gun/smg/m25/magharness = ITEM_SLOT_SUITSTORE,
 		/obj/item/weapon/gun/rifle/alf_machinecarbine/assault = ITEM_SLOT_SUITSTORE,
+		/obj/item/storage/holster/blade/machete/full_alt = ITEM_SLOT_SUITSTORE,
 	)
 
 //special unlockable
@@ -154,7 +155,7 @@
 	A powerful ranged weapon with a wide area of effect, the recoiless rifle is a powerful support weapon that can severely wound whole groups of opponents in a single shot. Has a draw delay."
 	ui_icon = "t160"
 	purchase_cost = 100
-	quantity = 2
+	quantity = 3
 	item_typepath = /obj/item/storage/holster/backholster/rpg/low_impact
 	jobs_supported = list(SQUAD_ENGINEER)
 

@@ -16,11 +16,11 @@ GLOBAL_LIST_INIT(channel_tokens, list(
 	name = "radio headset"
 	desc = "An updated, modular intercom that fits over the head. Takes encryption keys."
 	icon_state = "headset"
-	item_icons = list(
+	worn_icon_list = list(
 		slot_l_hand_str = 'icons/mob/inhands/clothing/ears_left.dmi',
 		slot_r_hand_str = 'icons/mob/inhands/clothing/ears_right.dmi',
 	)
-	item_state = "headset"
+	worn_icon_state = "headset"
 	subspace_transmission = TRUE
 	canhear_range = 0 // can't hear headsets from very far away
 
@@ -170,7 +170,7 @@ GLOBAL_LIST_INIT(channel_tokens, list(
 	name = "marine radio headset"
 	desc = "A standard military radio headset."
 	icon_state = "cargo_headset"
-	item_state = "headset"
+	worn_icon_state = "headset"
 	frequency = FREQ_COMMON
 	atom_flags = CONDUCT | PREVENT_CONTENTS_EXPLOSION
 	freerange = TRUE
@@ -210,7 +210,7 @@ GLOBAL_LIST_INIT(channel_tokens, list(
 ///Explodes the headset if you put on an enemy's headset
 /obj/item/radio/headset/mainship/proc/safety_protocol(mob/living/carbon/human/user)
 	balloon_alert_to_viewers("Explodes")
-	playsound(user, 'sound/effects/explosion_micro1.ogg', 50, 1)
+	playsound(user, 'sound/effects/explosion/micro1.ogg', 50, 1)
 	if(wearer)
 		wearer.ex_act(EXPLODE_LIGHT)
 	qdel(src)
@@ -653,6 +653,11 @@ GLOBAL_LIST_INIT(channel_tokens, list(
 	name = "retirement home headset"
 	keyslot = /obj/item/encryptionkey/retired
 	frequency = FREQ_RETIRED
+
+/obj/item/radio/headset/distress/vsd
+	name = "security detail headset"
+	keyslot = /obj/item/encryptionkey/vsd
+	frequency = FREQ_VSD
 
 //SOM headsets
 

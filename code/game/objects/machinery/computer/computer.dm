@@ -54,9 +54,9 @@
 	return 1
 
 /obj/machinery/computer/emp_act(severity)
-	if(prob(20/severity)) set_broken()
-	..()
-
+	. = ..()
+	if(prob(20/severity))
+		set_broken()
 
 /obj/machinery/computer/ex_act(severity)
 	if(CHECK_BITFIELD(resistance_flags, INDESTRUCTIBLE))
@@ -121,6 +121,12 @@
 /obj/machinery/computer/proc/set_broken()
 	machine_stat |= BROKEN
 	density = FALSE
+	update_icon()
+
+/obj/machinery/computer/proc/repair()
+	machine_stat &= ~BROKEN
+	density = TRUE
+	durability = initial(durability)
 	update_icon()
 
 /obj/machinery/computer/proc/decode(text)

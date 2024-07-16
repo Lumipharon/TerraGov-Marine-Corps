@@ -482,6 +482,7 @@ GLOBAL_LIST_EMPTY(active_cas_targets)
 		if("back")
 			state = OW_MAIN
 		if("use_cam")
+			selected_target = locate(href_list["selected_target"])
 			var/atom/cam_target = locate(href_list["cam_target"])
 			if(!cam_target)
 				return
@@ -783,7 +784,8 @@ GLOBAL_LIST_EMPTY(active_cas_targets)
 /obj/machinery/computer/camera_advanced/overwatch/proc/message_member(mob/living/target, message, mob/living/carbon/human/sender)
 	if(!target.client)
 		return
-	target.play_screen_text("<span class='maptext' style=font-size:24pt;text-align:center valign='top'><u>CIC MESSAGE FROM [sender.real_name]:</u></span><br>" + message, /atom/movable/screen/text/screen_text/command_order)
+	target.playsound_local(target, "sound/machines/dotprinter.ogg", 35)
+	target.play_screen_text("<span class='maptext' style=font-size:24pt;text-align:center valign='top'><u>CIC MESSAGE FROM [sender.real_name]:</u></span><br>" + message, /atom/movable/screen/text/screen_text/command_order, "#32cd32")
 	return TRUE
 
 ///Signal handler for radial menu

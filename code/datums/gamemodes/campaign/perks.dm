@@ -63,7 +63,7 @@ Needed both for a purchase list and effected list (if one perk impacts multiple 
 	var/obj/effect/overlay/perk/perk_animation = new
 	owner.vis_contents += perk_animation
 	flick(ui_icon, perk_animation)
-	addtimer(CALLBACK(src, PROC_REF(remove_unlock_animation), owner, perk_animation), 0.9 SECONDS, TIMER_CLIENT_TIME)
+	addtimer(CALLBACK(src, PROC_REF(remove_unlock_animation), owner, perk_animation), 1.8 SECONDS, TIMER_CLIENT_TIME)
 
 ///callback for removing the eye from viscontents
 /datum/perk/proc/remove_unlock_animation(mob/living/carbon/owner, obj/effect/overlay/perk/perk_animation)
@@ -132,14 +132,21 @@ Needed both for a purchase list and effected list (if one perk impacts multiple 
 /datum/perk/trait/hp_boost/unlock_bonus(mob/living/carbon/owner, datum/individual_stats/owner_stats)
 	if(owner_stats.faction == FACTION_TERRAGOV)
 		owner_stats.replace_loadout_option(/datum/loadout_item/suit_slot/heavy_tyr/universal, /datum/loadout_item/suit_slot/heavy_tyr, SQUAD_MARINE)
-		owner_stats.unlock_loadout_item(/datum/loadout_item/suit_slot/heavy_tyr/universal, list(SQUAD_CORPSMAN, SQUAD_ENGINEER, SQUAD_LEADER, FIELD_COMMANDER), owner)
-		owner_stats.unlock_loadout_item(/datum/loadout_item/helmet/tyr/universal, list(SQUAD_CORPSMAN, SQUAD_ENGINEER, SQUAD_LEADER, FIELD_COMMANDER), owner)
-
+		owner_stats.unlock_loadout_item(/datum/loadout_item/suit_slot/heavy_tyr/universal, list(SQUAD_LEADER, FIELD_COMMANDER), owner)
+		owner_stats.unlock_loadout_item(/datum/loadout_item/helmet/tyr/universal, list(SQUAD_LEADER, FIELD_COMMANDER), owner)
+		owner_stats.unlock_loadout_item(/datum/loadout_item/suit_slot/heavy_tyr/medic, list(SQUAD_CORPSMAN), owner)
+		owner_stats.unlock_loadout_item(/datum/loadout_item/helmet/tyr/corpsman, list(SQUAD_CORPSMAN), owner)
+		owner_stats.unlock_loadout_item(/datum/loadout_item/suit_slot/heavy_tyr/engineer, list(SQUAD_ENGINEER), owner)
+		owner_stats.unlock_loadout_item(/datum/loadout_item/helmet/tyr/engineer, list(SQUAD_ENGINEER), owner)
 	else if(owner_stats.faction == FACTION_SOM)
 		owner_stats.replace_loadout_option(/datum/loadout_item/suit_slot/som_heavy_tyr/universal, /datum/loadout_item/suit_slot/som_heavy_tyr, SOM_SQUAD_MARINE)
 		owner_stats.replace_loadout_option(/datum/loadout_item/suit_slot/som_heavy_tyr/universal, /datum/loadout_item/suit_slot/som_heavy_tyr/veteran, SOM_SQUAD_VETERAN)
-		owner_stats.unlock_loadout_item(/datum/loadout_item/suit_slot/som_heavy_tyr/universal, list(SOM_SQUAD_CORPSMAN, SOM_SQUAD_ENGINEER, SOM_SQUAD_LEADER, SOM_FIELD_COMMANDER), owner)
-		owner_stats.unlock_loadout_item(/datum/loadout_item/helmet/som_tyr/universal, list(SOM_SQUAD_CORPSMAN, SOM_SQUAD_ENGINEER, SOM_SQUAD_LEADER, SOM_FIELD_COMMANDER), owner)
+		owner_stats.unlock_loadout_item(/datum/loadout_item/suit_slot/som_heavy_tyr/universal, list(SOM_SQUAD_LEADER, SOM_FIELD_COMMANDER), owner)
+		owner_stats.unlock_loadout_item(/datum/loadout_item/helmet/som_tyr/universal, list(SOM_SQUAD_LEADER, SOM_FIELD_COMMANDER), owner)
+		owner_stats.unlock_loadout_item(/datum/loadout_item/suit_slot/som_heavy_tyr/medic, list(SOM_SQUAD_CORPSMAN), owner)
+		owner_stats.unlock_loadout_item(/datum/loadout_item/helmet/som_tyr/medic, list(SOM_SQUAD_CORPSMAN), owner)
+		owner_stats.unlock_loadout_item(/datum/loadout_item/suit_slot/som_heavy_tyr/engineer, list(SOM_SQUAD_ENGINEER), owner)
+		owner_stats.unlock_loadout_item(/datum/loadout_item/helmet/som_tyr/engineer, list(SOM_SQUAD_ENGINEER), owner)
 
 /datum/perk/trait/hp_boost/two
 	name = "Extreme constitution"
@@ -178,7 +185,7 @@ Needed both for a purchase list and effected list (if one perk impacts multiple 
 
 /datum/perk/trait/sword_master
 	name = "Sword master"
-	desc = "You are able to wield a sword with considerable skill. Grants access to a special lunge attack when wielding any sword, and allows some roles to select a sword as a back or suit stored weapon."
+	desc = "You are able to wield a sword with considerable skill. Grants access to a special lunge attack when wielding any sword, and allows some roles to select a sword in different slots."
 	req_desc = "Requires Melee specialisation."
 	ui_icon = "sword"
 	traits = list(TRAIT_SWORD_EXPERT)
@@ -189,12 +196,13 @@ Needed both for a purchase list and effected list (if one perk impacts multiple 
 /datum/perk/trait/sword_master/unlock_bonus(mob/living/carbon/owner, datum/individual_stats/owner_stats)
 	if(!istype(owner_stats))
 		return
+	owner_stats.unlock_loadout_item(/datum/loadout_item/suit_store/machete_shield, jobs_supported, owner, 0)
 	owner_stats.unlock_loadout_item(/datum/loadout_item/back/machete, jobs_supported, owner, 0)
 	owner_stats.unlock_loadout_item(/datum/loadout_item/belt/energy_sword, jobs_supported, owner, 0)
 
 //skill modifying perks
 /datum/perk/skill_mod
-	var/cqc
+	var/unarmed
 	var/melee_weapons
 	var/firearms
 	var/pistols
@@ -218,28 +226,28 @@ Needed both for a purchase list and effected list (if one perk impacts multiple 
 	. = ..()
 
 /datum/perk/skill_mod/apply_perk(mob/living/carbon/owner)
-	owner.set_skills(owner.skills.modifyRating(cqc, melee_weapons, firearms, pistols, shotguns, rifles, smgs, heavy_weapons, smartgun, \
+	owner.set_skills(owner.skills.modifyRating(unarmed, melee_weapons, firearms, pistols, shotguns, rifles, smgs, heavy_weapons, smartgun, \
 	engineer, construction, leadership, medical, surgery, pilot, police, powerloader, large_vehicle, stamina))
 
 /datum/perk/skill_mod/remove_perk(mob/living/carbon/owner)
-	owner.set_skills(owner.skills.modifyRating(-cqc, -melee_weapons, -firearms, -pistols, -shotguns, -rifles, -smgs, -heavy_weapons, -smartgun, \
+	owner.set_skills(owner.skills.modifyRating(-unarmed, -melee_weapons, -firearms, -pistols, -shotguns, -rifles, -smgs, -heavy_weapons, -smartgun, \
 	-engineer, -construction, -leadership, -medical, -surgery, -pilot, -police, -powerloader, -large_vehicle, -stamina))
 
-/datum/perk/skill_mod/cqc
+/datum/perk/skill_mod/unarmed
 	name = "Hand to hand expertise"
 	desc = "Advanced hand to hand combat training gives you an edge when you need to punch someone in the face. Improved unarmed damage and stun chance."
 	ui_icon = "cqc_1"
-	cqc = 1
+	unarmed = 1
 	all_jobs = TRUE
 	unlock_cost = 250
 
-/datum/perk/skill_mod/cqc/two
+/datum/perk/skill_mod/unarmed/two
 	name = "Hand to hand specialisation"
 	desc = "Muscle augments combined with specialised hand to hand combat training turn your body into a lethal weapon. Greatly improved unarmed damage and stun chance."
 	req_desc = "Requires Hand to hand expertise."
 	ui_icon = "cqc_2"
 	unlock_cost = 350
-	prereq_perks = list(/datum/perk/skill_mod/cqc)
+	prereq_perks = list(/datum/perk/skill_mod/unarmed)
 
 /datum/perk/skill_mod/melee
 	name = "Melee expertise"
@@ -362,7 +370,7 @@ Needed both for a purchase list and effected list (if one perk impacts multiple 
 	else if(owner_stats.faction == FACTION_SOM)
 		owner_stats.replace_loadout_option(/datum/loadout_item/suit_store/main_gun/som_marine/smg/enhanced, /datum/loadout_item/suit_store/main_gun/som_marine/smg, SOM_SQUAD_MARINE)
 		owner_stats.replace_loadout_option(/datum/loadout_item/suit_store/main_gun/som_marine/smg_and_shield/enhanced, /datum/loadout_item/suit_store/main_gun/som_marine/smg_and_shield, SOM_SQUAD_MARINE)
-		owner_stats.replace_loadout_option(/datum/loadout_item/suit_store/main_gun/som_marine/smg/enhanced, /datum/loadout_item/suit_store/main_gun/som_marine/smg, SOM_SQUAD_CORPSMAN)
+		owner_stats.replace_loadout_option(/datum/loadout_item/suit_store/main_gun/som_medic/smg/enhanced, /datum/loadout_item/suit_store/main_gun/som_medic/smg, SOM_SQUAD_CORPSMAN)
 		owner_stats.replace_loadout_option(/datum/loadout_item/suit_store/main_gun/som_engineer/smg/enhanced, /datum/loadout_item/suit_store/main_gun/som_engineer/smg, SOM_SQUAD_ENGINEER)
 
 /datum/perk/skill_mod/heavy_weapons

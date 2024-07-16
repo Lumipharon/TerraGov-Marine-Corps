@@ -1,6 +1,6 @@
-////////////////////////////////////////////////////////////////////////////////
-/// Syringes.
-////////////////////////////////////////////////////////////////////////////////
+/*!
+ * Contains Syringes and subtypes
+ */
 #define SYRINGE_DRAW 0
 #define SYRINGE_INJECT 1
 #define SYRINGE_BROKEN 2
@@ -9,15 +9,15 @@
 	name = "syringe"
 	desc = "A syringe."
 	icon = 'icons/obj/items/syringe.dmi'
-	item_icons = list(
+	worn_icon_list = list(
 		slot_l_hand_str = 'icons/mob/inhands/equipment/medical_left.dmi',
 		slot_r_hand_str = 'icons/mob/inhands/equipment/medical_right.dmi',
 	)
-	item_state = "syringe_0"
+	worn_icon_state = "syringe_0"
 	icon_state = "0"
-	init_reagent_flags = AMOUNT_SKILLCHECK
+	reagent_flags = AMOUNT_SKILLCHECK
 	amount_per_transfer_from_this = 5
-	possible_transfer_amounts = null //list(5,10,15)
+	possible_transfer_amounts = list(5,10,15)
 	volume = 15
 	w_class = WEIGHT_CLASS_TINY
 	item_flags = NOBLUDGEON
@@ -193,7 +193,7 @@
 
 	var/rounded_vol = round(reagents.total_volume,5)
 	icon_state = "[rounded_vol]"
-	item_state = "syringe_[rounded_vol]"
+	worn_icon_state = "syringe_[rounded_vol]"
 
 /obj/item/reagent_containers/syringe/update_overlays()
 	. = ..()
@@ -392,3 +392,7 @@
 	. = ..()
 	mode = SYRINGE_INJECT
 	update_icon()
+
+#undef SYRINGE_DRAW
+#undef SYRINGE_INJECT
+#undef SYRINGE_BROKEN

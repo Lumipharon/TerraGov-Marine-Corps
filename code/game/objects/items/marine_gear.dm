@@ -15,7 +15,7 @@
 	anchored = TRUE
 	opacity = TRUE
 	density = TRUE
-	icon = 'icons/Marine/apc.dmi'
+	icon = 'icons/obj/structures/prop/broken_apc.dmi'
 	icon_state = "apc"
 
 
@@ -190,7 +190,6 @@
 /obj/item/storage/box/pizza
 	name = "food delivery box"
 	desc = "A space-age food storage device, capable of keeping food extra fresh. Actually, it's just a box."
-	icon = 'icons/obj/items/storage/storage.dmi'
 
 /obj/item/storage/box/pizza/Initialize(mapload, ...)
 	. = ..()
@@ -249,7 +248,7 @@
 	desc = "A leather sling with a clip to attach something. Should keep you from losing your weapon, hopefully."
 	icon = 'icons/obj/clothing/belts.dmi'
 	icon_state = "gun_sling"
-	item_state = "gun_sling"
+	worn_icon_state = "gun_sling"
 	equip_slot_flags = ITEM_SLOT_BELT
 	w_class = WEIGHT_CLASS_BULKY
 	equip_delay_self = 2 SECONDS
@@ -325,7 +324,7 @@
 	name = "\improper M45 pattern belt harness"
 	desc = "A shoulder worn strap with clamps that can attach to most anything. Should keep you from losing your weapon, hopefully."
 	icon_state = "heavy_harness"
-	item_state = "heavy_harness"
+	worn_icon_state = "heavy_harness"
 
 /obj/item/belt_harness/marine/equipped(mob/user, slot)
 	. = ..()
@@ -336,7 +335,6 @@
 /obj/item/compass
 	name = "compass"
 	desc = "A small compass that can tell you your coordinates on use."
-	icon = 'icons/Marine/marine-navigation.dmi'
 	icon_state = "compass"
 	w_class = WEIGHT_CLASS_TINY
 

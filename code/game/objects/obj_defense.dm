@@ -30,6 +30,7 @@
 	if(user?.client)
 		var/datum/personal_statistics/personal_statistics = GLOB.personal_statistics_list[user.ckey]
 		personal_statistics.integrity_repaired += repair_amount
+		personal_statistics.mission_integrity_repaired += repair_amount
 		personal_statistics.times_repaired++
 	obj_integrity += repair_amount
 
@@ -136,7 +137,7 @@
 		xeno_attacker.visible_message(span_danger("[xeno_attacker] has slashed [src]!"),
 		span_danger("We slash [src]!"))
 		xeno_attacker.do_attack_animation(src, ATTACK_EFFECT_CLAW)
-		playsound(loc, "alien_claw_metal", 25)
+		playsound(loc, SFX_ALIEN_CLAW_METAL, 25)
 	attack_generic(xeno_attacker, damage_amount, damage_type, armor_type, effects, armor_penetration)
 	return TRUE
 

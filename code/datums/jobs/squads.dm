@@ -283,8 +283,7 @@
 		CRASH("attempted to remove squad leader from squad [name] while not having one set")
 
 	SSdirection.clear_leader(tracking_id)
-	SSdirection.stop_tracking(TRACKING_ID_MARINE_COMMANDER, squad_leader)
-	SSdirection.stop_tracking(TRACKING_ID_SOM_COMMANDER, squad_leader)
+	SSdirection.stop_tracking(faction == FACTION_SOM ? TRACKING_ID_SOM_COMMANDER : TRACKING_ID_MARINE_COMMANDER, squad_leader)
 
 	//Handle aSL skill level and radio
 	if(!ismarineleaderjob(squad_leader.job) && !issommarineleaderjob(squad_leader.job))
@@ -354,11 +353,18 @@
 		return
 
 	var/header = "AUTOMATED CIC NOTICE:"
+	var/sound = "sound/misc/notice3.ogg"
+	var/message_color = "#a9a9a9"
+	var/message_type = /atom/movable/screen/text/screen_text/command_order/automated
 	if(sender)
 		header = "CIC SQUAD MESSAGE FROM [sender.real_name]:"
+		sound = "sound/machinery/dotprinter.ogg"
+		message_color = color
+		message_type = /atom/movable/screen/text/screen_text/command_order
 
 	for(var/mob/living/marine AS in marines_list)
-		marine.play_screen_text("<span class='maptext' style=font-size:24pt;text-align:center valign='top'><u>[header]</u></span><br>" + message, /atom/movable/screen/text/screen_text/command_order)
+		marine.playsound_local(marine, sound, 35)
+		marine.play_screen_text("<span class='maptext' style=font-size:24pt;text-align:center valign='top'><u>[header]</u></span><br>" + message, message_type, message_color)
 
 /datum/squad/proc/check_entry(datum/job/job)
 	if(!(job.title in current_positions))
@@ -411,6 +417,7 @@
 GLOBAL_LIST_EMPTY_TYPED(custom_squad_radio_freqs, /datum/squad)
 ///initializes a new custom squad. all args mandatory
 /proc/create_squad(squad_name, squad_color, mob/living/carbon/human/creator)
+	var/list/radio_blacklist = list(MODE_KEY_BINARY, MODE_KEY_R_HAND, MODE_KEY_L_HAND, MODE_KEY_INTERCOM, MODE_KEY_DEPARTMENT)
 	//Create the squad
 	if(!squad_name)
 		return
@@ -437,17 +444,18 @@ GLOBAL_LIST_EMPTY_TYPED(custom_squad_radio_freqs, /datum/squad)
 	LAZYADDASSOCSIMPLE(GLOB.reverseradiochannels, "[freq]", radio_channel_name)
 	new_squad.faction = squad_faction
 	var/key_prefix = lowertext_name[1]
-	if(GLOB.department_radio_keys[key_prefix])
+	if(GLOB.department_radio_keys[key_prefix] || (key_prefix in radio_blacklist))
 		for(var/letter in splittext(lowertext_name, ""))
-			if(!GLOB.department_radio_keys[letter])
+			if(!(GLOB.department_radio_keys[letter] && !(letter in radio_blacklist)))
 				key_prefix = letter
 				break
+	if(GLOB.department_radio_keys[key_prefix] || (key_prefix in radio_blacklist))
 		//okay... mustve been a very short name, randomly pick things from the alphabet now
 		for(var/letter in shuffle(GLOB.alphabet))
-			if(!GLOB.department_radio_keys[letter])
+			if(!(GLOB.department_radio_keys[letter] && !(letter in radio_blacklist)))
 				key_prefix = letter
 				break
-		key_prefix = "ERROR"
+
 	GLOB.department_radio_keys[key_prefix] = radio_channel_name
 	GLOB.channel_tokens[radio_channel_name] = ":[key_prefix]"
 

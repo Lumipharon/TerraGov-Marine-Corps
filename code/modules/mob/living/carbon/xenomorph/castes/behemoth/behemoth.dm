@@ -1,5 +1,5 @@
 /mob/living/carbon/xenomorph/behemoth
-	caste_base_type = /mob/living/carbon/xenomorph/behemoth
+	caste_base_type = /datum/xeno_caste/behemoth
 	name = "Behemoth"
 	desc = "A resilient and equally ferocious monster that commands the earth itself."
 	icon = 'icons/Xeno/castes/behemoth.dmi'
@@ -14,7 +14,6 @@
 	mob_size = MOB_SIZE_BIG
 	max_buckled_mobs = 2
 	pixel_x = -28.5
-	old_x = -28.5
 	footstep_type = FOOTSTEP_XENO_HEAVY
 
 
