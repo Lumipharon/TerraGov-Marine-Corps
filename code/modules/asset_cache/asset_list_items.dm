@@ -153,6 +153,14 @@
 	var/icon_sheet
 	///The list of icon names to use for this sprite sheet
 	var/list/icon_names
+	///A string of hex format colors to be used by greyscale sprites, ex: "#0054aa#badcff"
+	var/list/colour_options = list(
+		"green" = "#12200c#192d14#28402b#486b41#5f8e67#2d2d37",
+		"orange" = "#492213#652c16#85391e#c16737#c8845e#2d2d37",
+		"grey" = "#262626#3f3f3f#5a5a5a#828282#ababab#2d2d37",
+		"red" = "#370a0d#5d1e1d#732221#922b2b#c15248#2d2d37",
+		"blue" = "#001a42#003382#0040a3#0050cc#0066ff#2d2d37",
+	)
 
 /datum/asset/spritesheet/campaign/create_spritesheets()
 	for(var/icon_name in icon_names)
@@ -193,6 +201,20 @@
 /datum/asset/spritesheet/campaign/loadout_items/New()
 	icon_names = GLOB.campaign_loadout_item_icons
 	return ..()
+
+/datum/asset/spritesheet/campaign/loadout_items/create_spritesheets()
+	for(var/icon_name in icon_names)
+		//we probably need some assoc list for icon name to greyscale config... fuck
+		if(!(icon_name in GLOB.campaign_loadout_item_configs)) //just for test
+			continue
+		var/greyscale_config = GLOB.campaign_loadout_item_configs[icon_name]
+		for(var/colour in colour_options)
+			var/icon/iconNormal = icon(SSgreyscale.GetColoredIconByType(greyscale_config, colour_options[colour]), icon_name,  dir = SOUTH)
+			Insert("[icon_name]_[colour]", iconNormal)
+
+			var/icon/iconBig = icon(SSgreyscale.GetColoredIconByType(greyscale_config, colour_options[colour]), icon_name,  dir = SOUTH)
+			//iconBig.Scale(iconBig.Width()*2, iconBig.Height()*2) //this is giving me bad operation errors... its unchanged though, why?
+			Insert("[icon_name]_[colour]_big", iconBig)
 
 /datum/asset/simple/particle_editor
 	assets = list(

@@ -237,6 +237,12 @@ GLOBAL_LIST_INIT(campaign_perk_icon_types, list(
 
 GLOBAL_LIST_INIT(campaign_loadout_item_icon_types, list(
 	"default",
+	"t12",
+	"t18",
+))
+/*
+GLOBAL_LIST_INIT(campaign_loadout_item_icon_types, list(
+	"default",
 	"empty",
 	"lasergun",
 	"volkite",
@@ -312,6 +318,7 @@ GLOBAL_LIST_INIT(campaign_loadout_item_icon_types, list(
 	"t72",
 	"minigun",
 ))
+*/
 
 GLOBAL_LIST_INIT(minimap_icons, init_minimap_icons())
 
@@ -356,7 +363,16 @@ GLOBAL_LIST_INIT(campaign_loadout_item_icons, init_campaign_loadout_item_icons()
 ///Populates campaign_loadout_item_icons
 /proc/init_campaign_loadout_item_icons()
 	. = list()
-	var/list/colours = list("green", "orange", "grey", "red", "blue")
+	//var/list/colours = list("green", "orange", "grey", "red", "blue")
 	for(var/icon_state in GLOB.campaign_loadout_item_icon_types)
-		for(var/colour in colours)
-			. += "[icon_state]_[colour]"
+		. += icon_state
+		//for(var/colour in colours)
+		//	. += "[icon_state]_[colour]"
+
+//placeholder glob
+GLOBAL_LIST_INIT(campaign_loadout_item_configs, list(
+	"default" = /datum/greyscale_config/campaign_loadout_items/default,
+	"t12" = /datum/greyscale_config/campaign_loadout_items/t12,
+	"t18" = /datum/greyscale_config/campaign_loadout_items/t18,
+	//etc. Actually can probs recycle glob.campaign_loadout_item_icon_types by making it be assoc instead of a 2nd list
+))

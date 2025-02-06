@@ -323,3 +323,17 @@
 /datum/greyscale_config/broken_man
 	icon_file = 'icons/mob/human_face.dmi'
 	json_config = 'code/datums/greyscale/json_configs/broken_man.json'
+
+//Campaign icons
+/datum/greyscale_config/campaign_loadout_items
+	icon_file = 'icons/UI_icons/campaign/loadout_item_icons.dmi'
+	json_config = 'code/datums/greyscale/json_configs/campaign_loadout_items/default.json'
+
+/datum/greyscale_config/campaign_loadout_items/default
+	json_config = 'code/datums/greyscale/json_configs/campaign_loadout_items/default.json'
+
+/datum/greyscale_config/campaign_loadout_items/t12
+	json_config = 'code/datums/greyscale/json_configs/campaign_loadout_items/t12.json'
+
+/datum/greyscale_config/campaign_loadout_items/t18
+	json_config = 'code/datums/greyscale/json_configs/campaign_loadout_items/t18.json'
