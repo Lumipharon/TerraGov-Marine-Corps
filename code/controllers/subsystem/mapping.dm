@@ -664,13 +664,11 @@ SUBSYSTEM_DEF(mapping)
 
 			true_to_offset_planes[string_real] |= offset_plane
 
-/// Takes a turf or a z level, and returns a list of all the z levels that are connected to it
-/datum/controller/subsystem/mapping/proc/get_connected_levels(turf/connected)
-	var/z_level = connected
-	if(isturf(z_level))
-		z_level = connected.z
-	return z_level_to_stack[z_level]
-
+/// Takes an atom or a z number, and returns a list of all the z levels that are connected to it
+/datum/controller/subsystem/mapping/proc/get_connected_levels(atom/connected)
+	if(isnum(connected))
+		return z_level_to_stack[connected]
+	return z_level_to_stack[connected.z]
 
 ///lazy loads a map template in a reserved z. use for stuff like rooms that you teleport to like interiors or similar
 /datum/controller/subsystem/mapping/proc/lazy_load_template(template_key, force = FALSE)
