@@ -7,6 +7,13 @@
 ///A mix of the above, cheaper on moving items than dynamic, but heavier on rendering than movable
 #define HYBRID_LIGHT 3
 
+/// Is our overlay light source attached to another movable (its loc), meaning that the lighting component should go one level deeper.
+#define LIGHT_ATTACHED (1<<0)
+/// Freezes a light in its current state, blocking any attempts at modification
+#define LIGHT_FROZEN (1<<1)
+/// Does this light ignore inherent offsets? (Pixels, transforms, etc)
+#define LIGHT_IGNORE_OFFSET (1<<2)
+
 #define MINIMUM_USEFUL_LIGHT_RANGE 1.4
 
 #define LIGHTING_ICON 'icons/effects/lighting_object.dmi' // icon used for lighting shading effects

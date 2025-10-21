@@ -52,6 +52,8 @@
 	var/light_color = COLOR_WHITE
 	///Boolean variable for toggleable lights. Has no effect without the proper light_system, light_range and light_power values.
 	var/light_on = FALSE
+	///Bitflags to determine lighting-related atom properties.
+	var/light_flags = NONE
 	///Our light source. Don't fuck with this directly unless you have a good reason!
 	var/tmp/datum/dynamic_light_source/light
 	///Any light sources that are "inside" of us, for example, if src here was a mob that's carrying a flashlight, that flashlight's light source would be part of this list.
