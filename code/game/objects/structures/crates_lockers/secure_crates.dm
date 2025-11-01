@@ -1,12 +1,12 @@
 /obj/structure/closet/crate/secure
 	desc = "A secure crate."
 	name = "Secure crate"
-	icon_state = "secure_locked_basic"
-	icon_opened = "secure_open_basic"
-	icon_closed = "secure_locked_basic"
+	icon_state = "crate_secure_locked_basic"
+	icon_opened = "crate_secure_basic_open"
+	icon_closed = "crate_secure_locked_basic"
 	closet_flags = CLOSET_ALLOW_OBJS|CLOSET_ALLOW_DENSE_OBJ|CLOSET_IS_SECURE
-	var/icon_locked = "secure_locked_basic"
-	var/icon_unlocked = "secure_unlocked_basic"
+	var/icon_locked = "crate_secure_locked_basic"
+	var/icon_unlocked = "crate_secure_unlocked_basic"
 	var/sparks = "securecratesparks"
 	locked = TRUE
 	max_integrity = 500
@@ -35,7 +35,7 @@
 
 /obj/structure/closet/crate/secure/verb/verb_togglelock()
 	set src in oview(1) // One square distance
-	set category = "Object"
+	set category = "IC.Object"
 	set name = "Toggle Lock"
 
 	if(usr.incapacitated())
@@ -44,6 +44,7 @@
 
 
 /obj/structure/closet/crate/secure/emp_act(severity)
+	. = ..()
 	for(var/obj/O in src)
 		O.emp_act(severity)
 	if(!broken && !opened  && prob(50/severity))
@@ -62,8 +63,6 @@
 		else
 			req_access = list()
 			req_access += pick(ALL_ACCESS)
-	..()
-
 
 //------------------------------------
 //			Secure Crates

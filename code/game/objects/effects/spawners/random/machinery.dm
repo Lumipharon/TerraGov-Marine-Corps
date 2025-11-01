@@ -16,7 +16,6 @@
 
 /obj/effect/spawner/random/machinery/random_broken_computer
 	name = "Generic broken computer spawner"
-	name = "random broken computer spawner"
 	icon_state = "random_broke_computer"
 	loot = list(
 		/obj/structure/prop/computer/broken = 20,
@@ -235,3 +234,6 @@
 /obj/effect/spawner/random/machinery/motorbike/west
 	spawn_loot_chance = 75
 	spawn_force_direction = WEST
+
+/obj/effect/spawner/random/machinery/motorbike/uncommon
+	spawn_loot_chance = 25

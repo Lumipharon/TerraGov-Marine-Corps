@@ -18,18 +18,18 @@
 	Note that this proc can be overridden, and is in the case of screen objects.
 */
 /atom/Click(location, control, params)
-	if(flags_atom & INITIALIZED)
+	if(atom_flags & INITIALIZED)
 		SEND_SIGNAL(src, COMSIG_CLICK, location, control, params, usr)
 		usr.ClickOn(src, location, params)
 
 
 /atom/DblClick(location, control, params)
-	if(flags_atom & INITIALIZED)
+	if(atom_flags & INITIALIZED)
 		usr.DblClickOn(src, params)
 
 
 /atom/MouseWheel(delta_x, delta_y, location, control, params)
-	if(flags_atom & INITIALIZED)
+	if(atom_flags & INITIALIZED)
 		usr.MouseWheelOn(src, delta_x, delta_y, params)
 
 
@@ -68,31 +68,34 @@
 		modifiers["icon-y"] = num2text(ABS_PIXEL_TO_REL(text2num(modifiers["icon-y"])))
 		params = list2params(modifiers)
 
-	if(modifiers["shift"] && modifiers["middle"])
+	if(modifiers[BUTTON4] || modifiers[BUTTON5])
+		return
+
+	if(modifiers[SHIFT_CLICK] && modifiers[MIDDLE_CLICK])
 		ShiftMiddleClickOn(A)
 		return
-	if(modifiers["shift"] && modifiers["ctrl"])
+	if(modifiers[SHIFT_CLICK] && modifiers[CTRL_CLICK])
 		CtrlShiftClickOn(A)
 		return
-	if(modifiers["ctrl"] && modifiers["middle"])
+	if(modifiers[CTRL_CLICK] && modifiers[MIDDLE_CLICK])
 		CtrlMiddleClickOn(A)
 		return
-	if(modifiers["middle"] && MiddleClickOn(A))
+	if(modifiers[MIDDLE_CLICK] && MiddleClickOn(A))
 		return
-	if(modifiers["shift"] && modifiers["right"])
+	if(modifiers[SHIFT_CLICK] && modifiers[RIGHT_CLICK])
 		ShiftRightClickOn(A)
 		return
-	if(modifiers["shift"] && ShiftClickOn(A))
+	if(modifiers[SHIFT_CLICK] && ShiftClickOn(A))
 		return
-	if(modifiers["alt"] && modifiers["right"])
+	if(modifiers[ALT_CLICK] && modifiers[RIGHT_CLICK])
 		AltRightClickOn(A)
 		return
-	if(modifiers["alt"] && AltClickOn(A))
+	if(modifiers[ALT_CLICK] && AltClickOn(A))
 		return
-	if(modifiers["ctrl"])
+	if(modifiers[CTRL_CLICK])
 		CtrlClickOn(A)
 		return
-	if(modifiers["right"] && RightClickOn(A))
+	if(modifiers[RIGHT_CLICK] && RightClickOn(A))
 		return
 
 	if(incapacitated(TRUE))
@@ -120,7 +123,11 @@
 	var/obj/item/W = get_active_held_item()
 
 	if(W == A)
-		W.attack_self(src)
+		if(modifiers[RIGHT_CLICK])
+			W.attack_self_alternate(src)
+		else
+			W.attack_self(src)
+
 		update_inv_l_hand()
 		update_inv_r_hand()
 		return
@@ -129,7 +136,7 @@
 	//User itself, current loc, and user inventory
 	if(A in DirectAccess())
 		if(W)
-			W.melee_attack_chain(src, A, params, modifiers["right"])
+			W.melee_attack_chain(src, A, params, modifiers[RIGHT_CLICK])
 		else
 			UnarmedAttack(A, FALSE, modifiers)
 		return
@@ -141,7 +148,7 @@
 	//Standard reach turf to turf or reaching inside storage
 	if(CanReach(A, W))
 		if(W)
-			W.melee_attack_chain(src, A, params, modifiers["right"])
+			W.melee_attack_chain(src, A, params, modifiers[RIGHT_CLICK])
 		else
 			UnarmedAttack(A, TRUE, modifiers)
 	else
@@ -149,15 +156,19 @@
 			var/proximity = A.Adjacent(src)
 			if(!proximity || !A.attackby(W, src, params))
 				W.afterattack(A, src, proximity, params)
+				RangedAttack(A, params)
 		else
 			if(A.Adjacent(src))
 				A.attack_hand(src)
-			RangedAttack(A, params)
+			else
+				RangedAttack(A, params)
 
 
+/**
+ * A backwards depth-limited breadth-first-search to see if the target is
+ * logically "in" anything adjacent to us.
+ */
 /atom/movable/proc/CanReach(atom/ultimate_target, obj/item/tool, view_only = FALSE)
-	// A backwards depth-limited breadth-first-search to see if the target is
-	// logically "in" anything adjacent to us.
 	var/list/direct_access = DirectAccess()
 	var/depth = 1 + (view_only ? STORAGE_VIEW_DEPTH : INVENTORY_DEPTH)
 
@@ -204,14 +215,14 @@
 	if(!T)
 		return FALSE
 	for(var/atom/movable/AM AS in T)
-		if(AM.flags_atom & PREVENT_CLICK_UNDER && AM.density && AM.layer > layer)
+		if(AM.atom_flags & PREVENT_CLICK_UNDER && AM.density && AM.layer > layer)
 			return TRUE
 	return FALSE
 
 
 /turf/IsObscured()
 	for(var/atom/movable/AM AS in src)
-		if(AM.flags_atom & PREVENT_CLICK_UNDER && AM.density)
+		if(AM.atom_flags & PREVENT_CLICK_UNDER && AM.density)
 			return TRUE
 	return FALSE
 
@@ -234,7 +245,7 @@
 			return FALSE //here.Adjacent(there)
 		if(2 to INFINITY)
 			var/obj/dummy = new(get_turf(here))
-			dummy.allow_pass_flags |= PASS_LOW_STRUCTURE
+			dummy.add_pass_flags(PASS_LOW_STRUCTURE, INNATE_TRAIT)
 			dummy.invisibility = INVISIBILITY_ABSTRACT
 			for(var/i in 1 to reach) //Limit it to that many tries
 				var/turf/T = get_step(dummy, get_dir(dummy, there))
@@ -351,6 +362,7 @@ if(selected_ability.target_flags & flagname && !istype(A, typepath)){\
 			return FALSE
 		if(COMSIG_MOB_CLICK_HANDLED)
 			return TRUE
+
 	return A.RightClick(src)
 
 /mob/living/carbon/human/RightClickOn(atom/A)
@@ -408,8 +420,13 @@ if(selected_ability.target_flags & flagname && !istype(A, typepath)){\
 /mob/living/carbon/human/ShiftClickOn(atom/A)
 	if(client.prefs.toggles_gameplay & MIDDLESHIFTCLICKING)
 		return ..()
-	var/obj/item/held_thing = get_active_held_item()
+	if(selected_ability)
+		A = ability_target(A)
+		if(selected_ability.can_use_ability(A))
+			selected_ability.use_ability(A)
+		return TRUE
 
+	var/obj/item/held_thing = get_active_held_item()
 	if(held_thing && SEND_SIGNAL(held_thing, COMSIG_ITEM_SHIFTCLICKON, A, src) & COMPONENT_ITEM_CLICKON_BYPASS)
 		return FALSE
 	return ..()
@@ -427,6 +444,7 @@ if(selected_ability.target_flags & flagname && !istype(A, typepath)){\
 /atom/proc/ShiftClick(mob/user)
 	SHOULD_CALL_PARENT(TRUE)
 	SEND_SIGNAL(src, COMSIG_CLICK_SHIFT, user)
+	user.examinate(src)
 	return TRUE
 
 /*
@@ -498,7 +516,7 @@ if(selected_ability.target_flags & flagname && !istype(A, typepath)){\
 
 
 /atom/proc/CtrlShiftClick(mob/user)
-	SEND_SIGNAL(src, COMSIG_CLICK_CTRL_SHIFT)
+	SEND_SIGNAL(src, COMSIG_CLICK_CTRL_SHIFT, user)
 
 
 /*
@@ -543,6 +561,16 @@ if(selected_ability.target_flags & flagname && !istype(A, typepath)){\
 	M.Scale(px/sx, py/sy)
 	transform = M
 
+
+/atom/movable/screen/click_catcher/Initialize(mapload, datum/hud/hud_owner)
+	. = ..()
+	RegisterSignal(SSmapping, COMSIG_PLANE_OFFSET_INCREASE, PROC_REF(offset_increased))
+	offset_increased(SSmapping, 0, SSmapping.max_plane_offset)
+
+// Draw to the lowest plane level offered
+/atom/movable/screen/click_catcher/proc/offset_increased(datum/source, old_offset, new_offset)
+	SIGNAL_HANDLER
+	SET_PLANE_W_SCALAR(src, initial(plane), new_offset)
 
 /atom/movable/screen/click_catcher/Click(location, control, params)
 	var/list/modifiers = params2list(params)

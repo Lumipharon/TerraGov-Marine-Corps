@@ -203,8 +203,8 @@
 /obj/machinery/atmospherics/proc/can_unwrench(mob/user)
 	return can_unwrench
 
-/obj/machinery/atmospherics/deconstruct(disassembled = TRUE)
-	if(!(flags_atom & NODECONSTRUCT))
+/obj/machinery/atmospherics/deconstruct(disassembled = TRUE, mob/living/blame_mob)
+	if(!(atom_flags & NODECONSTRUCT))
 		if(can_unwrench)
 			var/obj/item/pipe/stored = new construction_type(loc, null, dir, src)
 			stored.setPipingLayer(piping_layer)
@@ -229,7 +229,7 @@
 
 /obj/machinery/atmospherics/on_construction(obj_color, set_layer)
 	if(can_unwrench)
-		add_atom_colour(obj_color, FIXED_COLOUR_PRIORITY)
+		add_atom_colour(obj_color, FIXED_COLOR_PRIORITY)
 		pipe_color = obj_color
 	setPipingLayer(set_layer)
 	var/turf/T = get_turf(src)
@@ -252,7 +252,7 @@
 	if(T.density)
 		to_chat(user, span_notice("You cannot climb out, the exit is blocked!"))
 		return
-	if(TIMER_COOLDOWN_CHECK(user, COOLDOWN_VENTCRAWL))
+	if(TIMER_COOLDOWN_RUNNING(user, COOLDOWN_VENTCRAWL))
 		return FALSE
 	var/silent_crawl = FALSE
 	var/vent_crawl_exit_time = 2 SECONDS
@@ -270,8 +270,9 @@
 	user.forceMove(T)
 	user.visible_message(span_warning("[user] climbs out of [src].</span>"), \
 	span_notice("You climb out of [src].</span>"))
+	log_game("[user] Crawled out of the [src] at [AREACOORD(src)]")
 	if(!silent_crawl)
-		playsound(src, get_sfx("alien_ventpass"), 35, TRUE)
+		playsound(src, SFX_ALIEN_VENTPASS, 35, TRUE)
 
 
 /obj/machinery/atmospherics/relaymove(mob/living/user, direction)
@@ -293,15 +294,15 @@
 
 				user.forceMove(target_move)
 				user.update_pipe_vision()
-				user.client.eye = target_move  //Byond only updates the eye every tick, This smooths out the movement
+				user.client.set_eye(target_move)  //Byond only updates the eye every tick, This smooths out the movement
 				var/silent_crawl = FALSE //Some creatures can move through the vents silently
 				if(isxeno(user))
 					var/mob/living/carbon/xenomorph/X = user
 					silent_crawl = X.xeno_caste.silent_vent_crawl
-				if(TIMER_COOLDOWN_CHECK(user, COOLDOWN_VENTSOUND) || silent_crawl)
+				if(TIMER_COOLDOWN_RUNNING(user, COOLDOWN_VENTSOUND) || silent_crawl)
 					return
 				TIMER_COOLDOWN_START(user, COOLDOWN_VENTSOUND, 3 SECONDS)
-				playsound(src, pick('sound/effects/alien_ventcrawl1.ogg','sound/effects/alien_ventcrawl2.ogg'), 50, TRUE, -3)
+				playsound(src, pick('sound/effects/alien/ventcrawl1.ogg','sound/effects/alien/ventcrawl2.ogg'), 50, TRUE, -3)
 	else if((direction & initialize_directions) || is_type_in_typecache(src, GLOB.ventcrawl_machinery) && can_crawl_through()) //if we move in a way the pipe can connect, but doesn't - or we're in a vent
 		climb_out(user, src.loc)
 

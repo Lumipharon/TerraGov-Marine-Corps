@@ -1,6 +1,6 @@
 
 /obj/structure/xeno/xeno_turret
-	icon = 'icons/Xeno/acidturret.dmi'
+	icon = 'icons/Xeno/acid_turret.dmi'
 	icon_state = XENO_TURRET_ACID_ICONSTATE
 	name = "acid turret"
 	desc = "A menacing looking construct of resin, it seems to be alive. It fires acid against intruders."
@@ -33,9 +33,9 @@
 	var/firing
 
 ///Change minimap icon if its firing or not firing
-/obj/structure/xeno/xeno_turret/proc/update_minimap_icon()
+/obj/structure/xeno/xeno_turret/update_minimap_icon()
 	SSminimaps.remove_marker(src)
-	SSminimaps.add_marker(src, MINIMAP_FLAG_XENO, image('icons/UI_icons/map_blips.dmi', null, "xeno_turret[firing ? "_firing" : "_passive"]"))
+	SSminimaps.add_marker(src, MINIMAP_FLAG_XENO, image('icons/UI_icons/map_blips.dmi', null, "xeno_turret[firing ? "_firing" : "_passive"]", MINIMAP_BLIPS_LAYER))
 
 /obj/structure/xeno/xeno_turret/Initialize(mapload, _hivenumber)
 	. = ..()
@@ -56,9 +56,9 @@
 	SIGNAL_HANDLER
 	qdel(src)
 
-/obj/structure/xeno/xeno_turret/obj_destruction(damage_amount, damage_type, damage_flag)
+/obj/structure/xeno/xeno_turret/obj_destruction(damage_amount, damage_type, damage_flag, mob/living/blame_mob)
 	if(damage_amount) //Spawn the gas only if we actually get destroyed by damage
-		var/datum/effect_system/smoke_spread/xeno/smoke = new /datum/effect_system/smoke_spread/xeno/acid(src)
+		var/datum/effect_system/smoke_spread/xeno/acid/opaque/smoke = new(get_turf(src))
 		smoke.set_up(1, get_turf(src))
 		smoke.start()
 	return ..()
@@ -68,7 +68,7 @@
 	set_hostile(null)
 	set_last_hostile(null)
 	STOP_PROCESSING(SSobj, src)
-	playsound(loc,'sound/effects/xeno_turret_death.ogg', 70)
+	playsound(loc,'sound/effects/alien/turret_death.ogg', 70)
 	return ..()
 
 /obj/structure/xeno/xeno_turret/ex_act(severity)
@@ -80,12 +80,8 @@
 		if(EXPLODE_LIGHT)
 			take_damage(300, BRUTE, BOMB)
 
-/obj/structure/xeno/xeno_turret/flamer_fire_act(burnlevel)
-	take_damage(burnlevel * 2, BURN, FIRE)
-	ENABLE_BITFIELD(resistance_flags, ON_FIRE)
-
-/obj/structure/xeno/xeno_turret/fire_act()
-	take_damage(60, BURN, FIRE)
+/obj/structure/xeno/xeno_turret/fire_act(burn_level)
+	take_damage(burn_level * 2, BURN, FIRE)
 	ENABLE_BITFIELD(resistance_flags, ON_FIRE)
 
 /obj/structure/xeno/xeno_turret/update_overlays()
@@ -93,9 +89,9 @@
 	if(!(xeno_structure_flags & HAS_OVERLAY))
 		return
 	if(obj_integrity <= max_integrity / 2)
-		. += image('icons/Xeno/acidturret.dmi', src, "+turret_damage")
+		. += image('icons/Xeno/acid_turret.dmi', src, "+turret_damage")
 	if(CHECK_BITFIELD(resistance_flags, ON_FIRE))
-		. += image('icons/Xeno/acidturret.dmi', src, "+turret_on_fire")
+		. += image('icons/Xeno/acid_turret.dmi', src, "+turret_on_fire")
 
 /obj/structure/xeno/xeno_turret/process()
 	//Turrets regen some HP, every 2 sec
@@ -113,15 +109,15 @@
 		if(last_hostile)
 			set_last_hostile(null)
 		return
-	if(!TIMER_COOLDOWN_CHECK(src, COOLDOWN_XENO_TURRETS_ALERT))
-		GLOB.hive_datums[hivenumber].xeno_message("Our [name] is attacking a nearby hostile [hostile] at [get_area(hostile)] (X: [hostile.x], Y: [hostile.y]).", "xenoannounce", 5, FALSE, hostile, 'sound/voice/alien_help1.ogg', FALSE, null, /atom/movable/screen/arrow/turret_attacking_arrow)
+	if(TIMER_COOLDOWN_FINISHED(src, COOLDOWN_XENO_TURRETS_ALERT))
+		GLOB.hive_datums[hivenumber].xeno_message("Our [name] is attacking a nearby hostile [hostile] at [get_area(hostile)] (X: [hostile.x], Y: [hostile.y]).", "xenoannounce", 5, FALSE, hostile, 'sound/voice/alien/help1.ogg', FALSE, null, /atom/movable/screen/arrow/turret_attacking_arrow)
 		TIMER_COOLDOWN_START(src, COOLDOWN_XENO_TURRETS_ALERT, 20 SECONDS)
 	if(hostile != last_hostile)
 		set_last_hostile(hostile)
 		SEND_SIGNAL(src, COMSIG_AUTOMATIC_SHOOTER_START_SHOOTING_AT)
 
 /obj/structure/xeno/xeno_turret/attackby(obj/item/I, mob/living/user, params)
-	if(I.flags_item & NOBLUDGEON || !isliving(user))
+	if(I.item_flags & NOBLUDGEON || !isliving(user))
 		return attack_hand(user)
 
 	user.changeNext_move(I.attack_speed)
@@ -132,15 +128,9 @@
 	if(I.damtype == BURN) //Burn damage deals extra vs resin structures (mostly welders).
 		multiplier += 1
 
-	if(istype(I, /obj/item/tool/pickaxe/plasmacutter) && !user.do_actions)
-		var/obj/item/tool/pickaxe/plasmacutter/P = I
-		if(P.start_cut(user, name, src, PLASMACUTTER_BASE_COST * PLASMACUTTER_VLOW_MOD))
-			multiplier += PLASMACUTTER_RESIN_MULTIPLIER
-			P.cut_apart(user, name, src, PLASMACUTTER_BASE_COST * PLASMACUTTER_VLOW_MOD)
-
 	damage *= max(0, multiplier)
-	take_damage(damage, BRUTE, MELEE)
-	playsound(src, "alien_resin_break", 25)
+	take_damage(damage, I.damtype, MELEE)
+	playsound(src, SFX_ALIEN_RESIN_BREAK, 25)
 
 ///Signal handler for hard del of hostile
 /obj/structure/xeno/xeno_turret/proc/unset_hostile()
@@ -168,7 +158,6 @@
 /obj/structure/xeno/xeno_turret/proc/get_target()
 	var/distance = range + 0.5 //we add 0.5 so if a potential target is at range, it is accepted by the system
 	var/buffer_distance
-	var/list/turf/path = list()
 	for (var/atom/nearby_hostile AS in potential_hostiles)
 		if(isliving(nearby_hostile))
 			var/mob/living/nearby_living_hostile = nearby_hostile
@@ -177,32 +166,14 @@
 		if(HAS_TRAIT(nearby_hostile, TRAIT_TURRET_HIDDEN))
 			continue
 		buffer_distance = get_dist(nearby_hostile, src)
-		if (distance <= buffer_distance) //If we already found a target that's closer
+		if(distance <= buffer_distance) //If we already found a target that's closer
 			continue
-		path = getline(src, nearby_hostile)
-		path -= get_turf(src)
-		if(!length(path)) //Can't shoot if it's on the same turf
+		if(check_path(get_step_towards(src, nearby_hostile), nearby_hostile, PASS_PROJECTILE) != get_turf(nearby_hostile)) //xeno turret seems to not care about actual sight, for whatever reason
 			continue
-		var/blocked = FALSE
-		for(var/turf/T AS in path)
-			if(IS_OPAQUE_TURF(T) || T.density && !(T.allow_pass_flags & PASS_PROJECTILE))
-				blocked = TRUE
-				break //LoF Broken; stop checking; we can't proceed further.
+		distance = buffer_distance
+		. = nearby_hostile
 
-			for(var/obj/machinery/MA in T)
-				if(MA.opacity || MA.density && !(MA.allow_pass_flags & PASS_PROJECTILE))
-					blocked = TRUE
-					break //LoF Broken; stop checking; we can't proceed further.
-
-			for(var/obj/structure/S in T)
-				if(S.opacity || S.density && !(S.allow_pass_flags & PASS_PROJECTILE))
-					blocked = TRUE
-					break //LoF Broken; stop checking; we can't proceed further.
-		if(!blocked)
-			distance = buffer_distance
-			. = nearby_hostile
-
-///Return TRUE if a possible target is near
+///Populates the target list on process
 /obj/structure/xeno/xeno_turret/proc/scan()
 	potential_hostiles.Cut()
 	for (var/mob/living/carbon/human/nearby_human AS in cheap_get_humans_near(src, TURRET_SCAN_RANGE))
@@ -211,17 +182,17 @@
 		if(nearby_human.get_xeno_hivenumber() == hivenumber)
 			continue
 		potential_hostiles += nearby_human
-	for (var/mob/living/carbon/xenomorph/nearby_xeno AS in cheap_get_xenos_near(src, range))
+	for (var/mob/living/carbon/xenomorph/nearby_xeno AS in cheap_get_xenos_near(src, TURRET_SCAN_RANGE))
 		if(GLOB.hive_datums[hivenumber] == nearby_xeno.hive)
 			continue
 		if(nearby_xeno.stat == DEAD)
 			continue
 		potential_hostiles += nearby_xeno
 	for(var/obj/vehicle/unmanned/vehicle AS in GLOB.unmanned_vehicles)
-		if(vehicle.z == z && get_dist(vehicle, src) <= range)
+		if(vehicle.z == z && get_dist(vehicle, src) <= TURRET_SCAN_RANGE)
 			potential_hostiles += vehicle
 	for(var/obj/vehicle/sealed/mecha/mech AS in GLOB.mechas_list)
-		if(mech.z == z && get_dist(mech, src) <= range)
+		if(mech.z == z && get_dist(mech, src) <= TURRET_SCAN_RANGE)
 			potential_hostiles += mech
 
 ///Signal handler to make the turret shoot at its target
@@ -233,10 +204,10 @@
 		update_minimap_icon()
 		return
 	face_atom(hostile)
-	var/obj/projectile/newshot = new(loc)
+	var/atom/movable/projectile/newshot = new(loc)
 	newshot.generate_bullet(ammo)
 	newshot.def_zone = pick(GLOB.base_miss_chance)
-	newshot.fire_at(hostile, src, null, ammo.max_range, ammo.shell_speed)
+	newshot.fire_at(hostile, null, src, ammo.max_range, ammo.shell_speed)
 	if(istype(ammo, /datum/ammo/xeno/hugger))
 		var/datum/ammo/xeno/hugger/hugger_ammo = ammo
 		newshot.color = initial(hugger_ammo.hugger_type.color)
@@ -246,7 +217,7 @@
 
 /obj/structure/xeno/xeno_turret/sticky
 	name = "Sticky resin turret"
-	icon = 'icons/Xeno/acidturret.dmi'
+	icon = 'icons/Xeno/acid_turret.dmi'
 	icon_state = XENO_TURRET_STICKY_ICONSTATE
 	desc = "A menacing looking construct of resin, it seems to be alive. It fires resin against intruders."
 	light_initial_color = LIGHT_COLOR_PURPLE

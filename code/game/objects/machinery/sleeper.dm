@@ -69,13 +69,13 @@
 			dat += "[health_ratio > 50 ? "<font color='#487553'>" : "<font color='#b54646'>"]\tHealth %: [health_ratio] ([t1])</FONT><BR>"
 			if(ishuman(occupant))
 				if(connected.filtering)
-					dat += "<A href='?src=[text_ref(src)];togglefilter=1'>Stop Dialysis</A><BR>"
+					dat += "<A href='byond://?src=[text_ref(src)];togglefilter=1'>Stop Dialysis</A><BR>"
 				else
-					dat += "<HR><A href='?src=[text_ref(src)];togglefilter=1'>Start Dialysis</A><BR>"
+					dat += "<HR><A href='byond://?src=[text_ref(src)];togglefilter=1'>Start Dialysis</A><BR>"
 				if(connected.stasis)
-					dat += "<HR><A href='?src=[text_ref(src)];togglestasis=1'>Deactivate Cryostasis</A><BR><HR>"
+					dat += "<HR><A href='byond://?src=[text_ref(src)];togglestasis=1'>Deactivate Cryostasis</A><BR><HR>"
 				else
-					dat += "<HR><A href='?src=[text_ref(src)];togglestasis=1'>Activate Cryostasis</A><BR><HR>"
+					dat += "<HR><A href='byond://?src=[text_ref(src)];togglestasis=1'>Activate Cryostasis</A><BR><HR>"
 			else
 				dat += "<HR>Dialysis Disabled - Non-human present.<BR><HR>"
 				var/mob/living/carbon/human/patient = occupant
@@ -91,8 +91,8 @@
 				for(var/amount in connected.amounts)
 					dat += " <a href ='?src=[text_ref(src)];chemical=[chemical];amount=[amount]'>[amount] units</a>"
 				dat += "<br>"
-			dat += "<A href='?src=[text_ref(src)];refresh=1'>Refresh Meter Readings</A><BR>"
-			dat += "<HR><A href='?src=[text_ref(src)];ejectify=1'>Eject Patient</A>"
+			dat += "<A href='byond://?src=[text_ref(src)];refresh=1'>Refresh Meter Readings</A><BR>"
+			dat += "<HR><A href='byond://?src=[text_ref(src)];ejectify=1'>Eject Patient</A>"
 		else
 			dat += "The sleeper is empty."
 	var/datum/browser/popup = new(user, "sleeper", "<div align='center'>Sleeper Console</div>", 400, 670)
@@ -135,8 +135,8 @@
 	icon = 'icons/obj/machines/cryogenics.dmi'
 	icon_state = "sleeper"
 	density = TRUE
-	light_range = 1
-	light_power = 0.5
+	light_range = 3
+	light_power = 1
 	light_color = LIGHT_COLOR_BLUE
 	dir = EAST
 	var/mob/living/carbon/human/occupant = null
@@ -154,7 +154,7 @@
 /obj/machinery/sleeper/Initialize(mapload)
 	. = ..()
 	RegisterSignal(src, COMSIG_MOVABLE_SHUTTLE_CRUSH, PROC_REF(shuttle_crush))
-	update_icon()
+	update_appearance(UPDATE_ICON)
 
 /obj/machinery/sleeper/proc/shuttle_crush()
 	SIGNAL_HANDLER
@@ -201,15 +201,11 @@
 	if(!hasHUD(user,"medical"))
 		. += span_notice("It contains: [occupant].[feedback]")
 		return
-	var/mob/living/carbon/human/H = occupant
-	for(var/datum/data/record/R in GLOB.datacore.medical)
-		if (!R.fields["name"] == H.real_name)
-			continue
-		if(!(R.fields["last_scan_time"]))
-			. += span_deptradio("No scan report on record")
-		else
-			. += span_deptradio("<a href='?src=[text_ref(src)];scanreport=1'>It contains [occupant]: Scan from [R.fields["last_scan_time"]].[feedback]</a>")
-		break
+	var/datum/data/record/medical_record = find_medical_record(occupant)
+	if(!isnull(medical_record?.fields["historic_scan"]))
+		. += "<a href='byond://?src=[text_ref(src)];scanreport=1'>Occupant's body scan from [medical_record.fields["historic_scan_time"]]...</a>"
+	else
+		. += "[span_deptradio("No body scan report on record for occupant")]"
 
 /obj/machinery/sleeper/Topic(href, href_list)
 	. = ..()
@@ -224,15 +220,9 @@
 		return
 	if(!ishuman(occupant))
 		return
-	var/mob/living/carbon/human/H = occupant
-	for(var/datum/data/record/R in GLOB.datacore.medical)
-		if (!R.fields["name"] == H.real_name)
-			continue
-		if(R.fields["last_scan_time"] && R.fields["last_scan_result"])
-			var/datum/browser/popup = new(usr, "scanresults", "<div align='center'>Last Scan Result</div>", 430, 600)
-			popup.set_content(R.fields["last_scan_result"])
-			popup.open(FALSE)
-		break
+	var/datum/data/record/medical_record = find_medical_record(occupant)
+	var/datum/historic_scan/scan = medical_record.fields["historic_scan"]
+	scan.ui_interact(usr)
 
 /obj/machinery/sleeper/process()
 	if (machine_stat & (NOPOWER|BROKEN))
@@ -273,41 +263,55 @@
 		return
 	if(!occupant)
 		return
-	. += emissive_appearance(icon, "[icon_state]_emissive", alpha = src.alpha)
+	. += emissive_appearance(icon, "[icon_state]_emissive", src, alpha = src.alpha)
 	. += mutable_appearance(icon, "[icon_state]_emissive", alpha = src.alpha)
 
 /obj/machinery/sleeper/attackby(obj/item/I, mob/user, params)
 	. = ..()
+	if(.)
+		return
 
 	if(istype(I, /obj/item/healthanalyzer) && occupant) //Allows us to use the analyzer on the occupant without taking him out.
 		var/obj/item/healthanalyzer/J = I
 		J.attack(occupant, user)
 		return
 
+/obj/machinery/sleeper/grab_interact(obj/item/grab/grab, mob/user, base_damage = BASE_OBJ_SLAM_DAMAGE, is_sharp = FALSE)
+	. = ..()
+	if(.)
+		return
 	if(isxeno(user))
 		return
-
+	if(machine_stat & (NOPOWER|BROKEN))
+		to_chat(user, span_notice("\ [src] is non-functional!"))
+		return
 	if(occupant)
-		to_chat(user, span_notice("The sleeper is already occupied!"))
+		to_chat(user, span_notice("\ [src] is already occupied!"))
 		return
 
+	var/mob/grabbed_mob
 
-	if(!istype(I, /obj/item/grab))
+	if(ismob(grab.grabbed_thing))
+		grabbed_mob = grab.grabbed_thing
+	else if(istype(grab.grabbed_thing,/obj/structure/closet/bodybag/cryobag))
+		var/obj/structure/closet/bodybag/cryobag/cryobag = grab.grabbed_thing
+		if(!cryobag.bodybag_occupant)
+			to_chat(user, span_warning("The stasis bag is empty!"))
+			return
+		grabbed_mob = cryobag.bodybag_occupant
+		cryobag.open()
+		user.start_pulling(grabbed_mob)
+	if(!grabbed_mob)
 		return
 
-	var/obj/item/grab/G = I
-	if(!ismob(G.grabbed_thing))
+	if(!grabbed_mob.forceMove(src))
 		return
-
-	var/mob/M = G.grabbed_thing
-	if(!M.forceMove(src))
-		return
-
-	visible_message("[user] puts [M] into the sleeper.", 3)
-	occupant = M
+	visible_message("[user] puts [grabbed_mob] into the sleeper.", 3)
+	occupant = grabbed_mob
 	start_processing()
 	connected.start_processing()
 	update_icon()
+	return TRUE
 
 /obj/machinery/sleeper/ex_act(severity)
 	if(filtering)
@@ -324,16 +328,15 @@
 
 
 /obj/machinery/sleeper/emp_act(severity)
+	. = ..()
 	if(filtering)
 		toggle_filter()
 	if(stasis)
 		toggle_stasis()
 	if(machine_stat & (BROKEN|NOPOWER))
-		..(severity)
 		return
 	if(occupant)
 		go_out()
-	..()
 
 /obj/machinery/sleeper/proc/toggle_filter()
 	if(!occupant)
@@ -394,7 +397,6 @@
 				t1 = "Unconscious"
 			if(2)
 				t1 = "*dead*"
-			else
 		var/health_ratio = occupant.health * 100 / occupant.maxHealth
 		to_chat(user, "[health_ratio > 50 ? "<font color='#487553'> " : "<font color='#b54646'> "]\t Health %: [health_ratio] ([t1])</font>")
 		to_chat(user, "[occupant.bodytemperature > 50 ? "<font color='#487553'>" : "<font color='#b54646'>"]\t -Core Temperature: [occupant.bodytemperature-T0C]&deg;C ([occupant.bodytemperature*1.8-459.67]&deg;F)</FONT><BR>")
@@ -407,22 +409,22 @@
 	else
 		to_chat(user, span_notice("There is no one inside!"))
 
-/obj/machinery/sleeper/attack_alien(mob/living/carbon/xenomorph/X, damage_amount, damage_type, damage_flag, effects, armor_penetration, isrightclick)
+/obj/machinery/sleeper/attack_alien(mob/living/carbon/xenomorph/xeno_attacker, damage_amount = xeno_attacker.xeno_caste.melee_damage, damage_type = BRUTE, armor_type = MELEE, effects = TRUE, armor_penetration = xeno_attacker.xeno_caste.melee_ap, isrightclick = FALSE)
 	if(!occupant)
-		to_chat(X, span_xenowarning("There is nothing of interest in there."))
+		to_chat(xeno_attacker, span_xenowarning("There is nothing of interest in there."))
 		return
-	if(X.status_flags & INCORPOREAL || X.do_actions)
+	if(xeno_attacker.status_flags & INCORPOREAL || xeno_attacker.do_actions)
 		return
-	visible_message(span_warning("[X] begins to pry the [src]'s cover!"), 3)
+	visible_message(span_warning("[xeno_attacker] begins to pry the [src]'s cover!"), 3)
 	playsound(src,'sound/effects/metal_creaking.ogg', 25, 1)
-	if(!do_after(X, 2 SECONDS))
+	if(!do_after(xeno_attacker, 2 SECONDS))
 		return
 	playsound(loc, 'sound/effects/metal_creaking.ogg', 25, 1)
 	go_out()
 
 /obj/machinery/sleeper/verb/eject()
 	set name = "Eject Sleeper"
-	set category = "Object"
+	set category = "IC.Object"
 	set src in oview(1)
 
 	if(usr.stat != CONSCIOUS)
@@ -467,7 +469,7 @@
 
 /obj/machinery/sleeper/verb/move_inside()
 	set name = "Enter Sleeper"
-	set category = "Object"
+	set category = "IC.Object"
 	set src in oview(1)
 
 	move_inside_wrapper(usr, usr)

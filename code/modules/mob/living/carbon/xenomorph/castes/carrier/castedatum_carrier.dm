@@ -3,7 +3,7 @@
 	display_name = "Carrier"
 	upgrade_name = ""
 	caste_desc = "A carrier of huggies."
-
+	base_strain_type = /mob/living/carbon/xenomorph/carrier
 	caste_type_path = /mob/living/carbon/xenomorph/carrier
 
 	tier = XENO_TIER_TWO
@@ -11,32 +11,31 @@
 	wound_type = "carrier" //used to match appropriate wound overlays
 
 	// *** Melee Attacks *** //
-	melee_damage = 20
+	melee_damage = 22
 
 	// *** Speed *** //
-	speed = -0.3
+	speed = -0.2
 
 	// *** Plasma *** //
-	plasma_max = 800
-	plasma_gain = 38
+	plasma_max = 1000
+	plasma_gain = 50
 
 	// *** Health *** //
-	max_health = 325
+	max_health = 425
 
 	// *** Evolution *** //
 	evolution_threshold = 225
 	upgrade_threshold = TIER_TWO_THRESHOLD
 
-	deevolves_to = /mob/living/carbon/xenomorph/drone
+	deevolves_to = /datum/xeno_caste/drone
 
 	// *** Flags *** //
-	caste_flags = CASTE_EVOLUTION_ALLOWED
+	caste_flags = CASTE_EVOLUTION_ALLOWED|CASTE_MUTATIONS_ALLOWED
 	can_hold_eggs = CAN_HOLD_ONE_HAND
-	can_flags = CASTE_CAN_BE_QUEEN_HEALED|CASTE_CAN_HOLD_FACEHUGGERS|CASTE_CAN_BE_GIVEN_PLASMA|CASTE_CAN_BE_LEADER
-	caste_traits = null
+	can_flags = parent_type::can_flags|CASTE_CAN_HOLD_FACEHUGGERS|CASTE_CAN_BE_GIVEN_PLASMA
 
 	// *** Defense *** //
-	soft_armor = list(MELEE = 15, BULLET = 15, LASER = 15, ENERGY = 15, BOMB = 0, BIO = 5, FIRE = 15, ACID = 5)
+	soft_armor = list(MELEE = 30, BULLET = 30, LASER = 30, ENERGY = 30, BOMB = 0, BIO = 5, FIRE = 25, ACID = 5)
 
 	// *** Pheromones *** //
 	aura_strength = 2.5
@@ -45,8 +44,8 @@
 	minimap_icon = "carrier"
 
 	// *** Carrier Abilities *** //
-	huggers_max = 7
-	hugger_delay = 1.5 SECONDS
+	huggers_max = 8
+	hugger_delay = 1.25 SECONDS
 
 	actions = list(
 		/datum/action/ability/xeno_action/xeno_resting,
@@ -65,6 +64,18 @@
 		/datum/action/ability/xeno_action/pheromones/emit_frenzy,
 		/datum/action/ability/xeno_action/carrier_panic,
 		/datum/action/ability/xeno_action/choose_hugger_type,
+	)
+
+	mutations = list(
+		/datum/mutation_upgrade/shell/shared_jelly,
+		/datum/mutation_upgrade/shell/hugger_overflow,
+		/datum/mutation_upgrade/shell/recurring_panic,
+		/datum/mutation_upgrade/spur/leapfrog,
+		/datum/mutation_upgrade/spur/claw_delivered,
+		/datum/mutation_upgrade/spur/fake_huggers,
+		/datum/mutation_upgrade/veil/oviposition,
+		/datum/mutation_upgrade/veil/life_for_life,
+		/datum/mutation_upgrade/veil/swarm_trap
 	)
 
 /datum/xeno_caste/carrier/normal

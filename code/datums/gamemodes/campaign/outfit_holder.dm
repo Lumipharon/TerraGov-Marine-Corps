@@ -48,18 +48,17 @@
 			continue
 		if(thing_to_check.quantity > 0)
 			thing_to_check.quantity --
-		thing_to_check.post_equip(owner, loadout)
+		thing_to_check.post_equip(owner, loadout, src)
 
 ///Adds a new loadout_item to the available list
 /datum/outfit_holder/proc/unlock_new_option(datum/loadout_item/new_item)
-	if(new_item in available_list["[new_item.item_slot]"])
-		return FALSE
-	available_list["[new_item.item_slot]"] += new_item
+	available_list["[new_item.item_slot]"] |= new_item
 	purchasable_list["[new_item.item_slot]"] -= new_item
-	return TRUE
 
 ///Adds a new loadout_item to the purchasable list
 /datum/outfit_holder/proc/allow_new_option(datum/loadout_item/new_item)
+	if(!istype(new_item))
+		return
 	if(new_item in purchasable_list["[new_item.item_slot]"])
 		return
 	if(new_item in available_list["[new_item.item_slot]"])
@@ -68,6 +67,8 @@
 
 ///Removes loadout_item entirely from being equipped
 /datum/outfit_holder/proc/remove_option(datum/loadout_item/removed_item)
+	if(!istype(removed_item))
+		return
 	var/removed_item_slot = "[removed_item.item_slot]"
 	available_list[removed_item_slot] -= removed_item
 	purchasable_list[removed_item_slot] -= removed_item
@@ -113,13 +114,16 @@
 		if(ITEM_SLOT_BACK)
 			loadout.back = new_item?.item_typepath
 		if(ITEM_SLOT_R_POCKET)
-			loadout.r_store = new_item?.item_typepath
+			loadout.r_pocket = new_item?.item_typepath
 		if(ITEM_SLOT_L_POCKET)
-			loadout.l_store = new_item?.item_typepath
+			loadout.l_pocket = new_item?.item_typepath
 		if(ITEM_SLOT_SUITSTORE)
 			loadout.suit_store = new_item?.item_typepath
+		if(ITEM_SLOT_SECONDARY)
+			loadout.secondary_weapon = new_item?.item_typepath
 		else
 			CRASH("Invalid item slot specified [slot_bit]")
+	new_item.on_holder_equip(src)
 	return TRUE
 
 ///scans the entire loadout for validity

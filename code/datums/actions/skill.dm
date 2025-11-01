@@ -3,9 +3,12 @@
 	var/skill_min
 
 /datum/action/skill/should_show()
-	return can_use_action()
+	. = ..()
+	if(!.)
+		return
+	return owner.skills.getRating(skill_name) >= skill_min
 
-/datum/action/skill/can_use_action()
+/datum/action/skill/can_use_action(silent, override_flags, selecting)
 	return owner.skills.getRating(skill_name) >= skill_min
 
 /datum/action/skill/fail_activate()

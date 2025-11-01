@@ -51,7 +51,7 @@
 	icon_state = "monorail"
 	density = FALSE
 	anchored = TRUE
-	layer = ATMOS_PIPE_LAYER + 0.01
+	layer = LOW_OBJ_LAYER
 
 /obj/structure/mopbucket
 	name = "mop bucket"
@@ -73,6 +73,8 @@
 
 /obj/structure/mopbucket/attackby(obj/item/I, mob/user, params)
 	. = ..()
+	if(.)
+		return
 
 	if(istype(I, /obj/item/tool/mop))
 		if(reagents.total_volume < 1)
@@ -131,14 +133,14 @@
 	max_integrity = 100
 	resistance_flags = UNACIDABLE
 	hit_sound = 'sound/effects/Glasshit.ogg'
-	destroy_sound = "shatter"
+	destroy_sound = SFX_SHATTER
 	///Whatever is contained in the tank
 	var/obj/occupant
 	///What this tank is replaced by when broken
 	var/obj/structure/broken_state = /obj/structure/xenoautopsy/tank/escaped
 
 
-/obj/structure/xenoautopsy/tank/deconstruct(disassembled = TRUE)
+/obj/structure/xenoautopsy/tank/deconstruct(disassembled = TRUE, mob/living/blame_mob)
 	if(!broken_state)
 		return ..()
 
@@ -214,14 +216,24 @@
 
 
 
-//stairs
-
+/**
+ * TODO FIXME FIX ME ETC FUCK KNOWS
+ * So guess what stairs are super fucked
+ * Instead of doing something sane like right and left handrail variants cm/bay lumped everything into
+ * ONE ICONSTATE FOR N/S AND ONE FOR E/W
+ * WHY
+ * WHAT IS WRONG WITH YOU
+ * WE USE DIRS FOR SHIT LIKE STAIRS THAT ACTUALLY MOVE YOU
+ * FIX THIS SHIT FUCKING PLEASE USE THE UPDATEPATHS TOOL I HAVE FIXED rampbottom FOR YOU BECAUSE OTHERWISE MULTIZSTAIRS JUST DIE
+ * DUMBASSES
+ */
 /obj/structure/stairs
 	name = "Stairs"
 	icon = 'icons/obj/structures/stairs.dmi'
 	desc = "Stairs.  You walk up and down them."
 	icon_state = "rampbottom"
-	layer = TURF_LAYER
+	plane = FLOOR_PLANE // we want this to render below walls if we place them on top
+	layer = LOWER_RUNE_LAYER
 	density = FALSE
 	opacity = FALSE
 
@@ -230,8 +242,8 @@
 	update_icon()
 
 	var/static/list/connections = list(
-		COMSIG_FIND_FOOTSTEP_SOUND = PROC_REF(footstep_override),
-		COMSIG_TURF_CHECK_COVERED = PROC_REF(turf_cover_check),
+		COMSIG_FIND_FOOTSTEP_SOUND = TYPE_PROC_REF(/atom/movable, footstep_override),
+		COMSIG_TURF_CHECK_COVERED = TYPE_PROC_REF(/atom/movable, turf_cover_check),
 	)
 	AddElement(/datum/element/connect_loc, connections)
 
@@ -382,7 +394,7 @@
 /obj/structure/cryopods
 	name = "hypersleep chamber"
 	icon = 'icons/obj/machines/cryogenics.dmi'
-	icon_state = "body_scanner_0"
+	icon_state = "body_scanner"
 	desc = "A large automated capsule with LED displays intended to put anyone inside into 'hypersleep'."
 	density = TRUE
 	anchored = TRUE

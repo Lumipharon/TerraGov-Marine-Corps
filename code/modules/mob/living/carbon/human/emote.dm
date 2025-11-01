@@ -31,29 +31,29 @@
 	key_third_person = "bows"
 	message = "bows."
 	message_param = "bows to %t."
-	flags_emote = EMOTE_RESTRAINT_CHECK
+	emote_flags = EMOTE_RESTRAINT_CHECK
 
 
 /datum/emote/living/carbon/human/chuckle
 	key = "chuckle"
 	key_third_person = "chuckles"
 	message = "chuckles."
-	emote_type = EMOTE_AUDIBLE
+	emote_type = EMOTE_TYPE_AUDIBLE
 
 
 /datum/emote/living/carbon/human/cross
 	key = "cross"
 	key_third_person = "crosses"
 	message = "crosses their arms."
-	flags_emote = EMOTE_RESTRAINT_CHECK
+	emote_flags = EMOTE_RESTRAINT_CHECK
 
 
 /datum/emote/living/carbon/human/clap
 	key = "clap"
 	key_third_person = "claps"
 	message = "claps."
-	flags_emote = EMOTE_RESTRAINT_CHECK|EMOTE_VARY|EMOTE_MUZZLE_IGNORE
-	emote_type = EMOTE_AUDIBLE
+	emote_flags = EMOTE_RESTRAINT_CHECK|EMOTE_VARY|EMOTE_MUZZLE_IGNORE
+	emote_type = EMOTE_TYPE_AUDIBLE
 	sound = 'sound/misc/clap.ogg'
 
 
@@ -61,7 +61,7 @@
 	key = "collapse"
 	key_third_person = "collapses"
 	message = "collapses!"
-	emote_type = EMOTE_AUDIBLE
+	emote_type = EMOTE_TYPE_AUDIBLE
 
 
 /datum/emote/living/carbon/human/collapse/run_emote(mob/living/carbon/human/user, params, type_override, intentional = FALSE, prefix)
@@ -75,7 +75,7 @@
 	key = "cough"
 	key_third_person = "coughs"
 	message = "coughs!"
-	emote_type = EMOTE_AUDIBLE
+	emote_type = EMOTE_TYPE_AUDIBLE
 
 
 /datum/emote/living/carbon/human/cough/get_sound(mob/living/carbon/human/user)
@@ -91,7 +91,7 @@
 	key = "cry"
 	key_third_person = "cries"
 	message = "cries."
-	emote_type = EMOTE_AUDIBLE
+	emote_type = EMOTE_TYPE_AUDIBLE
 
 
 /datum/emote/living/carbon/human/drool
@@ -128,7 +128,7 @@
 	key = "gasp"
 	key_third_person = "gasps"
 	message = "gasps!"
-	emote_type = EMOTE_AUDIBLE
+	emote_type = EMOTE_TYPE_AUDIBLE
 	stat_allowed = UNCONSCIOUS
 
 
@@ -144,7 +144,7 @@
 	key = "giggle"
 	key_third_person = "giggles"
 	message = "giggles."
-	emote_type = EMOTE_AUDIBLE
+	emote_type = EMOTE_TYPE_AUDIBLE
 
 
 /datum/emote/living/carbon/human/glare
@@ -152,14 +152,14 @@
 	key_third_person = "glares"
 	message = "glares."
 	message_param = "glares at %t."
-	emote_type = EMOTE_AUDIBLE
+	emote_type = EMOTE_TYPE_AUDIBLE
 
 
 /datum/emote/living/carbon/human/yawn
 	key = "yawn"
 	key_third_person = "yawns"
 	message = "yawns."
-	emote_type = EMOTE_AUDIBLE
+	emote_type = EMOTE_TYPE_AUDIBLE
 
 
 /datum/emote/living/carbon/human/wave
@@ -178,7 +178,7 @@
 	key = "snore"
 	key_third_person = "snores"
 	message = "snores."
-	emote_type = EMOTE_AUDIBLE
+	emote_type = EMOTE_TYPE_AUDIBLE
 	stat_allowed = UNCONSCIOUS
 
 
@@ -217,7 +217,7 @@
 	key = "surrender"
 	key_third_person = "surrenders"
 	message = "puts their hands on their head and falls to the ground, they surrender!"
-	emote_type = EMOTE_AUDIBLE
+	emote_type = EMOTE_TYPE_AUDIBLE
 
 /datum/emote/living/carbon/human/surrender/run_emote(mob/user, params, type_override, intentional)
 	. = ..()
@@ -230,35 +230,35 @@
 	key = "sneeze"
 	key_third_person = "sneezes"
 	message = "sneezes."
-	emote_type = EMOTE_AUDIBLE
+	emote_type = EMOTE_TYPE_AUDIBLE
 
 
 /datum/emote/living/carbon/human/sniff
 	key = "sniff"
 	key_third_person = "sniffs"
 	message = "sniffs."
-	emote_type = EMOTE_AUDIBLE
+	emote_type = EMOTE_TYPE_AUDIBLE
 
 
 /datum/emote/living/carbon/human/shiver
 	key = "shiver"
 	key_third_person = "shiver"
 	message = "shivers."
-	emote_type = EMOTE_AUDIBLE
+	emote_type = EMOTE_TYPE_AUDIBLE
 
 
 /datum/emote/living/carbon/human/scowl
 	key = "scowl"
 	key_third_person = "scowls"
 	message = "scowls."
-	emote_type = EMOTE_AUDIBLE
+	emote_type = EMOTE_TYPE_AUDIBLE
 
 
 /datum/emote/living/carbon/human/sigh
 	key = "sigh"
 	key_third_person = "sighs"
 	message = "sighs."
-	emote_type = EMOTE_AUDIBLE
+	emote_type = EMOTE_TYPE_AUDIBLE
 
 
 /datum/emote/living/carbon/human/sit
@@ -276,7 +276,7 @@
 	key = "shakehead"
 	key_third_person = "shakeheads"
 	message = "shakes their head."
-	emote_type = EMOTE_AUDIBLE
+	emote_type = EMOTE_TYPE_AUDIBLE
 
 
 /datum/emote/living/carbon/human/nod
@@ -290,7 +290,7 @@
 	key = "gag"
 	key_third_person = "gags"
 	message = "gags."
-	emote_type = EMOTE_AUDIBLE
+	emote_type = EMOTE_TYPE_AUDIBLE
 
 
 /datum/emote/living/carbon/human/glare
@@ -298,7 +298,7 @@
 	key_third_person = "glares"
 	message = "glares."
 	message_param = "glares at %t."
-	emote_type = EMOTE_AUDIBLE
+	emote_type = EMOTE_TYPE_AUDIBLE
 
 
 /datum/emote/living/carbon/human/grin
@@ -312,33 +312,25 @@
 	key_third_person = "grimaces"
 	message = "grimaces."
 
-
-/datum/emote/living/carbon/human/jump
-	key = "jump"
-	key_third_person = "jumps"
-	message = "jumps!"
-	flags_emote = EMOTE_RESTRAINT_CHECK
-
-
 /datum/emote/living/carbon/human/grumble
 	key = "grumble"
 	key_third_person = "grumbles"
 	message = "grumbles!"
-	emote_type = EMOTE_AUDIBLE
+	emote_type = EMOTE_TYPE_AUDIBLE
 
 /datum/emote/living/carbon/human/kiss
 	key = "kiss"
 	key_third_person = "kisses"
 	message = "blows a kiss."
 	message_param = "blows a kiss to %t."
-	emote_type = EMOTE_AUDIBLE
+	emote_type = EMOTE_TYPE_AUDIBLE
 
 
 /datum/emote/living/carbon/human/signal
 	key = "signal"
 	key_third_person = "signals"
 	message_param = "raises %t fingers."
-	flags_emote = EMOTE_RESTRAINT_CHECK
+	emote_flags = EMOTE_RESTRAINT_CHECK
 
 
 /datum/emote/living/carbon/human/signal/select_param(mob/user, params)
@@ -353,34 +345,34 @@
 	key = "mumble"
 	key_third_person = "mumbles"
 	message = "mumbles!"
-	emote_type = EMOTE_AUDIBLE
+	emote_type = EMOTE_TYPE_AUDIBLE
 
 
 /datum/emote/living/carbon/human/moan
 	key = "moan"
 	key_third_person = "moans"
 	message = "moans!"
-	emote_type = EMOTE_AUDIBLE
+	emote_type = EMOTE_TYPE_AUDIBLE
 
 
 /datum/emote/living/carbon/human/laugh
 	key = "laugh"
 	key_third_person = "laughs"
 	message = "laughs."
-	emote_type = EMOTE_AUDIBLE
+	emote_type = EMOTE_TYPE_AUDIBLE
 
 
 /datum/emote/living/carbon/human/laugh/get_sound(mob/living/user)
 	if(user.gender == FEMALE)
-		return 'sound/voice/human_female_laugh_1.ogg'
+		return 'sound/voice/human/female/laugh_1.ogg'
 	else
-		return pick('sound/voice/human_male_laugh_1.ogg', 'sound/voice/human_male_laugh_2.ogg')
+		return pick('sound/voice/human/male/laugh_1.ogg', 'sound/voice/human/male/laugh_2.ogg')
 
 /datum/emote/living/carbon/human/warcry
 	key = "warcry"
 	key_third_person = "warcries"
 	message = "shouts an inspiring cry!"
-	emote_type = EMOTE_AUDIBLE
+	emote_type = EMOTE_TYPE_AUDIBLE
 
 /datum/emote/living/carbon/human/warcry/get_sound(mob/living/carbon/human/user)
 	if(!user.species)
@@ -402,8 +394,8 @@
 	key = "snap"
 	key_third_person = "snaps"
 	message = "snaps their fingers"
-	emote_type = EMOTE_AUDIBLE
-	flags_emote = EMOTE_RESTRAINT_CHECK|EMOTE_MUZZLE_IGNORE|EMOTE_ARMS_CHECK
+	emote_type = EMOTE_TYPE_AUDIBLE
+	emote_flags = EMOTE_RESTRAINT_CHECK|EMOTE_MUZZLE_IGNORE|EMOTE_ARMS_CHECK
 	sound = 'sound/misc/fingersnap.ogg'
 
 /datum/emote/living/carbon/human/hug
@@ -411,8 +403,8 @@
 	key_third_person = "hugs"
 	message = "hugs themself"
 	message_param = "hugs %t."
-	flags_emote = EMOTE_RESTRAINT_CHECK
-	emote_type = EMOTE_AUDIBLE
+	emote_flags = EMOTE_RESTRAINT_CHECK
+	emote_type = EMOTE_TYPE_AUDIBLE
 
 
 /datum/emote/living/carbon/human/look
@@ -426,8 +418,8 @@
 	key = "handshake"
 	message = "shakes their own hands."
 	message_param = "shakes hands with %t."
-	flags_emote = EMOTE_RESTRAINT_CHECK
-	emote_type = EMOTE_AUDIBLE
+	emote_flags = EMOTE_RESTRAINT_CHECK
+	emote_type = EMOTE_TYPE_AUDIBLE
 
 
 /datum/emote/living/carbon/human/salute
@@ -435,7 +427,7 @@
 	key_third_person = "salutes"
 	message = "salutes."
 	message_param = "salutes to %t."
-	flags_emote = EMOTE_RESTRAINT_CHECK
+	emote_flags = EMOTE_RESTRAINT_CHECK
 	sound = 'sound/misc/salute.ogg'
 
 
@@ -443,7 +435,7 @@
 	key = "golfclap"
 	key_third_person = "golfclaps"
 	message = "claps, clearly unimpressed."
-	flags_emote = EMOTE_RESTRAINT_CHECK
+	emote_flags = EMOTE_RESTRAINT_CHECK
 	sound = 'sound/misc/golfclap.ogg'
 
 
@@ -451,14 +443,14 @@
 	key = "pout"
 	key_third_person = "pouts"
 	message = "pouts."
-	emote_type = EMOTE_AUDIBLE
+	emote_type = EMOTE_TYPE_AUDIBLE
 
 
 /datum/emote/living/carbon/human/scream
 	key = "scream"
 	key_third_person = "screams"
 	message = "screams!"
-	emote_type = EMOTE_AUDIBLE
+	emote_type = EMOTE_TYPE_AUDIBLE
 
 
 /datum/emote/living/carbon/human/scream/get_sound(mob/living/carbon/human/user)
@@ -481,17 +473,17 @@
 /datum/emote/living/carbon/human/medic
 	key = "medic"
 	message = "calls for a medic!"
-	emote_type = EMOTE_AUDIBLE
+	emote_type = EMOTE_TYPE_AUDIBLE
 
 
 /datum/emote/living/carbon/human/medic/get_sound(mob/living/carbon/human/user)
 	if(user.gender == MALE)
 		if(prob(95))
-			return 'sound/voice/human_male_medic.ogg'
+			return 'sound/voice/human/male/medic.ogg'
 		else
-			return 'sound/voice/human_male_medic2.ogg'
+			return 'sound/voice/human/male/medic2.ogg'
 	else
-		return 'sound/voice/human_female_medic.ogg'
+		return 'sound/voice/human/female/medic.ogg'
 
 
 /datum/emote/living/carbon/human/medic/run_emote(mob/user, params, type_override, intentional = FALSE, prefix)
@@ -500,12 +492,12 @@
 		return
 	var/image/medic = image('icons/mob/talk.dmi', user, icon_state = "medic")
 	user.add_emote_overlay(medic)
-
+	SEND_GLOBAL_SIGNAL(COMSIG_GLOB_MOB_CALL_MEDIC, user)
 
 /datum/emote/living/carbon/human/pain
 	key = "pain"
 	message = "cries out in pain!"
-	emote_type = EMOTE_AUDIBLE
+	emote_type = EMOTE_TYPE_AUDIBLE
 
 
 /datum/emote/living/carbon/human/pain/get_sound(mob/living/carbon/human/user)
@@ -528,8 +520,8 @@
 /datum/emote/living/carbon/human/gored
 	key = "gored"
 	message = "gags out in pain!"
-	emote_type = EMOTE_AUDIBLE
-	flags_emote = EMOTE_FORCED_AUDIO
+	emote_type = EMOTE_TYPE_AUDIBLE
+	emote_flags = EMOTE_FORCED_AUDIO
 
 
 /datum/emote/living/carbon/human/gored/get_sound(mob/living/carbon/human/user)
@@ -552,8 +544,8 @@
 /datum/emote/living/carbon/human/burstscream
 	key = "burstscream"
 	message = "screams in agony!"
-	emote_type = EMOTE_AUDIBLE
-	flags_emote = EMOTE_FORCED_AUDIO
+	emote_type = EMOTE_TYPE_AUDIBLE
+	emote_flags = EMOTE_FORCED_AUDIO
 	stat_allowed = UNCONSCIOUS
 
 
@@ -572,3 +564,22 @@
 		return
 	var/image/pain = image('icons/mob/talk.dmi', user, icon_state = "pain")
 	user.add_emote_overlay(pain)
+
+/datum/emote/living/carbon/human/trick
+	key = "trick"
+	key_third_person = "tricks"
+	emote_flags = EMOTE_ACTIVE_ITEM|EMOTE_RESTRAINT_CHECK
+
+/datum/emote/living/carbon/human/trick/can_run_emote(mob/user, status_check = TRUE, intentional = FALSE)
+	. = ..()
+	if(!.)
+		return
+	var/obj/item/I = user.get_active_held_item()
+	return I.can_do_trick(user)
+
+/datum/emote/living/carbon/human/trick/run_emote(mob/user, params, type_override, intentional, prefix)
+	. = ..()
+	if(!.)
+		return
+	var/obj/item/I = user.get_active_held_item()
+	I.do_trick(usr)

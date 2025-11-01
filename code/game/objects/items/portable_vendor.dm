@@ -5,15 +5,15 @@
 /obj/item/portable_vendor
 	name = "\improper Automated Storage Briefcase"
 	desc = "A suitcase-sized automated storage and retrieval system. Designed to efficiently store and selectively dispense small items."
-	icon = 'icons/obj/items/storage/storage.dmi'
+	icon = 'icons/obj/items/storage/briefcase.dmi'
 	icon_state = "secure"
-	item_icons = list(
+	worn_icon_list = list(
 		slot_l_hand_str = 'icons/mob/inhands/items/containers_left.dmi',
 		slot_r_hand_str = 'icons/mob/inhands/items/containers_right.dmi',
 	)
-	flags_atom = CONDUCT
+	atom_flags = CONDUCT
 	force = 8
-	hitsound = "swing_hit"
+	hitsound = SFX_SWING_HIT
 	throw_speed = 1
 	throw_range = 4
 	w_class = WEIGHT_CLASS_BULKY
@@ -107,11 +107,11 @@
 	switch(action)
 		if("vend")
 			if(!allowed(user))
-				balloon_alert(user, "Access denied.")
+				balloon_alert(user, "access denied!")
 				return
 
 			if(fabricating)
-				balloon_alert(user, "already fabricating")
+				balloon_alert(user, "already fabricating!")
 				return
 			var/idx = text2num(params["vend"])
 
@@ -119,18 +119,18 @@
 			var/cost = L[2]
 
 			if(use_points && points < cost)
-				balloon_alert(user, "Not enough points")
+				balloon_alert(user, "not enough points!")
 
 			var/turf/T = get_turf(src)
 			if(length(T.contents) > 25)
-				balloon_alert(user, "not enough space")
+				balloon_alert(user, "not enough space!")
 				return
 
 			if(use_points)
 				points -= cost
 
 			playsound(src, "sound/machines/fax.ogg", 5)
-			balloon_alert(user, "fabricating")
+			balloon_alert(user, "fabricating...")
 			fabricating = TRUE
 			update_appearance()
 			addtimer(CALLBACK(src, PROC_REF(do_vend), L[3], user), 1 SECONDS)
@@ -181,9 +181,10 @@
 	s.start()
 
 /obj/item/portable_vendor/emp_act(severity)
-	if (broken)
+	. = ..()
+	if(broken)
 		return
-	if (prob(40*severity))
+	if(prob(100 - (severity * 20)))
 		malfunction()
 
 /obj/item/portable_vendor/ex_act(severity)

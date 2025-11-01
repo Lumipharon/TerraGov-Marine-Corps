@@ -4,6 +4,10 @@
 	map_name = "Ice Caves"
 	map_file = '_maps/map_files/icy_caves/icy_caves.dmm'
 	max_game_time = 12 MINUTES
+	shutter_open_delay = list(
+		MISSION_STARTING_FACTION = 30 SECONDS,
+		MISSION_HOSTILE_FACTION = 0,
+	)
 	victory_point_rewards = list(
 		MISSION_OUTCOME_MAJOR_VICTORY = list(3, 0),
 		MISSION_OUTCOME_MINOR_VICTORY = list(1, 0),
@@ -101,7 +105,7 @@
 		if(mode.stat_list[attacking_faction].active_attrition_points)
 			return FALSE //attacking team still has more bodies to throw into the fight
 		var/list/player_list = count_humans(count_flags = COUNT_IGNORE_ALIVE_SSD)
-		if(length(player_list[attacking_faction == starting_faction ? 1 : 3]))
+		if(length(player_list[attacking_faction == starting_faction ? 1 : 2]))
 			return FALSE //attacking team still has living guys
 
 	if(min_destruction_amount && objectives_destroyed >= min_destruction_amount) //Destroyed at least the minimum required

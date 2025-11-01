@@ -1,6 +1,6 @@
 //MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
 "ad" = (
-/obj/item/weapon/gun/tl102/hsg_nest/sandless{
+/obj/item/weapon/gun/hsg_102/hsg_nest/sandless{
 	dir = 4
 	},
 /turf/open/floor/plating/ground/dirt2,
@@ -74,53 +74,38 @@
 /turf/open/ground/grass,
 /area/oscar_outpost/outside/northwest)
 "aT" = (
-/obj/structure/table/rusticwoodentable,
+/obj/structure/table/wood/rustic,
 /obj/machinery/light,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/turf/open/floor,
-/area/oscar_outpost)
-"aU" = (
-/obj/structure/closet,
-/obj/item/clothing/gloves/green{
-	desc = "Always good to keep a green thumb";
-	name = "gardener gloves"
-	},
-/obj/structure/prop/mainship/gelida/propplaceholder,
-/obj/item/clothing/mask/cigarette/pipe,
-/obj/item/clothing/shoes/leather,
-/obj/item/clothing/under/color/green,
-/obj/item/tool/minihoe,
-/obj/item/tool/shovel,
-/obj/item/tool/plantspray/weeds,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
 /turf/open/floor,
 /area/oscar_outpost)
 "aW" = (
@@ -174,7 +159,7 @@
 /turf/open/floor/plating/ground/dirtgrassborder/corner,
 /area/oscar_outpost/outside/northeast)
 "bx" = (
-/obj/item/weapon/gun/tl102/hsg_nest/sandless{
+/obj/item/weapon/gun/hsg_102/hsg_nest/sandless{
 	dir = 1;
 	pixel_y = -5
 	},
@@ -239,10 +224,6 @@
 /obj/docking_port/stationary/crashmode,
 /turf/open/floor/plating/ground/dirt2,
 /area/oscar_outpost/outside/west)
-"bD" = (
-/obj/effect/landmark/patrol_point/som/som_14,
-/turf/open/floor/plating/ground/dirt,
-/area/oscar_outpost/outside/north)
 "bI" = (
 /obj/structure/platform/trench{
 	dir = 4
@@ -279,16 +260,16 @@
 /area/oscar_outpost/outside/east)
 "cy" = (
 /obj/structure/table/reinforced,
-/obj/structure/barricade/metal{
+/obj/structure/barricade/solid{
 	dir = 1
 	},
-/obj/structure/barricade/metal{
+/obj/structure/barricade/solid{
 	dir = 8
 	},
-/obj/structure/barricade/metal{
+/obj/structure/barricade/solid{
 	dir = 4
 	},
-/obj/structure/barricade/metal,
+/obj/structure/barricade/solid,
 /turf/open/floor/plating,
 /area/oscar_outpost/outside/north)
 "cA" = (
@@ -334,16 +315,16 @@
 /area/oscar_outpost/outside/east)
 "cX" = (
 /obj/structure/table/reinforced,
-/obj/structure/barricade/metal{
+/obj/structure/barricade/solid{
 	dir = 1
 	},
-/obj/structure/barricade/metal{
+/obj/structure/barricade/solid{
 	dir = 8
 	},
-/obj/structure/barricade/metal{
+/obj/structure/barricade/solid{
 	dir = 4
 	},
-/obj/structure/barricade/metal,
+/obj/structure/barricade/solid,
 /turf/open/ground/coast{
 	dir = 1
 	},
@@ -353,10 +334,6 @@
 /obj/structure/platform/trench,
 /turf/open/ground/grass,
 /area/oscar_outpost/outside/northwest)
-"dd" = (
-/obj/effect/landmark/patrol_point/som/som_22,
-/turf/open/floor/plating/ground/dirt,
-/area/oscar_outpost/outside/north)
 "de" = (
 /obj/structure/platform/trench{
 	dir = 4
@@ -443,10 +420,6 @@
 	},
 /turf/open/floor/plating/ground/dirtgrassborder/corner2,
 /area/oscar_outpost/outside/northeast)
-"el" = (
-/obj/effect/landmark/patrol_point/som/som_23,
-/turf/open/floor/plating/ground/dirt,
-/area/oscar_outpost/outside/north)
 "en" = (
 /obj/structure/platform/trench,
 /turf/open/floor/plating/ground/dirtgrassborder{
@@ -468,7 +441,7 @@
 	},
 /area/oscar_outpost/outside/northwest)
 "er" = (
-/obj/structure/table/rusticwoodentable,
+/obj/structure/table/wood/rustic,
 /obj/item/reagent_containers/glass/bucket,
 /obj/item/reagent_containers/glass/bucket,
 /obj/item/reagent_containers/glass/bucket,
@@ -485,26 +458,26 @@
 "eE" = (
 /obj/structure/table/mainship,
 /obj/item/tool/pen,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
 /turf/open/floor,
 /area/oscar_outpost)
 "eF" = (
@@ -555,7 +528,7 @@
 	name = "barley";
 	plantname = "barley"
 	},
-/obj/structure/table/rusticwoodentable,
+/obj/structure/table/wood/rustic,
 /obj/machinery/camera/autoname/mainship,
 /turf/open/floor,
 /area/oscar_outpost)
@@ -583,10 +556,6 @@
 	},
 /turf/open/floor,
 /area/oscar_outpost)
-"fe" = (
-/obj/effect/landmark/patrol_point/som/som_24,
-/turf/open/floor/plating/ground/dirt,
-/area/oscar_outpost/outside/north)
 "ff" = (
 /obj/machinery/floodlight/outpost/oscar,
 /turf/open/floor/plating/ground/dirtgrassborder{
@@ -604,10 +573,6 @@
 	dir = 4
 	},
 /area/oscar_outpost/outside/road)
-"fm" = (
-/obj/effect/landmark/patrol_point/som/som_12,
-/turf/open/floor/plating/ground/dirt,
-/area/oscar_outpost/outside/north)
 "fx" = (
 /obj/effect/ai_node,
 /obj/structure/platform/trench{
@@ -635,10 +600,6 @@
 	},
 /turf/open/floor/mainship/sterile,
 /area/oscar_outpost)
-"fL" = (
-/obj/effect/landmark/patrol_point/som/som_13,
-/turf/open/floor/plating/ground/dirt,
-/area/oscar_outpost/outside/north)
 "fM" = (
 /obj/structure/platform/trench{
 	dir = 4
@@ -752,7 +713,7 @@
 	},
 /area/oscar_outpost/outside/east)
 "gL" = (
-/obj/structure/table/rusticwoodentable,
+/obj/structure/table/wood/rustic,
 /obj/item/reagent_containers/food/drinks/flask/barflask{
 	pixel_x = -8;
 	pixel_y = 15
@@ -1000,8 +961,7 @@
 /area/oscar_outpost/outside/east)
 "jH" = (
 /obj/structure/platform{
-	dir = 4;
-	layer = 2.7
+	dir = 4
 	},
 /turf/open/floor/mainship_hull/dir{
 	dir = 4
@@ -1026,7 +986,7 @@
 /turf/open/floor/plating/ground/dirt2,
 /area/oscar_outpost/outside/northeast)
 "kk" = (
-/obj/structure/table/rusticwoodentable,
+/obj/structure/table/wood/rustic,
 /obj/item/reagent_containers/glass/bucket,
 /turf/open/floor,
 /area/oscar_outpost)
@@ -1396,7 +1356,7 @@
 /turf/open/ground/grass,
 /area/oscar_outpost/outside/east)
 "ow" = (
-/obj/item/weapon/gun/tl102/hsg_nest/sandless{
+/obj/item/weapon/gun/hsg_102/hsg_nest/sandless{
 	dir = 1;
 	pixel_y = -5
 	},
@@ -1404,7 +1364,7 @@
 /area/oscar_outpost/outside/northeast)
 "ox" = (
 /obj/structure/table/mainship,
-/obj/structure/barricade/metal{
+/obj/structure/barricade/solid{
 	alpha = 0;
 	dir = 1;
 	mouse_opacity = 0
@@ -1531,7 +1491,7 @@
 	},
 /area/oscar_outpost/outside/road)
 "pk" = (
-/obj/structure/table/rusticwoodentable,
+/obj/structure/table/wood/rustic,
 /obj/item/reagent_containers/glass/bucket,
 /obj/item/reagent_containers/glass/bucket,
 /obj/item/reagent_containers/glass/bucket,
@@ -1558,7 +1518,7 @@
 /turf/closed/wall/mainship/research,
 /area/oscar_outpost)
 "pz" = (
-/obj/structure/table/rusticwoodentable,
+/obj/structure/table/wood/rustic,
 /obj/item/storage/box/condimentbottles{
 	pixel_x = -5;
 	pixel_y = 12
@@ -1586,7 +1546,7 @@
 /turf/open/floor,
 /area/oscar_outpost)
 "pB" = (
-/obj/structure/barricade/metal{
+/obj/structure/barricade/solid{
 	alpha = 0;
 	dir = 1;
 	mouse_opacity = 0
@@ -1608,7 +1568,7 @@
 /turf/open/ground/grass,
 /area/oscar_outpost)
 "pE" = (
-/obj/structure/table/rusticwoodentable,
+/obj/structure/table/wood/rustic,
 /obj/item/reagent_containers/food/drinks/flask/barflask{
 	pixel_x = -8;
 	pixel_y = 15
@@ -1640,12 +1600,12 @@
 /turf/open/floor,
 /area/oscar_outpost)
 "pI" = (
-/obj/structure/barricade/metal{
+/obj/structure/barricade/solid{
 	alpha = 0;
 	dir = 1;
 	mouse_opacity = 0
 	},
-/obj/structure/barricade/metal{
+/obj/structure/barricade/solid{
 	alpha = 0;
 	dir = 4;
 	mouse_opacity = 0
@@ -1666,13 +1626,13 @@
 	},
 /area/oscar_outpost/outside/northeast)
 "pQ" = (
-/obj/item/weapon/gun/tl102/hsg_nest/sandless{
+/obj/item/weapon/gun/hsg_102/hsg_nest/sandless{
 	dir = 4
 	},
 /turf/open/floor/plating/ground/dirt2,
 /area/oscar_outpost/outside/northwest)
 "pU" = (
-/obj/item/weapon/gun/tl102/hsg_nest/sandless{
+/obj/item/weapon/gun/hsg_102/hsg_nest/sandless{
 	dir = 8
 	},
 /turf/open/floor/plating/ground/dirt2,
@@ -1786,12 +1746,12 @@
 /turf/open/floor/plating/ground/dirtgrassborder/corner2,
 /area/oscar_outpost/outside/northwest)
 "ra" = (
-/obj/structure/barricade/metal{
+/obj/structure/barricade/solid{
 	alpha = 0;
 	dir = 1;
 	mouse_opacity = 0
 	},
-/obj/structure/barricade/metal{
+/obj/structure/barricade/solid{
 	alpha = 0;
 	dir = 8;
 	mouse_opacity = 0
@@ -1803,12 +1763,12 @@
 /area/oscar_outpost)
 "rb" = (
 /obj/structure/table/mainship,
-/obj/structure/barricade/metal{
+/obj/structure/barricade/solid{
 	alpha = 0;
 	dir = 1;
 	mouse_opacity = 0
 	},
-/obj/structure/barricade/metal{
+/obj/structure/barricade/solid{
 	alpha = 0;
 	dir = 4;
 	mouse_opacity = 0
@@ -1874,7 +1834,7 @@
 	name = "barley";
 	plantname = "barley"
 	},
-/obj/structure/table/rusticwoodentable,
+/obj/structure/table/wood/rustic,
 /turf/open/floor,
 /area/oscar_outpost)
 "rs" = (
@@ -1920,7 +1880,7 @@
 /turf/open/floor/plating/ground/dirt2,
 /area/oscar_outpost/outside/northeast)
 "rG" = (
-/obj/structure/table/rusticwoodentable,
+/obj/structure/table/wood/rustic,
 /obj/item/reagent_containers/glass/bucket/janibucket,
 /turf/open/floor,
 /area/oscar_outpost)
@@ -2049,7 +2009,7 @@
 /turf/open/floor/plating/ground/dirt2,
 /area/oscar_outpost/outside/north)
 "tl" = (
-/obj/item/weapon/gun/tl102/hsg_nest/sandless,
+/obj/item/weapon/gun/hsg_102/hsg_nest/sandless,
 /turf/open/floor/plating/ground/dirt2,
 /area/oscar_outpost/outside/east)
 "tm" = (
@@ -2073,7 +2033,7 @@
 /turf/open/floor/plating/ground/dirtgrassborder/corner,
 /area/oscar_outpost/outside/northwest)
 "tB" = (
-/obj/structure/barricade/metal{
+/obj/structure/barricade/solid{
 	dir = 1
 	},
 /turf/open/floor/engine/cult{
@@ -2170,13 +2130,13 @@
 	},
 /area/oscar_outpost)
 "uN" = (
-/obj/item/weapon/gun/tl102/hsg_nest/sandless{
+/obj/item/weapon/gun/hsg_102/hsg_nest/sandless{
 	dir = 4
 	},
-/obj/structure/barricade/metal{
+/obj/structure/barricade/solid{
 	dir = 1
 	},
-/obj/structure/barricade/metal{
+/obj/structure/barricade/solid{
 	dir = 4
 	},
 /turf/open/floor/engine/cult{
@@ -2197,7 +2157,7 @@
 /area/oscar_outpost/outside/northwest)
 "uR" = (
 /obj/structure/table/mainship,
-/obj/structure/barricade/metal{
+/obj/structure/barricade/solid{
 	alpha = 0;
 	dir = 4;
 	mouse_opacity = 0
@@ -2312,7 +2272,7 @@
 /area/oscar_outpost/outside/east)
 "wl" = (
 /obj/structure/table/mainship,
-/obj/structure/barricade/metal{
+/obj/structure/barricade/solid{
 	alpha = 0;
 	dir = 8;
 	mouse_opacity = 0
@@ -2330,13 +2290,13 @@
 /turf/open/ground/grass,
 /area/oscar_outpost/outside/west)
 "wr" = (
-/obj/item/weapon/gun/tl102/hsg_nest/sandless{
+/obj/item/weapon/gun/hsg_102/hsg_nest/sandless{
 	dir = 8
 	},
-/obj/structure/barricade/metal{
+/obj/structure/barricade/solid{
 	dir = 1
 	},
-/obj/structure/barricade/metal{
+/obj/structure/barricade/solid{
 	dir = 8
 	},
 /turf/open/floor/engine/cult{
@@ -2415,11 +2375,11 @@
 	},
 /area/oscar_outpost/outside/northeast)
 "xh" = (
-/obj/item/weapon/gun/tl102/hsg_nest/sandless{
+/obj/item/weapon/gun/hsg_102/hsg_nest/sandless{
 	dir = 1;
 	pixel_y = -5
 	},
-/obj/structure/barricade/metal{
+/obj/structure/barricade/solid{
 	dir = 1
 	},
 /turf/open/floor/engine/cult{
@@ -2533,29 +2493,29 @@
 /turf/open/floor,
 /area/oscar_outpost)
 "zh" = (
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
 /turf/open/floor/engine/cult{
 	dir = 2
 	},
@@ -2588,7 +2548,7 @@
 	},
 /area/oscar_outpost/outside/northeast)
 "zF" = (
-/obj/item/weapon/gun/tl102/hsg_nest/sandless{
+/obj/item/weapon/gun/hsg_102/hsg_nest/sandless{
 	dir = 4
 	},
 /turf/open/floor/plating/ground/dirt2,
@@ -2706,7 +2666,7 @@
 	name = "barley";
 	plantname = "barley"
 	},
-/obj/structure/table/rusticwoodentable,
+/obj/structure/table/wood/rustic,
 /obj/machinery/light{
 	dir = 1
 	},
@@ -2885,7 +2845,7 @@
 /turf/open/ground/grass,
 /area/oscar_outpost/outside/northeast)
 "Dj" = (
-/obj/structure/table/rusticwoodentable,
+/obj/structure/table/wood/rustic,
 /obj/effect/spawner/random/food_or_drink/beer/oscaroutpost{
 	pixel_x = -5;
 	pixel_y = 15
@@ -3263,7 +3223,7 @@
 /turf/open/floor/plating/ground/dirt,
 /area/oscar_outpost/outside/north)
 "FW" = (
-/obj/item/weapon/gun/tl102/hsg_nest/sandless{
+/obj/item/weapon/gun/hsg_102/hsg_nest/sandless{
 	dir = 8
 	},
 /turf/open/floor/plating/ground/dirt2,
@@ -3518,7 +3478,7 @@
 	},
 /area/oscar_outpost/outside/northwest)
 "Jn" = (
-/obj/structure/table/rusticwoodentable,
+/obj/structure/table/wood/rustic,
 /obj/item/reagent_containers/food/drinks/flask/barflask{
 	pixel_x = -8;
 	pixel_y = 15
@@ -3636,7 +3596,7 @@
 	},
 /area/oscar_outpost)
 "Kj" = (
-/obj/item/weapon/gun/tl102/hsg_nest/sandless{
+/obj/item/weapon/gun/hsg_102/hsg_nest/sandless{
 	dir = 8
 	},
 /turf/open/floor/plating/ground/dirt2,
@@ -3659,7 +3619,7 @@
 	},
 /area/oscar_outpost)
 "KD" = (
-/obj/structure/table/rusticwoodentable,
+/obj/structure/table/wood/rustic,
 /obj/item/reagent_containers/food/snacks/grown/grapes,
 /obj/item/reagent_containers/food/snacks/grown/grapes,
 /obj/item/reagent_containers/food/snacks/grown/grapes,
@@ -3732,7 +3692,7 @@
 	name = "barley";
 	plantname = "barley"
 	},
-/obj/structure/table/rusticwoodentable,
+/obj/structure/table/wood/rustic,
 /obj/effect/spawner/random/food_or_drink/kitchen,
 /turf/open/floor,
 /area/oscar_outpost)
@@ -3744,7 +3704,7 @@
 /turf/open/floor,
 /area/oscar_outpost)
 "Lj" = (
-/obj/item/weapon/gun/tl102/hsg_nest/sandless,
+/obj/item/weapon/gun/hsg_102/hsg_nest/sandless,
 /turf/open/floor/plating/ground/dirt2,
 /area/oscar_outpost/outside/west)
 "Lk" = (
@@ -4153,8 +4113,7 @@
 /area/oscar_outpost/outside/northwest)
 "Ol" = (
 /obj/structure/platform{
-	dir = 4;
-	layer = 2.7
+	dir = 4
 	},
 /turf/open/floor/plating/ground/dirt,
 /area/oscar_outpost/outside/north)
@@ -4175,15 +4134,6 @@
 /obj/docking_port/stationary/crashmode,
 /turf/open/ground/grass,
 /area/oscar_outpost/outside/west)
-"Or" = (
-/obj/structure/platform{
-	dir = 8;
-	layer = 2.7
-	},
-/turf/open/floor/mainship_hull/dir{
-	dir = 8
-	},
-/area/oscar_outpost)
 "Ox" = (
 /obj/structure/platform/trench{
 	dir = 4
@@ -4201,7 +4151,9 @@
 	},
 /area/oscar_outpost/outside/west)
 "OH" = (
-/obj/structure/stairs,
+/obj/structure/stairs{
+	dir = 1
+	},
 /turf/open/floor/plating/ground/dirt2,
 /area/oscar_outpost/outside/northeast)
 "OI" = (
@@ -4329,7 +4281,7 @@
 	},
 /area/oscar_outpost)
 "PI" = (
-/obj/item/weapon/gun/tl102/hsg_nest/sandless{
+/obj/item/weapon/gun/hsg_102/hsg_nest/sandless{
 	dir = 1;
 	pixel_y = -5
 	},
@@ -4348,15 +4300,6 @@
 	dir = 4
 	},
 /area/oscar_outpost/outside/northwest)
-"PK" = (
-/obj/structure/platform{
-	dir = 1;
-	layer = 2.7
-	},
-/turf/open/floor/mainship_hull/dir{
-	dir = 1
-	},
-/area/oscar_outpost)
 "PM" = (
 /obj/item/mortal_shell/howitzer/he,
 /obj/item/mortal_shell/howitzer/he,
@@ -4381,29 +4324,29 @@
 	},
 /area/oscar_outpost/outside/northeast)
 "PQ" = (
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
 /turf/open/floor/plating/ground/dirt2,
 /area/oscar_outpost/outside/northeast)
 "PU" = (
@@ -4452,29 +4395,29 @@
 /turf/closed/wall,
 /area/oscar_outpost/outside/west)
 "Qu" = (
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
 /turf/open/floor/plating/ground/dirt2,
 /area/oscar_outpost/outside/west)
 "Qz" = (
@@ -4793,7 +4736,9 @@
 /turf/open/floor/plating/ground/dirt2,
 /area/oscar_outpost/outside/northwest)
 "Tv" = (
-/obj/structure/stairs,
+/obj/structure/stairs{
+	dir = 1
+	},
 /turf/open/floor/plating/ground/dirt2,
 /area/oscar_outpost/outside/northwest)
 "Tx" = (
@@ -5155,7 +5100,7 @@
 /turf/open/floor/plating/ground/dirt,
 /area/oscar_outpost/outside/northwest)
 "Ye" = (
-/obj/structure/table/rusticwoodentable,
+/obj/structure/table/wood/rustic,
 /obj/effect/spawner/random/food_or_drink/wine{
 	pixel_x = -8;
 	pixel_y = 18
@@ -5260,7 +5205,7 @@
 /turf/open/floor/tile/dark,
 /area/oscar_outpost)
 "YO" = (
-/obj/item/weapon/gun/tl102/hsg_nest/sandless{
+/obj/item/weapon/gun/hsg_102/hsg_nest/sandless{
 	dir = 1;
 	pixel_y = -5
 	},
@@ -5280,7 +5225,6 @@
 	desc = "Always good to keep a green thumb";
 	name = "gardener gloves"
 	},
-/obj/structure/prop/mainship/gelida/propplaceholder,
 /obj/item/clothing/mask/cigarette/pipe,
 /obj/item/clothing/shoes/leather,
 /obj/item/clothing/under/color/green,
@@ -5321,29 +5265,29 @@
 /turf/open/ground/grass,
 /area/oscar_outpost/outside/northeast)
 "Zu" = (
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
 /turf/open/floor/plating/ground/dirt2,
 /area/oscar_outpost/outside/northwest)
 "Zz" = (
@@ -5376,29 +5320,29 @@
 /turf/open/floor/plating/ground/dirt2,
 /area/oscar_outpost/outside/east)
 "ZD" = (
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
-/obj/item/ammo_magazine/tl102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
+/obj/item/ammo_magazine/hsg_102/hsg_nest,
 /turf/open/floor/plating/ground/dirt2,
 /area/oscar_outpost/outside/east)
 "ZE" = (
@@ -7495,7 +7439,7 @@ ZE
 ZE
 ZE
 ZE
-fL
+ZE
 ZE
 ZE
 ZE
@@ -7959,7 +7903,7 @@ uc
 ZE
 ZE
 ZE
-fm
+ZE
 ZE
 ZE
 ZE
@@ -8266,7 +8210,7 @@ th
 th
 th
 uc
-bD
+ZE
 ZE
 cy
 ZE
@@ -12460,7 +12404,7 @@ ZE
 ZE
 ZE
 ZE
-PK
+jP
 nw
 RH
 RH
@@ -12615,8 +12559,8 @@ ZE
 ZE
 ZE
 ZE
-PK
-PK
+jP
+jP
 ra
 wl
 ry
@@ -12770,8 +12714,8 @@ ZE
 FR
 ZE
 ZE
-PK
-PK
+jP
+jP
 ox
 wr
 xR
@@ -12925,8 +12869,8 @@ ZE
 ZE
 ZE
 ZE
-PK
-PK
+jP
+jP
 ox
 tB
 CE
@@ -13080,8 +13024,8 @@ ZE
 Ns
 ZE
 ZE
-PK
-PK
+jP
+jP
 ox
 xh
 CE
@@ -13235,8 +13179,8 @@ cy
 ZE
 ZE
 ZE
-PK
-PK
+jP
+jP
 ox
 tB
 CE
@@ -13390,8 +13334,8 @@ ZE
 ZE
 ZE
 ZE
-PK
-PK
+jP
+jP
 ox
 uM
 yc
@@ -13545,8 +13489,8 @@ ZE
 FR
 ZE
 ZE
-PK
-PK
+jP
+jP
 pB
 tB
 xR
@@ -13700,8 +13644,8 @@ ZE
 ZE
 ZE
 ZE
-PK
-PK
+jP
+jP
 ox
 xh
 CE
@@ -13855,8 +13799,8 @@ ZE
 ZE
 ZE
 ZE
-PK
-PK
+jP
+jP
 ox
 tB
 CE
@@ -14010,8 +13954,8 @@ ZE
 ZE
 ZE
 ZE
-PK
-PK
+jP
+jP
 ox
 uN
 CE
@@ -14165,8 +14109,8 @@ ZE
 FR
 ZE
 ZE
-PK
-PK
+jP
+jP
 rb
 uR
 ym
@@ -14320,7 +14264,7 @@ ZE
 ZE
 ZE
 ZE
-PK
+jP
 mu
 jH
 jH
@@ -18653,7 +18597,7 @@ uc
 ZE
 ZE
 ZE
-fe
+ZE
 ZE
 ZE
 ZE
@@ -18961,7 +18905,7 @@ th
 th
 uc
 ZE
-el
+ZE
 ZE
 ZE
 cy
@@ -19119,7 +19063,7 @@ ZE
 ZE
 ZE
 ZE
-dd
+ZE
 ZE
 ZE
 ZE
@@ -19281,9 +19225,9 @@ ZE
 ZE
 ZE
 iW
-Or
-Or
-Or
+RH
+RH
+RH
 qa
 qa
 qa
@@ -19437,12 +19381,12 @@ ZE
 ZE
 jP
 nB
-Or
-Or
-Or
-Or
-Or
-Or
+RH
+RH
+RH
+RH
+RH
+RH
 tO
 tO
 tO
@@ -21232,7 +21176,7 @@ Ws
 YV
 dD
 Ws
-aU
+VS
 ce
 wd
 fW
@@ -26565,7 +26509,7 @@ ZE
 ZE
 ZE
 ZE
-PK
+jP
 nw
 RH
 RH
@@ -26720,7 +26664,7 @@ ZE
 ZE
 ZE
 ZE
-PK
+jP
 jP
 ra
 wl
@@ -26875,7 +26819,7 @@ ZE
 ZE
 ZE
 ZE
-PK
+jP
 jP
 ox
 wr
@@ -27030,7 +26974,7 @@ ZE
 ZE
 ZE
 ZE
-PK
+jP
 jP
 ox
 tB
@@ -27185,7 +27129,7 @@ FR
 ZE
 ZE
 ZE
-PK
+jP
 jP
 ox
 xh
@@ -27340,7 +27284,7 @@ uB
 uB
 ZE
 ZE
-PK
+jP
 jP
 ox
 tB
@@ -27495,7 +27439,7 @@ th
 th
 uc
 ZE
-PK
+jP
 jP
 ox
 uM
@@ -27650,7 +27594,7 @@ th
 th
 uc
 ZE
-PK
+jP
 jP
 ox
 tB
@@ -27805,7 +27749,7 @@ th
 th
 uc
 ZE
-PK
+jP
 jP
 ox
 xh
@@ -27960,7 +27904,7 @@ WS
 WS
 ZE
 ZE
-PK
+jP
 jP
 ox
 tB
@@ -28115,7 +28059,7 @@ ZE
 ZE
 ZE
 ZE
-PK
+jP
 jP
 ox
 tB
@@ -28270,7 +28214,7 @@ ZE
 ZE
 ZE
 ZE
-PK
+jP
 jP
 ry
 tm

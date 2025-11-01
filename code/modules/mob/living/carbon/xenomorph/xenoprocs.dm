@@ -1,3 +1,41 @@
+/mob/living/carbon/xenomorph/Bump(atom/A)
+	if(ismecha(A))
+		var/obj/vehicle/sealed/mecha/mecha = A
+		var/mob_swap_mode = NO_SWAP
+		if(a_intent == INTENT_HELP)
+			mob_swap_mode = SWAPPING
+		// If we're moving diagonally, but the mob isn't on the diagonal destination turf and the destination turf is enterable we have no reason to shuffle/push them
+		if(moving_diagonally && (get_dir(src, mecha) in GLOB.cardinals) && get_step(src, dir).Enter(src, loc))
+			mob_swap_mode = PHASING
+		if(mob_swap_mode)
+			//switch our position with mech
+			if(loc && !loc.Adjacent(mecha.loc))
+				return
+			now_pushing = TRUE
+			var/oldloc = loc
+			var/oldmechaloc = mecha.loc
+
+			var/mecha_passmob = (mecha.allow_pass_flags & PASS_MOB) // we give PASS_MOB to both mobs to avoid bumping other mobs during swap.
+			mecha.allow_pass_flags |= PASS_MOB
+
+			if(!moving_diagonally) //the diagonal move already does this for us
+				Move(oldmechaloc)
+			if(mob_swap_mode == SWAPPING)
+				mecha.Move(oldloc)
+
+			if(!mecha_passmob)
+				mecha.allow_pass_flags &= ~PASS_MOB
+
+			now_pushing = FALSE
+
+			return TURF_ENTER_ALREADY_MOVED
+
+	if(!(xeno_flags & XENO_LEAPING))
+		return ..()
+	if(!isliving(A))
+		return ..()
+	return SEND_SIGNAL(src, COMSIG_XENOMORPH_LEAP_BUMP, A)
+
 /mob/living/carbon/xenomorph/verb/hive_status()
 	set name = "Hive Status"
 	set desc = "Check the status of your current hive."
@@ -59,7 +97,7 @@
 			else
 				if(X.nicknumber != xeno_name)
 					continue
-			to_chat(usr,span_notice(" You will now track [X.name]"))
+			to_chat(usr,span_notice("You will now track [X.name]"))
 			set_tracked(X)
 			break
 
@@ -68,7 +106,7 @@
 		for(var/obj/structure/xeno/silo/resin_silo AS in GLOB.xeno_resin_silos_by_hive[hivenumber])
 			if(num2text(resin_silo.number_silo) == silo_number)
 				set_tracked(resin_silo)
-				to_chat(usr,span_notice(" You will now track [resin_silo.name]"))
+				to_chat(usr,span_notice("You will now track [resin_silo.name]"))
 				break
 
 	if(href_list["watch_xeno_name"])
@@ -90,11 +128,17 @@
 
 ///returns TRUE if we are permitted to evo to the next caste FALSE otherwise
 /mob/living/carbon/xenomorph/proc/upgrade_possible()
+	if(!(upgrade in GLOB.xenoupgradetiers))
+		stack_trace("Upgrade isn't in upgrade list, incorrect define provided")
+		return FALSE
 	if(HAS_TRAIT(src, TRAIT_VALHALLA_XENO))
 		return FALSE
 	if(upgrade == XENO_UPGRADE_NORMAL)
 		return hive.purchases.upgrades_by_name[GLOB.tier_to_primo_upgrade[xeno_caste.tier]].times_bought
-	return (upgrade != XENO_UPGRADE_INVALID && upgrade != XENO_UPGRADE_PRIMO)
+	if(upgrade == XENO_UPGRADE_INVALID || upgrade == XENO_UPGRADE_PRIMO || upgrade == XENO_UPGRADE_BASETYPE)
+		return FALSE
+	stack_trace("Logic for handling this Upgrade tier wasn't written")
+	return FALSE
 
 //Adds stuff to your "Status" pane -- Specific castes can have their own, like carrier hugger count
 //Those are dealt with in their caste files.
@@ -118,11 +162,17 @@
 	if(xeno_caste.plasma_max > 0)
 		. += "Plasma: [plasma_stored]/[xeno_caste.plasma_max]"
 
-	. += "Sunder: [100-sunder]% armor left"
+	. += "Armor: [100-sunder]%"
 
 	. += "Regeneration power: [max(regen_power * 100, 0)]%"
 
-	//Very weak <= 1.0, weak <= 2.0, no modifier 2-3, strong <= 3.5, very strong <= 4.5
+	var/casteswap_value = ((GLOB.key_to_time_of_caste_swap[key] ? GLOB.key_to_time_of_caste_swap[key] : -INFINITY)  + SSticker.mode.caste_swap_cooldown - world.time) * 0.1
+	if(casteswap_value <= 0)
+		. += "Caste Swap Timer: READY"
+	else
+		. += "Caste Swap Timer: [(casteswap_value / 60) % 60]:[add_leading(num2text(casteswap_value % 60), 2, "0")]"
+
+	//Very weak <= 1.0, Weak <= 2.0, Medium < 3.0, Strong < 4.0, Very strong >= 4.0
 	var/msg_holder = ""
 	if(frenzy_aura)
 		switch(frenzy_aura)
@@ -136,7 +186,7 @@
 				msg_holder = "Strong"
 			if(4.0 to INFINITY)
 				msg_holder = "Very strong"
-		. += "[AURA_XENO_FRENZY] pheromone strength: [msg_holder]"
+		. += "[AURA_XENO_FRENZY] pheromone strength: [msg_holder] ([frenzy_aura])"
 	if(warding_aura)
 		switch(warding_aura)
 			if(-INFINITY to 1.0)
@@ -149,7 +199,7 @@
 				msg_holder = "Strong"
 			if(4.0 to INFINITY)
 				msg_holder = "Very strong"
-		. += "[AURA_XENO_WARDING] pheromone strength: [msg_holder]"
+		. += "[AURA_XENO_WARDING] pheromone strength: [msg_holder] ([warding_aura])"
 	if(recovery_aura)
 		switch(recovery_aura)
 			if(-INFINITY to 1.0)
@@ -162,7 +212,7 @@
 				msg_holder = "Strong"
 			if(4.0 to INFINITY)
 				msg_holder = "Very strong"
-		. += "[AURA_XENO_RECOVERY] pheromone strength: [msg_holder]"
+		. += "[AURA_XENO_RECOVERY] pheromone strength: [msg_holder] ([recovery_aura])"
 
 //A simple handler for checking your state. Used in pretty much all the procs.
 /mob/living/carbon/xenomorph/proc/check_state()
@@ -178,16 +228,25 @@
 		return FALSE
 	return TRUE
 
-/mob/living/carbon/xenomorph/proc/use_plasma(value)
+/mob/living/carbon/xenomorph/proc/set_plasma(value, update_plasma = TRUE)
+	plasma_stored = clamp(value, 0, xeno_caste.plasma_max)
+	if(!update_plasma)
+		return
+	hud_set_plasma()
+
+/mob/living/carbon/xenomorph/proc/use_plasma(value, update_plasma = TRUE)
 	plasma_stored = max(plasma_stored - value, 0)
 	update_action_button_icons()
+	if(!update_plasma)
+		return
+	hud_set_plasma()
 
-/mob/living/carbon/xenomorph/proc/gain_plasma(value)
+/mob/living/carbon/xenomorph/proc/gain_plasma(value, update_plasma = TRUE)
 	plasma_stored = min(plasma_stored + value, xeno_caste.plasma_max)
 	update_action_button_icons()
-
-
-
+	if(!update_plasma)
+		return
+	hud_set_plasma()
 
 //Strip all inherent xeno verbs from your caste. Used in evolution.
 /mob/living/carbon/xenomorph/proc/remove_inherent_verbs()
@@ -213,11 +272,11 @@
 //Stealth handling
 
 
-/mob/living/carbon/xenomorph/proc/update_progression()
+/mob/living/carbon/xenomorph/proc/update_progression(seconds_per_tick)
 	// Upgrade is increased based on marine to xeno population taking stored_larva as a modifier.
 	var/datum/job/xeno_job = SSjob.GetJobType(/datum/job/xenomorph)
 	var/stored_larva = xeno_job.total_positions - xeno_job.current_positions
-	upgrade_stored += 1 + (stored_larva/6) + hive.get_evolution_boost() //Do this regardless of whether we can upgrade so age accrues at primo
+	upgrade_stored += (1 + (stored_larva/6) + hive.get_upgrade_boost()) * seconds_per_tick * XENO_PER_SECOND_LIFE_MOD //Do this regardless of whether we can upgrade so age accrues at primo
 	if(!upgrade_possible())
 		return
 	if(upgrade_stored < xeno_caste.upgrade_threshold)
@@ -227,24 +286,25 @@
 	upgrade_xeno(upgrade_next())
 
 
-/mob/living/carbon/xenomorph/proc/update_evolving()
+/mob/living/carbon/xenomorph/proc/update_evolving(seconds_per_tick)
 	if(evolution_stored >= xeno_caste.evolution_threshold || !(xeno_caste.caste_flags & CASTE_EVOLUTION_ALLOWED) || HAS_TRAIT(src, TRAIT_VALHALLA_XENO))
 		return
-	if(!hive.check_ruler() && caste_base_type != /mob/living/carbon/xenomorph/larva) // Larva can evolve without leaders at round start.
+	if(!hive.check_ruler() && caste_base_type != /datum/xeno_caste/larva) // Larva can evolve without leaders at round start.
 		return
 
 	// Evolution is increased based on marine to xeno population taking stored_larva as a modifier.
 	var/datum/job/xeno_job = SSjob.GetJobType(/datum/job/xenomorph)
 	var/stored_larva = xeno_job.total_positions - xeno_job.current_positions
 	var/evolution_points = 1 + (FLOOR(stored_larva / 3, 1)) + hive.get_evolution_boost() + spec_evolution_boost()
-	evolution_stored = min(evolution_stored + evolution_points, xeno_caste.evolution_threshold)
+	var/evolution_points_lag = evolution_points * seconds_per_tick * XENO_PER_SECOND_LIFE_MOD
+	evolution_stored = min(evolution_stored + evolution_points_lag, xeno_caste.evolution_threshold)
 
 	if(!client || !ckey)
 		return
 
 	if(evolution_stored == xeno_caste.evolution_threshold)
 		to_chat(src, span_xenodanger("Our carapace crackles and our tendons strengthen. We are ready to evolve!"))
-		SEND_SOUND(src, sound('sound/effects/xeno_evolveready.ogg'))
+		SEND_SOUND(src, sound('sound/effects/alien/evolve_ready.ogg'))
 
 
 //This deals with "throwing" xenos -- ravagers, hunters, and runners in particular. Everyone else defaults to normal
@@ -252,7 +312,7 @@
 /mob/living/carbon/xenomorph/throw_impact(atom/hit_atom, speed)
 	set waitfor = FALSE
 
-	if(stat || !usedPounce)
+	if(stat || !(xeno_flags & XENO_LEAPING))
 		return ..()
 
 	if(isobj(hit_atom)) //Deal with smacking into dense objects. This overwrites normal throw code.
@@ -265,51 +325,48 @@
 	if(isliving(hit_atom)) //Hit a mob! This overwrites normal throw code.
 		if(SEND_SIGNAL(src, COMSIG_XENO_LIVING_THROW_HIT, hit_atom) & COMPONENT_KEEP_THROWING)
 			return FALSE
-		stop_throw() //Resert throwing since something was hit.
+		set_throwing(FALSE) //Resert throwing since something was hit.
 		return TRUE
 
 	return ..() //Do the parent otherwise, for turfs.
 
-/mob/living/carbon/xenomorph/proc/toggle_nightvision(new_lighting_alpha)
-	if(!new_lighting_alpha)
-		switch(lighting_alpha)
-			if(LIGHTING_PLANE_ALPHA_NV_TRAIT)
-				new_lighting_alpha = LIGHTING_PLANE_ALPHA_MOSTLY_VISIBLE
-			if(LIGHTING_PLANE_ALPHA_MOSTLY_VISIBLE)
-				new_lighting_alpha = LIGHTING_PLANE_ALPHA_MOSTLY_INVISIBLE
-			if(LIGHTING_PLANE_ALPHA_MOSTLY_INVISIBLE)
-				new_lighting_alpha = LIGHTING_PLANE_ALPHA_INVISIBLE
+/mob/living/carbon/xenomorph/proc/toggle_nightvision(new_lighting_cutoff)
+	if(!new_lighting_cutoff)
+		switch(lighting_cutoff)
+			if(LIGHTING_CUTOFF_VISIBLE)
+				new_lighting_cutoff = LIGHTING_CUTOFF_MEDIUM
+			if(LIGHTING_CUTOFF_MEDIUM)
+				new_lighting_cutoff = LIGHTING_CUTOFF_HIGH
+			if(LIGHTING_CUTOFF_HIGH)
+				new_lighting_cutoff = LIGHTING_CUTOFF_FULLBRIGHT
 			else
-				new_lighting_alpha = LIGHTING_PLANE_ALPHA_NV_TRAIT
+				new_lighting_cutoff = LIGHTING_CUTOFF_VISIBLE
 
-	switch(new_lighting_alpha)
-		if(LIGHTING_PLANE_ALPHA_MOSTLY_VISIBLE, LIGHTING_PLANE_ALPHA_MOSTLY_INVISIBLE, LIGHTING_PLANE_ALPHA_INVISIBLE)
-			ENABLE_BITFIELD(sight, SEE_MOBS)
-			ENABLE_BITFIELD(sight, SEE_OBJS)
-			ENABLE_BITFIELD(sight, SEE_TURFS)
-		if(LIGHTING_PLANE_ALPHA_NV_TRAIT)
-			ENABLE_BITFIELD(sight, SEE_MOBS)
-			DISABLE_BITFIELD(sight, SEE_OBJS)
-			DISABLE_BITFIELD(sight, SEE_TURFS)
+	var/new_sight = NONE
+	switch(new_lighting_cutoff)
+		if(LIGHTING_CUTOFF_FULLBRIGHT, LIGHTING_CUTOFF_HIGH, LIGHTING_CUTOFF_MEDIUM)
+			new_sight = SEE_MOBS|SEE_OBJS|SEE_TURFS
+		if(LIGHTING_CUTOFF_VISIBLE)
+			new_sight = SEE_MOBS
 
-	lighting_alpha = new_lighting_alpha
+	lighting_cutoff = new_lighting_cutoff
 
+	set_sight(new_sight)
 	update_sight()
 
 
 /mob/living/carbon/xenomorph/proc/zoom_in(tileoffset = 5, viewsize = 12)
-	if(stat || resting)
-		if(is_zoomed)
-			is_zoomed = 0
+	if(stat)
+		if(xeno_flags & XENO_ZOOMED)
 			zoom_out()
 			return
 		return
-	if(is_zoomed)
+	if(xeno_flags & XENO_ZOOMED)
 		return
 	if(!client)
 		return
 	zoom_turf = get_turf(src)
-	is_zoomed = 1
+	xeno_flags |= XENO_ZOOMED
 	client.view_size.set_view_radius_to(viewsize/2-2) //convert diameter to radius
 	var/viewoffset = 32 * tileoffset
 	switch(dir)
@@ -327,7 +384,7 @@
 			client.pixel_y = 0
 
 /mob/living/carbon/xenomorph/proc/zoom_out()
-	is_zoomed = 0
+	xeno_flags &= ~XENO_ZOOMED
 	zoom_turf = null
 	if(!client)
 		return
@@ -348,13 +405,13 @@
 
 
 //When the Queen's pheromones are updated, or we add/remove a leader, update leader pheromones
-/mob/living/carbon/xenomorph/proc/handle_xeno_leader_pheromones(mob/living/carbon/xenomorph/queen/Q)
+/mob/living/carbon/xenomorph/proc/handle_xeno_leader_pheromones(mob/living/carbon/xenomorph/ruler)
 	QDEL_NULL(leader_current_aura)
-	if(QDELETED(Q) || !queen_chosen_lead || !Q.current_aura || Q.loc.z != loc.z) //We are no longer a leader, or the Queen attached to us has dropped from her ovi, disabled her pheromones or even died
-		to_chat(src, span_xenowarning("Our pheromones wane. The Queen is no longer granting us her pheromones."))
+	if(QDELETED(ruler) || !(xeno_flags & XENO_LEADER) || !ruler.current_aura || ruler.loc.z != loc.z) //We are no longer a leader, or the Queen attached to us has dropped from her ovi, disabled her pheromones or even died
+		to_chat(src, span_xenowarning("Our pheromones wane. The Ruler is no longer granting us her pheromones."))
 	else
-		leader_current_aura = SSaura.add_emitter(src, Q.current_aura.aura_types.Copy(), Q.current_aura.range, Q.current_aura.strength, Q.current_aura.duration, Q.current_aura.faction, Q.current_aura.hive_number)
-		to_chat(src, span_xenowarning("Our pheromones have changed. The Queen has new plans for the Hive."))
+		leader_current_aura = SSaura.add_emitter(src, ruler.current_aura.aura_types.Copy(), ruler.current_aura.range, ruler.current_aura.strength, ruler.current_aura.duration, ruler.current_aura.faction, ruler.current_aura.hive_number)
+		to_chat(src, span_xenowarning("Our pheromones have changed. The Ruler has new plans for the Hive."))
 
 
 /mob/living/carbon/xenomorph/proc/update_spits(skip_ammo_choice = FALSE)
@@ -372,30 +429,25 @@
 
 
 // this mess will be fixed by obj damage refactor
-/atom/proc/acid_spray_act(mob/living/carbon/xenomorph/X)
+/atom/proc/acid_spray_act(mob/living/carbon/xenomorph/X, skip_cooldown)
 	return TRUE
 
-/obj/structure/acid_spray_act(mob/living/carbon/xenomorph/X)
+/obj/structure/acid_spray_act(mob/living/carbon/xenomorph/X, skip_cooldown)
 	if(!is_type_in_typecache(src, GLOB.acid_spray_hit))
 		return TRUE // normal density flag
 	take_damage(X.xeno_caste.acid_spray_structure_damage, BURN, ACID)
 	return TRUE // normal density flag
 
-/obj/structure/razorwire/acid_spray_act(mob/living/carbon/xenomorph/X)
+/obj/structure/razorwire/acid_spray_act(mob/living/carbon/xenomorph/X, skip_cooldown)
 	take_damage(2 * X.xeno_caste.acid_spray_structure_damage, BURN, ACID)
 	return FALSE // not normal density flag
 
-/obj/vehicle/multitile/root/cm_armored/acid_spray_act(mob/living/carbon/xenomorph/X)
-	take_damage_type(X.xeno_caste.acid_spray_structure_damage, ACID, src)
-	healthcheck()
-	return TRUE
-
-/mob/living/carbon/acid_spray_act(mob/living/carbon/xenomorph/X)
+/mob/living/carbon/acid_spray_act(mob/living/carbon/xenomorph/X, skip_cooldown)
 	ExtinguishMob()
 	if(isnestedhost(src))
 		return
 
-	if(TIMER_COOLDOWN_CHECK(src, COOLDOWN_ACID))
+	if(!skip_cooldown && TIMER_COOLDOWN_RUNNING(src, COOLDOWN_ACID))
 		return
 	TIMER_COOLDOWN_START(src, COOLDOWN_ACID, 2 SECONDS)
 
@@ -415,11 +467,15 @@
 	emote("scream")
 	Paralyze(2 SECONDS)
 
-/mob/living/carbon/xenomorph/acid_spray_act(mob/living/carbon/xenomorph/X)
+/mob/living/carbon/xenomorph/acid_spray_act(mob/living/carbon/xenomorph/X, skip_cooldown)
 	ExtinguishMob()
 
-/obj/flamer_fire/acid_spray_act(mob/living/carbon/xenomorph/X)
-	Destroy()
+/obj/fire/flamer/acid_spray_act(mob/living/carbon/xenomorph/X, skip_cooldown)
+	qdel(src)
+
+/obj/hitbox/acid_spray_act(mob/living/carbon/xenomorph/X, skip_cooldown)
+	take_damage(X.xeno_caste.acid_spray_structure_damage, BURN, ACID)
+	return TRUE
 
 // Vent Crawl
 /mob/living/carbon/xenomorph/proc/vent_crawl()
@@ -437,25 +493,29 @@
 	set desc = "Toggles the health and plasma hud appearing above Xenomorphs."
 	set category = "Alien"
 
-	xeno_mobhud = !xeno_mobhud
+	xeno_flags ^= XENO_MOBHUD
 	var/datum/atom_hud/H = GLOB.huds[DATA_HUD_XENO_STATUS]
-	if(xeno_mobhud)
+	if(xeno_flags & XENO_MOBHUD)
 		H.add_hud_to(src)
 	else
 		H.remove_hud_from(src)
-	to_chat(src, span_notice("You have [xeno_mobhud ? "enabled" : "disabled"] the Xeno Status HUD."))
+	to_chat(src, span_notice("You have [(xeno_flags & XENO_MOBHUD) ? "enabled" : "disabled"] the Xeno Status HUD."))
 
 
-/mob/living/carbon/xenomorph/proc/recurring_injection(mob/living/carbon/C, datum/reagent/toxin = /datum/reagent/toxin/xeno_neurotoxin, channel_time = XENO_NEURO_CHANNEL_TIME, transfer_amount = XENO_NEURO_AMOUNT_RECURRING, count = 4)
+/mob/living/carbon/xenomorph/proc/recurring_injection(mob/living/carbon/C, datum/reagent/toxin = /datum/reagent/toxin/xeno_neurotoxin, channel_time = XENO_NEURO_CHANNEL_TIME, transfer_amount = XENO_NEURO_AMOUNT_RECURRING, count = 4, datum/effect_system/smoke_spread/gas_type, gas_range)
 	if(!C?.can_sting() || !toxin)
 		return FALSE
 	if(!do_after(src, channel_time, NONE, C, BUSY_ICON_HOSTILE))
 		return FALSE
+	if(gas_type && gas_range)
+		var/datum/effect_system/smoke_spread/smoke_system = new gas_type()
+		smoke_system.set_up(gas_range, get_turf(C))
+		smoke_system.start()
 	var/i = 1
 	to_chat(C, span_danger("You feel a tiny prick."))
 	to_chat(src, span_xenowarning("Our stinger injects our victim with [initial(toxin.name)]!"))
 	playsound(C, 'sound/effects/spray3.ogg', 15, TRUE)
-	playsound(C, "alien_drool", 15, TRUE)
+	playsound(C, SFX_ALIEN_DROOL, 15, TRUE)
 	do
 		face_atom(C)
 		if(IsStaggered())
@@ -477,17 +537,16 @@
 		return TRUE
 	return FALSE
 
-/mob/living/carbon/xenomorph/proc/setup_verbs()
-	add_verb(src, /mob/living/proc/toggle_resting)
-
-/mob/living/carbon/xenomorph/hivemind/setup_verbs()
-	return
-
 /mob/living/carbon/xenomorph/adjust_sunder(adjustment)
 	. = ..()
 	if(.)
 		return
-	sunder = clamp(sunder + adjustment, 0, xeno_caste.sunder_max)
+	var/old_sunder = sunder
+	sunder = clamp(sunder + (adjustment > 0 ? adjustment * xeno_caste.sunder_multiplier : adjustment), 0, xeno_caste.sunder_max)
+	SEND_SIGNAL(src, COMSIG_XENOMORPH_SUNDER_CHANGE, old_sunder, sunder)
+	return sunder - old_sunder // The real difference in sunder. Negative: real loss in sunder. Positive: real gain in sunder.
+
+//Applying sunder is an adjustment value above 0, healing sunder is an adjustment value below 0. Use multiplier when taking sunder, not when healing.
 
 /mob/living/carbon/xenomorph/set_sunder(new_sunder)
 	. = ..()
@@ -536,18 +595,14 @@
 	SIGNAL_HANDLER
 	tracked = null
 
-///Handles empowered abilities, should return TRUE if the ability should be empowered. Empowerable should be FALSE if the ability cannot itself be empowered but has interactions with empowerable abilities
-/mob/living/carbon/xenomorph/proc/empower(empowerable = TRUE)
-	return FALSE
-
 ///Handles icon updates when leadered/unleadered. Evolution.dm also uses this
 /mob/living/carbon/xenomorph/proc/update_leader_icon(makeleader = TRUE)
 	// Xenos with specialized icons (Queen, King, Shrike) do not get their icon changed
-	if(istype(xeno_caste, /datum/xeno_caste/queen) || istype(xeno_caste, /datum/xeno_caste/shrike) || istype(xeno_caste, /datum/xeno_caste/king))
+	if(istype(xeno_caste, /datum/xeno_caste/queen) || istype(xeno_caste, /datum/xeno_caste/shrike) || istype(xeno_caste, /datum/xeno_caste/king) || istype(xeno_caste, /datum/xeno_caste/dragon))
 		return
 
 	SSminimaps.remove_marker(src)
-	var/image/blip = image('icons/UI_icons/map_blips.dmi', null, xeno_caste.minimap_icon)
+	var/image/blip = image('icons/UI_icons/map_blips.dmi', null, xeno_caste.minimap_icon, MINIMAP_BLIPS_LAYER)
 	if(makeleader)
 		blip.overlays += image('icons/UI_icons/map_blips.dmi', null, xeno_caste.minimap_leadered_overlay)
 	SSminimaps.add_marker(src, MINIMAP_FLAG_XENO, blip)

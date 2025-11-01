@@ -3,8 +3,8 @@
 	desc = "A balloon that can be used to extract equipment or personnel. Anything not bolted down can be moved."
 	icon = 'icons/obj/items/fulton.dmi'
 	icon_state = "extraction_pack"
-	item_state = "fulton"
-	item_icons = list(
+	worn_icon_state = "fulton"
+	worn_icon_list = list(
 		slot_l_hand_str = 'icons/mob/inhands/equipment/tools_left.dmi',
 		slot_r_hand_str = 'icons/mob/inhands/equipment/tools_right.dmi',
 	)
@@ -15,7 +15,7 @@
 	var/atom/movable/vis_obj/fulton_balloon/baloon
 	var/obj/effect/fulton_extraction_holder/holder_obj
 	/// How many times you can use the fulton before it goes poof
-	var/uses = 3
+	var/uses = 6
 
 /obj/item/fulton_extraction_pack/examine(mob/user)
 	. = ..()
@@ -194,7 +194,7 @@
 
 
 /obj/item/fulton_extraction_pack/adminbus/preattack(mob/user, atom/target)
-	if(!isturf(target.loc) || !ismovableatom(target))
+	if(!isturf(target.loc) || !ismovable(target))
 		return FALSE
 	if(active)
 		balloon_alert(user, "Fulton not ready")

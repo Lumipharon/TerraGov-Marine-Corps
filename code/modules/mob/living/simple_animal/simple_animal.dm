@@ -42,11 +42,8 @@
 
 	//Attack
 	melee_damage = 0
-	attacktext = "attacks"
-	attack_sound = null
-	friendly = "nuzzles" //If the mob does no damage with it's attack
 	var/obj_damage = 0 //how much damage this simple animal does to objects, if any
-	var/attacked_sound = "punch" //Played when someone punches the creature
+	var/attacked_sound = SFX_PUNCH //Played when someone punches the creature
 	var/armour_penetration = 0 //How much armour they ignore, as a flat reduction from the targets armour value
 	var/melee_damage_type = BRUTE //Damage type of a simple mob's melee attack, should it do damage.
 	var/list/damage_coeff = list(BRUTE = 1, BURN = 1, TOX = 1, CLONE = 1, STAMINA = 0, OXY = 1) // 1 for full damage , 0 for none , -1 for 1:1 heal from that source
@@ -79,6 +76,9 @@
 	. = ..()
 	health = clamp(health, 0, maxHealth)
 
+/mob/living/simple_animal/update_sight()
+	lighting_color_cutoffs = list(lighting_cutoff_red, lighting_cutoff_green, lighting_cutoff_blue)
+	return ..()
 
 /mob/living/simple_animal/update_stat()
 	if(status_flags & GODMODE)
@@ -126,9 +126,6 @@
 /mob/living/simple_animal/death(gibbing, deathmessage, silent)
 	if(stat == DEAD)
 		return ..()
-	if(!silent && !gibbing && !del_on_death && !deathmessage && src.deathmessage)
-		emote("deathgasp")
-		silent = TRUE //No need to for the parent to deathmessage again.
 	return ..()
 
 
@@ -197,22 +194,22 @@
 			return TRUE
 
 
-/mob/living/simple_animal/attack_alien(mob/living/carbon/xenomorph/X, damage_amount = X.xeno_caste.melee_damage, damage_type = BRUTE, damage_flag = "", effects = TRUE, armor_penetration = 0, isrightclick = FALSE)
+/mob/living/simple_animal/attack_alien(mob/living/carbon/xenomorph/xeno_attacker, damage_amount = xeno_attacker.xeno_caste.melee_damage, damage_type = BRUTE, armor_type = MELEE, effects = TRUE, armor_penetration = xeno_attacker.xeno_caste.melee_ap, isrightclick = FALSE)
 	. = ..()
 	if(!.)
 		return
-	if(X.a_intent == INTENT_DISARM)
+	if(xeno_attacker.a_intent == INTENT_DISARM)
 		playsound(loc, 'sound/weapons/pierce.ogg', 25, 1, -1)
-		visible_message(span_danger("[X] [response_disarm] [name]!"), \
-				span_userdanger("[X] [response_disarm] [name]!"))
-		log_combat(X, src, "disarmed")
+		visible_message(span_danger("[xeno_attacker] [response_disarm] [name]!"), \
+				span_userdanger("[xeno_attacker] [response_disarm] [name]!"))
+		log_combat(xeno_attacker, src, "disarmed")
 	else
 		var/damage = rand(15, 30)
-		visible_message(span_danger("[X] has slashed at [src]!"), \
-				span_userdanger("[X] has slashed at [src]!"))
+		visible_message(span_danger("[xeno_attacker] has slashed at [src]!"), \
+				span_userdanger("[xeno_attacker] has slashed at [src]!"))
 		playsound(loc, 'sound/weapons/slice.ogg', 25, 1, -1)
 		attack_threshold_check(damage)
-		log_combat(X, src, "attacked")
+		log_combat(xeno_attacker, src, "attacked")
 	return TRUE
 
 
@@ -282,10 +279,10 @@
 			stack_trace("Something attempted to set simple animals AI to an invalid state: [togglestatus]")
 
 
-/mob/living/simple_animal/onTransitZ(old_z, new_z)
+/mob/living/simple_animal/on_changed_z_level(turf/old_turf, turf/new_turf, same_z_layer, notify_contents = TRUE)
 	. = ..()
 	if(AIStatus == AI_Z_OFF)
-		SSidlenpcpool.idle_mobs_by_zlevel[old_z] -= src
+		SSidlenpcpool.idle_mobs_by_zlevel[old_turf.z] -= src
 		toggle_ai(initial(AIStatus))
 
 

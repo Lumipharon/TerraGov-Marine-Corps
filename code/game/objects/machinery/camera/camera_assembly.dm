@@ -20,10 +20,10 @@
 
 	var/turf/loc = get_turf(user)
 	if(!isfloorturf(loc))
-		loc.balloon_alert(user, "bad spot")
+		loc.balloon_alert(user, "bad spot!")
 		return
 
-	user.balloon_alert_to_viewers("attaching")
+	user.balloon_alert_to_viewers("attaching...")
 	playsound(loc, 'sound/machines/click.ogg', 15, 1)
 	var/constrdir = REVERSE_DIR(user.dir)
 	var/constrloc = user.loc
@@ -81,6 +81,8 @@
 
 /obj/structure/camera_assembly/attackby(obj/item/I, mob/living/user, params)
 	. = ..()
+	if(.)
+		return
 
 	switch(state)
 		if(STATE_WRENCHED)
@@ -172,8 +174,8 @@
 	return FALSE
 
 
-/obj/structure/camera_assembly/deconstruct(disassembled = TRUE)
-	if(!(flags_atom & NODECONSTRUCT))
+/obj/structure/camera_assembly/deconstruct(disassembled = TRUE, mob/living/blame_mob)
+	if(!(atom_flags & NODECONSTRUCT))
 		new /obj/item/stack/sheet/metal(loc)
 	return ..()
 

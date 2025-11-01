@@ -47,16 +47,38 @@
 ///Called when the roomba moves, sucks in all items held in the tile and sends them to cryo
 /obj/machinery/bot/roomba/proc/suck_items()
 	SIGNAL_HANDLER
+
 	var/sucked_one = FALSE
 	for(var/obj/item/sucker in loc)
 		if(sucker.anchored)
 			continue
 		sucked_one = TRUE
-		sucker.store_in_cryo()
-		counter++
+
+		if(roomba_restock(sucker))
+			counter++
+			continue
+
 	stuck_counter = 0
 	if(sucked_one && prob(10))
 		say(pick(sentences))
+
+/**
+ * For each obj/item/sucker, we try to restock it if possible
+ * If the item cannot be restocked, we send it to cryo storage so it's not just deleted from existence
+ */
+/obj/machinery/bot/roomba/proc/roomba_restock(obj/item/sucker)
+	set waitfor = FALSE
+
+	//Here we try to restock whatever we sucked up
+	for(var/type in GLOB.loadout_linked_vendor[VENDOR_FACTION_NEUTRAL])
+		for(var/datum/vending_product/item_to_restock AS in GLOB.vending_records[type])
+			if(sucker.type != item_to_restock.product_path)
+				continue
+			if(item_to_restock.attempt_restock(sucker, null, FALSE))
+				return TRUE
+	//Cryo our item if our restock attempt failed
+	sucker.store_in_cryo()
+	return TRUE
 
 /obj/machinery/bot/roomba/attack_hand(mob/living/user)
 	if(!CONFIG_GET(flag/fun_allowed))
@@ -66,9 +88,9 @@
 		return
 	tgui_alert(user, "Are you really sure to want to try your luck with the devilish roomba?", "The roomba roulette", list("Yes", "Yes!", "Yes?"))
 	if(prob(50))
-		explosion(user, 1, throw_range = "[user] lost at the roomba roulette")
-		return
-	explosion(src, 1, throw_range = "[user] won at the roomba roulette")
+		explosion(user, 1, throw_range = "[user] lost at the roomba roulette", explosion_cause=user)
+		return // TODO WHO THE FUCK IS PASSING A STRING AS AN ARG DUDE
+	explosion(src, 1, throw_range = "[user] won at the roomba roulette", explosion_cause=user)
 	qdel(src)
 
 /obj/machinery/bot/roomba/attackby(obj/item/I, mob/living/user, def_zone)

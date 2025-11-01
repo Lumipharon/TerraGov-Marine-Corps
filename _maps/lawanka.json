@@ -2,9 +2,16 @@
     "map_name": "Lawanka Outpost",
     "map_path": "map_files/Lawanka_Outpost",
     "map_file": "LawankaOutpost.dmm",
+	"parallax_icon": "jungle",
 	"disk_sets": {
 		"basic": 1
 	},
+	"armor": "jungle",
 	"quickbuilds": 1800,
-	"announce_text": "An AI from a Nanotrasen sponsored Research Colony has been sending a distress signal, nonstop. Nanotrasen has hired us to reclaim the Colony in any form. TGMC, prepare to deploy!"
+	"announce_text": "An AI from a Nanotrasen sponsored Research Colony has been sending a distress signal, nonstop. Nanotrasen has hired us to reclaim the Colony in any form. TGMC, prepare to deploy!",
+	"traits":[{
+		"weather_rain": true,
+		"No Parallax": true,
+		"Baseturf": "/turf/open/floor/plating"
+	}]
 }

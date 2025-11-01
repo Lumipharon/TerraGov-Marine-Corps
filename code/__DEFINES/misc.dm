@@ -1,9 +1,5 @@
 //for all defines that doesn't fit in any other file.
 
-//Fullscreen overlay resolution in tiles.
-#define FULLSCREEN_OVERLAY_RESOLUTION_X 15
-#define FULLSCREEN_OVERLAY_RESOLUTION_Y 15
-
 //Run the world with this parameter to enable a single run though of the game setup and tear down process with unit tests in between
 #define TEST_RUN_PARAMETER "test-run"
 //Force the log directory to be something specific in the data/logs folder
@@ -23,7 +19,7 @@
 ///How many variations of bullethole patterns there are
 #define BULLETHOLE_STATES 10
 ///Maximum possible bullet holes in a closed turf
-#define BULLETHOLE_MAX 24 
+#define BULLETHOLE_MAX 24
 
 //wet floors
 
@@ -56,23 +52,12 @@ GLOBAL_VAR_INIT(global_unique_id, 1)
 #define SHELLEO_STDOUT 2
 #define SHELLEO_STDERR 3
 
-//different types of atom colorations
-#define ADMIN_COLOUR_PRIORITY 1 //only used by rare effects like greentext coloring mobs and when admins varedit color
-#define TEMPORARY_COLOUR_PRIORITY 2 //e.g. purple effect of the revenant on a mob, black effect when mob electrocuted
-#define WASHABLE_COLOUR_PRIORITY 3 //color splashed onto an atom (e.g. paint on turf)
-#define FIXED_COLOUR_PRIORITY 4 //color inherent to the atom (e.g. blob color)
-#define COLOUR_PRIORITY_AMOUNT 4 //how many priority levels there are.
-
-
 //Dummy mob reserve slots
 #define DUMMY_HUMAN_SLOT_PREFERENCES "dummy_preference_preview"
 #define DUMMY_HUMAN_SLOT_ADMIN "admintools"
 #define DUMMY_HUMAN_SLOT_MANIFEST "dummy_manifest_generation"
 
 #define CLIENT_FROM_VAR(I) (ismob(I) ? I:client : (istype(I, /client) ? I : (istype(I, /datum/mind) ? I:current?:client : null)))
-
-#define AREASELECT_CORNERA "corner A"
-#define AREASELECT_CORNERB "corner B"
 
 
 #define CHECKBOX_NONE 0
@@ -132,9 +117,6 @@ GLOBAL_VAR_INIT(global_unique_id, 1)
 #define LIGHT_EMPTY 1
 #define LIGHT_BROKEN 2
 #define LIGHT_BURNED 3
-
-//Actually better performant than reverse_direction()
-#define REVERSE_DIR(dir) ( ((dir & 85) << 1) | ((dir & 170) >> 1) )
 
 // shorter way to write as anything
 #define AS as anything

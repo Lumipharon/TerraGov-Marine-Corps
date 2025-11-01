@@ -139,7 +139,7 @@
 /obj/structure/largecrate/supply/weapons/standard_hmg
 	name = "\improper HSG-102 mounted heavy smartgun chest (x2)"
 	desc = "A supply crate containing two boxed HSG-102 mounted heavy smartguns."
-	supplies = list(/obj/item/storage/box/tl102 = 2)
+	supplies = list(/obj/item/storage/box/hsg_102 = 2)
 
 /obj/structure/largecrate/supply/weapons/standard_atgun
 	name = "\improper AT-36 anti tank gun and ammo chest (x1, x10)"
@@ -159,6 +159,11 @@
 		/obj/item/ammo_magazine/auto_cannon = 3,
 		/obj/item/ammo_magazine/auto_cannon/flak = 3,
 	)
+
+/obj/structure/largecrate/supply/weapons/heavy_flakgun
+	name = "\improper FK-88 mounted flak gun (x1)"
+	desc = "A supply crate containing a FK-88 mounted flak gun. Ammo sold separately."
+	supplies = list(/obj/item/weapon/gun/heavy_isg = 1)
 
 /obj/structure/largecrate/supply/ammo
 	name = "ammunition case"
@@ -197,7 +202,7 @@
 /obj/structure/largecrate/supply/ammo/standard_hmg
 	name = "\improper HSG-102 ammunition box case (x6)"
 	desc = "An ammunition case containing six HSG-102 ammunition boxes."
-	supplies = list(/obj/item/ammo_magazine/tl102 = 6)
+	supplies = list(/obj/item/ammo_magazine/hsg_102 = 6)
 
 /obj/structure/largecrate/supply/ammo/standard_ammo
 	name = "large surplus ammuniton crate"
@@ -216,11 +221,12 @@
 		/obj/item/storage/box/visual/magazine/compact/plasma_pistol/full = 1,
 		/obj/item/storage/box/visual/magazine/compact/standard_smg/full = 1,
 		/obj/item/storage/box/visual/magazine/compact/standard_machinepistol/full = 1,
+		/obj/item/storage/box/visual/magazine/compact/standard_heavysmg/full = 1,
 		/obj/item/storage/box/visual/magazine/compact/standard_assaultrifle/full = 1,
 		/obj/item/storage/box/visual/magazine/compact/standard_carbine/full = 1,
 		/obj/item/storage/box/visual/magazine/compact/standard_skirmishrifle/full = 1,
 		/obj/item/storage/box/visual/magazine/compact/ar11/full = 1,
-		/obj/item/storage/box/visual/magazine/compact/lasrifle/marine/full = 1,
+		/obj/item/storage/box/visual/magazine/compact/lasrifle/full = 1,
 		/obj/item/storage/box/visual/magazine/compact/sh15/flechette/full = 1,
 		/obj/item/storage/box/visual/magazine/compact/sh15/slug/full = 1,
 		/obj/item/storage/box/visual/magazine/compact/standard_dmr/full = 1,
@@ -240,7 +246,7 @@
 
 /obj/structure/largecrate/supply/explosives/mines
 	name = "\improper M20 claymore case (x20)"
-	desc = "A case containing five four M20 claymore boxes."
+	desc = "A case containing five four-count M20 claymore boxes."
 	supplies = list(/obj/item/storage/box/explosive_mines = 5)
 
 /obj/structure/largecrate/supply/explosives/grenades
@@ -264,7 +270,7 @@
 	supplies = list(/obj/item/mortal_shell/flare = 25)
 
 /obj/structure/largecrate/supply/explosives/disposable
-	name = "RL-72 disposable rocket launchers (x8)"
+	name = "\improper RL-72 disposable rocket launcher crate (x8)"
 	desc = "A case containing eight RL-72 disposables."
 	supplies = list(/obj/item/weapon/gun/launcher/rocket/oneuse = 8)
 
@@ -273,12 +279,12 @@
 	icon_state = "secure_crate"
 
 /obj/structure/largecrate/supply/supplies/flares
-	name = "Flare supply crate (x100)"
-	desc = "A supply crate containing twenty five-flare boxes."
+	name = "flare supply crate (x140)"
+	desc = "A supply crate containing ten boxes of fourteen flares each."
 	supplies = list(/obj/item/storage/box/m94 = 10)
 
 /obj/structure/largecrate/supply/supplies/coifs
-	name = "Heat absorbent coifs supply crate (x25)"
+	name = "heat absorbent coifs supply crate (x25)"
 	desc = "A supply crate containing twenty five heat absorbent coifs."
 	supplies = list(/obj/item/clothing/mask/rebreather/scarf = 25)
 
@@ -397,7 +403,7 @@
 
 /obj/structure/largecrate/machine/autodoc/attackby(obj/item/I, mob/user, params)
 	. = ..()
-	if(!.)
+	if(.)
 		return
 
 	if(iscrowbar(I))
@@ -407,7 +413,7 @@
 
 		var/obj/machinery/autodoc/event/E = new (T)
 		var/obj/machinery/computer/autodoc_console/C = new (T)
-		C.loc = get_step(T, EAST)
+		C.forceMove(get_step(T, EAST))
 		E.connected = C
 		C.connected = E
 
@@ -417,7 +423,7 @@
 
 /obj/structure/largecrate/supply/machine/bodyscanner/attackby(obj/item/I, mob/user, params)
 	. = ..()
-	if(!.)
+	if(.)
 		return
 
 	if(iscrowbar(I))
@@ -436,7 +442,7 @@
 
 /obj/structure/largecrate/machine/sleeper/attackby(obj/item/I, mob/user, params)
 	. = ..()
-	if(!.)
+	if(.)
 		return
 
 	if(iscrowbar(I))
@@ -446,6 +452,6 @@
 
 		var/obj/machinery/sleeper/E = new (T)
 		var/obj/machinery/computer/sleep_console/C = new (T)
-		C.loc = get_step(T, EAST)
+		C.forceMove(get_step(T, EAST))
 		E.connected = C
 		C.connected = E

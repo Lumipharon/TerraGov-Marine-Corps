@@ -97,7 +97,7 @@
 //greyscale mech stuff
 /obj/item/mecha_ammo/vendable
 	w_class = WEIGHT_CLASS_BULKY
-	flags_equip_slot = ITEM_SLOT_BACK
+	equip_slot_flags = ITEM_SLOT_BACK
 
 /obj/item/mecha_ammo/vendable/lmg
 	name = "box of LMG bullets"
@@ -168,7 +168,7 @@
 	name = "high explosive missile"
 	desc = "A TGMC mech missile. You probably shouldnt hit the pointy end with anything."
 	icon_state = "rpg_ammo"
-	rounds = 1
+	rounds = 10
 	ammo_type = MECHA_AMMO_RPG
 	direct_load = TRUE
 	qdel_on_empty = TRUE

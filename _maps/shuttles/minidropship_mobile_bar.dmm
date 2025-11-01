@@ -19,7 +19,7 @@
 	},
 /area/shuttle/minidropship)
 "e" = (
-/obj/structure/table/gamblingtable,
+/obj/structure/table/wood/gambling,
 /obj/machinery/chem_dispenser/beer{
 	dir = 4
 	},
@@ -32,23 +32,7 @@
 /obj/machinery/light{
 	dir = 8
 	},
-/obj/structure/barricade/metal{
-	dir = 8
-	},
 /turf/open/floor/carpet/side{
-	dir = 8
-	},
-/area/shuttle/minidropship)
-"m" = (
-/obj/machinery/door/poddoor/mainship/open{
-	id = "minidropship_podlock"
-	},
-/obj/machinery/door/poddoor/shutters/transit/nonsmoothing,
-/obj/structure/table/fancywoodentable,
-/obj/structure/barricade/metal{
-	dir = 4
-	},
-/turf/open/floor/mainship/white{
 	dir = 8
 	},
 /area/shuttle/minidropship)
@@ -64,15 +48,19 @@
 	id = "minidropship_podlock"
 	},
 /obj/machinery/door/poddoor/shutters/transit/nonsmoothing,
-/obj/structure/table/fancywoodentable,
-/obj/structure/barricade/metal{
-	dir = 8
-	},
+/obj/structure/table/wood/fancy,
 /turf/open/floor/mainship/white{
 	dir = 8
 	},
 /area/shuttle/minidropship)
 "r" = (
+/obj/machinery/door_control/minidropship{
+	dir = 4;
+	id = "minidropship_podlock";
+	name = "inner door-control";
+	pixel_x = -25;
+	pixel_y = 8
+	},
 /obj/structure/sink{
 	dir = 8;
 	pixel_x = -12;
@@ -99,23 +87,12 @@
 	id = "minidropship_podlock"
 	},
 /obj/machinery/door/poddoor/shutters/transit/nonsmoothing,
-/obj/structure/table/fancywoodentable,
+/obj/structure/table/wood/fancy,
 /obj/structure/dropship_piece/tadpole/engine{
 	dir = 1;
 	pixel_x = -23
 	},
-/obj/structure/barricade/metal{
-	dir = 8
-	},
 /turf/open/floor/mainship/white{
-	dir = 8
-	},
-/area/shuttle/minidropship)
-"w" = (
-/obj/structure/barricade/plasteel{
-	dir = 8
-	},
-/turf/open/floor/carpet/side{
 	dir = 8
 	},
 /area/shuttle/minidropship)
@@ -127,7 +104,7 @@
 	dir = 4
 	},
 /obj/structure/reagent_dispensers/beerkeg,
-/obj/structure/barricade/metal{
+/obj/structure/barricade/solid{
 	dir = 1
 	},
 /turf/open/floor/carpet/side{
@@ -150,7 +127,7 @@
 /obj/item/clothing/under/liaison_suit/galaxy_blue,
 /obj/item/book/manual/barman_recipes,
 /obj/item/reagent_containers/food/drinks/shaker,
-/obj/structure/barricade/metal{
+/obj/structure/barricade/solid{
 	dir = 1
 	},
 /turf/open/floor/carpet/side{
@@ -168,11 +145,8 @@
 	id = "minidropship_podlock"
 	},
 /obj/machinery/door/poddoor/shutters/transit/nonsmoothing,
-/obj/structure/table/fancywoodentable,
+/obj/structure/table/wood/fancy,
 /obj/item/reagent_containers/glass/rag,
-/obj/structure/barricade/metal{
-	dir = 4
-	},
 /turf/open/floor/mainship/white{
 	dir = 8
 	},
@@ -185,13 +159,7 @@
 /turf/closed/wall/mainship/outer/canterbury,
 /area/shuttle/minidropship)
 "E" = (
-/obj/machinery/door_control{
-	dir = 8;
-	id = "minidropship_podlock";
-	name = "inner door-control";
-	pixel_x = 25;
-	pixel_y = 8
-	},
+/obj/machinery/vending/nanoammo/directional/west,
 /obj/item/stack/barbed_wire/full,
 /turf/open/floor/carpet/side{
 	dir = 4
@@ -214,18 +182,7 @@
 	},
 /turf/template_noop,
 /area/shuttle/minidropship)
-"I" = (
-/obj/structure/barricade/plasteel{
-	dir = 4
-	},
-/turf/open/floor/carpet/side{
-	dir = 4
-	},
-/area/shuttle/minidropship)
 "J" = (
-/obj/structure/barricade/metal{
-	dir = 8
-	},
 /turf/open/floor/carpet/side{
 	dir = 8
 	},
@@ -235,14 +192,13 @@
 	dir = 2;
 	id = "minidropship_podlock"
 	},
-/obj/structure/barricade/plasteel,
 /obj/machinery/door/poddoor/shutters/transit/nonsmoothing{
 	dir = 1
 	},
 /turf/open/floor/carpet/side,
 /area/shuttle/minidropship)
 "M" = (
-/obj/structure/table/gamblingtable,
+/obj/structure/table/wood/gambling,
 /obj/machinery/chem_dispenser/soda{
 	dir = 4
 	},
@@ -253,7 +209,6 @@
 	dir = 2;
 	id = "minidropship_podlock"
 	},
-/obj/structure/barricade/plasteel,
 /obj/machinery/door/poddoor/shutters/transit/nonsmoothing{
 	dir = 1
 	},
@@ -262,9 +217,6 @@
 	},
 /area/shuttle/minidropship)
 "P" = (
-/obj/structure/barricade/metal{
-	dir = 4
-	},
 /turf/open/floor/carpet/side{
 	dir = 4
 	},
@@ -280,10 +232,10 @@
 /area/shuttle/minidropship)
 "S" = (
 /obj/machinery/computer/camera_advanced/shuttle_docker/minidropship,
-/obj/machinery/camera/autoname/mainship,
-/obj/structure/barricade/metal{
+/obj/structure/barricade/solid{
 	dir = 1
 	},
+/obj/machinery/camera/autoname/mainship/dropship_two,
 /turf/open/floor/carpet/side{
 	dir = 1
 	},
@@ -303,15 +255,12 @@
 /obj/machinery/reagentgrinder{
 	pixel_y = 5
 	},
-/obj/structure/table/fancywoodentable,
-/obj/structure/barricade/metal{
-	dir = 4
-	},
+/obj/structure/table/wood/fancy,
 /turf/open/floor/mainship/white{
 	dir = 8
 	},
 /area/shuttle/minidropship)
-"W" = (
+"Z" = (
 /obj/structure/dropship_piece/singlewindow/tadpole{
 	dir = 1;
 	max_integrity = 1000
@@ -345,10 +294,10 @@ H
 "}
 (3,1,1) = {"
 a
-W
+Z
 x
 r
-w
+J
 J
 k
 G
@@ -365,10 +314,10 @@ K
 "}
 (5,1,1) = {"
 a
-W
+Z
 z
 E
-I
+P
 P
 P
 O
@@ -379,7 +328,7 @@ c
 D
 f
 U
-m
+o
 C
 n
 "}

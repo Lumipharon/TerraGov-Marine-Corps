@@ -9,7 +9,7 @@ GLOBAL_LIST_INIT(ventcrawl_machinery, typecacheof(list(
 		if(is_type_in_list(U, GLOB.ventcrawl_machinery) && Adjacent(U))
 			pipes |= U
 	if(!pipes || !length(pipes))
-		balloon_alert(src, "No pipes in range!")
+		balloon_alert(src, "no pipes in range!")
 		return
 	if(length(pipes) == 1)
 		pipe = pipes[1]
@@ -67,10 +67,11 @@ GLOBAL_LIST_INIT(ventcrawl_machinery, typecacheof(list(
 			visible_message(span_notice("[stealthy ? "[src] scrambles into the ventilation ducts!" : ""]"),span_notice("You climb into the ventilation ducts."))
 
 			if(!stealthy) //Xenos with stealth vent crawling can silently enter/exit vents.
-				playsound(src, get_sfx("alien_ventpass"), 35, TRUE)
+				playsound(src, SFX_ALIEN_VENTPASS, 35, TRUE)
 
 			forceMove(vent_found)
 			update_pipe_vision()
+			log_game("[src] Crawled into the vent at [AREACOORD(vent_found)]")
 	else
 		to_chat(src, span_warning("This ventilation duct is not connected to anything!"))
 
@@ -91,8 +92,8 @@ GLOBAL_LIST_INIT(ventcrawl_machinery, typecacheof(list(
 			if(!in_view_range(client.mob, A))
 				continue
 			if(!A.pipe_vision_img)
-				A.pipe_vision_img = image(A, A.loc, layer = ABOVE_HUD_LAYER, dir = A.dir)
-				A.pipe_vision_img.plane = ABOVE_HUD_PLANE
+				A.pipe_vision_img = image(A, A.loc, dir = A.dir)
+				SET_PLANE_EXPLICIT(A.pipe_vision_img, ABOVE_HUD_PLANE, A)
 			A.pipe_vision_img.alpha = 200
 			client.images += A.pipe_vision_img
 			pipes_shown += A.pipe_vision_img

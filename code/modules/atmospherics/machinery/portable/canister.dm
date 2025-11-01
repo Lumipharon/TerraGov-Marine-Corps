@@ -58,7 +58,6 @@
 /obj/machinery/portable_atmospherics/canister/update_overlays()
 	. = ..()
 	if(machine_stat & BROKEN)
-		cut_overlays()
 		return
 
 	var/old_update_flags = update_flags
@@ -71,8 +70,6 @@
 
 	if(update_flags == old_update_flags)
 		return
-
-	cut_overlays()
 	if(update_flags & HOLDING)
 		. += "can-open"
 	if(update_flags & CONNECTED)
@@ -91,8 +88,8 @@
 		return
 
 
-/obj/machinery/portable_atmospherics/canister/deconstruct(disassembled = TRUE)
-	if(!(flags_atom & NODECONSTRUCT))
+/obj/machinery/portable_atmospherics/canister/deconstruct(disassembled = TRUE, mob/living/blame_mob)
+	if(!(atom_flags & NODECONSTRUCT))
 		if(!(machine_stat & BROKEN))
 			disconnect()
 			machine_stat |= BROKEN

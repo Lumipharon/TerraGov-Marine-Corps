@@ -75,6 +75,8 @@
 
 /obj/machinery/power/generator/attackby(obj/item/I, mob/user, params)
 	. = ..()
+	if(.)
+		return
 
 	if(iswrench(I))
 		anchored = !anchored
@@ -102,7 +104,7 @@
 
 
 /obj/machinery/power/generator/verb/rotate_clock()
-	set category = "Object"
+	set category = "IC.Object"
 	set name = "Rotate Generator (Clockwise)"
 	set src in view(1)
 
@@ -112,7 +114,7 @@
 	setDir(turn(src.dir, 90))
 
 /obj/machinery/power/generator/verb/rotate_anticlock()
-	set category = "Object"
+	set category = "IC.Object"
 	set name = "Rotate Generator (Counterclockwise)"
 	set src in view(1)
 

@@ -2,14 +2,15 @@
 	interaction_flags = INTERACT_UI_INTERACT
 	var/name = "Normal"
 	var/hivenumber = XENO_HIVE_NORMAL
-	var/mob/living/carbon/xenomorph/queen/living_xeno_queen
+	///The current ruler of the xeno hive
 	var/mob/living/carbon/xenomorph/living_xeno_ruler
-	///Timer for caste evolution after the last one died
+	///Timer for caste evolution after the last one died, CASTE = TIMER
 	var/list/caste_death_timers = list()
 	var/color = null
 	var/prefix = ""
 	var/hive_flags = NONE
 	var/list/xeno_leader_list = list()
+	/// /datum/xeno_caste = list(xeno mobs)
 	var/list/list/xenos_by_typepath = list()
 	var/list/list/xenos_by_tier = list()
 	var/list/list/xenos_by_upgrade = list()
@@ -21,6 +22,15 @@
 	var/list/obj/structure/xeno/psychictower/psychictowers = list()
 	///list of phero towers
 	var/list/obj/structure/xeno/pherotower/pherotowers = list()
+	/// List of recovery pylons.
+	var/list/obj/structure/xeno/recovery_pylon/recovery_pylons = list()
+	/// List of shell mutation chambers.
+	var/list/obj/structure/xeno/mutation_chamber/shell/shell_chambers = list()
+	/// List of spur mutation chambers.
+	var/list/obj/structure/xeno/mutation_chamber/spur/spur_chambers = list()
+	/// List of veil mutation chambers.
+	var/list/obj/structure/xeno/mutation_chamber/veil/veil_chambers = list()
+
 	///list of hivemind cores
 	var/list/obj/structure/xeno/hivemindcore/hivemindcores = list()
 	var/tier3_xeno_limit
@@ -39,10 +49,18 @@
 /datum/hive_status/New()
 	. = ..()
 	LAZYINITLIST(candidates)
+	/*
+	for(var/datum/xeno_caste/caste_type AS in subtypesof(/datum/xeno_caste))
+		if(caste_type.upgrade != XENO_UPGRADE_BASETYPE)
+			continue
+		if(caste_type.type != caste_type.base_strain_type)
+			continue
+			xenos_by_typepath[caste_type] = list()
+	*/
 
-	for(var/t in subtypesof(/mob/living/carbon/xenomorph))
-		var/mob/living/carbon/xenomorph/X = t
-		xenos_by_typepath[initial(X.caste_base_type)] = list()
+	for(var/datum/xeno_caste/caste_type AS in subtypesof(/datum/xeno_caste))
+		if(caste_type.upgrade == XENO_UPGRADE_BASETYPE)
+			xenos_by_typepath[caste_type] = list()
 
 	for(var/tier in GLOB.xenotiers)
 		xenos_by_tier[tier] = list()
@@ -88,9 +106,8 @@
 	// Show all the death timers in milliseconds
 	.["hive_death_timers"] = list()
 	// The key for caste_death_timer is the mob's type
-	for(var/mob in caste_death_timers)
-		var/datum/xeno_caste/caste = GLOB.xeno_caste_datums[mob][XENO_UPGRADE_BASETYPE]
-		var/timeleft = timeleft(caste_death_timers[caste.caste_type_path])
+	for(var/datum/xeno_caste/caste AS in caste_death_timers)
+		var/timeleft = timeleft(caste_death_timers[caste])
 		.["hive_death_timers"] += list(list(
 			"caste" = caste.caste_name,
 			"time_left" = round(timeleft MILLISECONDS),
@@ -126,6 +143,16 @@
 	// Spawners
 	for(var/obj/structure/xeno/spawner/spawner AS in GLOB.xeno_spawners_by_hive[hivenumber])
 		.["hive_structures"] += list(get_structure_packet(spawner))
+	// Acid Jaws
+	for(var/obj/structure/xeno/acid_maw/acid_jaws AS in GLOB.xeno_acid_jaws_by_hive[hivenumber])
+		.["hive_structures"] += list(get_structure_packet(acid_jaws))
+	// Mutation chambers
+	for(var/obj/structure/xeno/mutation_chamber/shell/chamber AS in GLOB.hive_datums[hivenumber].shell_chambers)
+		.["hive_structures"] += list(get_structure_packet(chamber))
+	for(var/obj/structure/xeno/mutation_chamber/spur/chamber AS in GLOB.hive_datums[hivenumber].spur_chambers)
+		.["hive_structures"] += list(get_structure_packet(chamber))
+	for(var/obj/structure/xeno/mutation_chamber/veil/chamber AS in GLOB.hive_datums[hivenumber].veil_chambers)
+		.["hive_structures"] += list(get_structure_packet(chamber))
 
 	.["xeno_info"] = list()
 	for(var/mob/living/carbon/xenomorph/xeno AS in get_all_xenos())
@@ -140,9 +167,9 @@
 			"location" = get_xeno_location(xeno),
 			"health" = round(health * 100, 1),
 			"plasma" = round((xeno.plasma_stored / (caste.plasma_max * plasma_multi)) * 100, 1),
-			"is_leader" = xeno.queen_chosen_lead,
+			"is_leader" = xeno.xeno_flags & XENO_LEADER,
 			"is_ssd" = !xeno.client,
-			"index" = GLOB.hive_ui_caste_index[caste.caste_type_path],
+			"index" = GLOB.hive_ui_caste_index[caste.base_strain_type],
 		))
 
 	var/mob/living/carbon/xenomorph/xeno_user
@@ -161,13 +188,14 @@
 	.["user_maturity"] = isxeno(user) ? xeno_user.upgrade_stored : 0
 	.["user_next_mat_level"] = isxeno(user) && xeno_user.upgrade_possible() ? xeno_user.xeno_caste.upgrade_threshold : 0
 	.["user_tracked"] = isxeno(user) && !isnull(xeno_user.tracked) ? REF(xeno_user.tracked) : ""
+	.["user_can_mutate"] = isxeno(user) && (xeno_user.xeno_caste.caste_flags & CASTE_MUTATIONS_ALLOWED) && ((SSticker.mode?.round_type_flags & MODE_MUTATIONS_OBTAINABLE) || HAS_TRAIT(xeno_user, TRAIT_VALHALLA_XENO))
 
-	.["user_show_empty"] = isxeno(user) ? xeno_user.status_toggle_flags & HIVE_STATUS_SHOW_EMPTY : 0
-	.["user_show_compact"] = isxeno(user) ? xeno_user.status_toggle_flags & HIVE_STATUS_COMPACT_MODE : 0
-	.["user_show_general"] = isxeno(user) ? xeno_user.status_toggle_flags & HIVE_STATUS_SHOW_GENERAL : 0
-	.["user_show_population"] = isxeno(user) ? xeno_user.status_toggle_flags & HIVE_STATUS_SHOW_POPULATION : 0
-	.["user_show_xeno_list"] = isxeno(user) ? xeno_user.status_toggle_flags & HIVE_STATUS_SHOW_XENO_LIST : 0
-	.["user_show_structures"] = isxeno(user) ? xeno_user.status_toggle_flags & HIVE_STATUS_SHOW_STRUCTURES : 0
+	.["user_show_empty"] = !!(user.client.prefs.status_toggle_flags & HIVE_STATUS_SHOW_EMPTY)
+	.["user_show_compact"] = !!(user.client.prefs.status_toggle_flags & HIVE_STATUS_COMPACT_MODE)
+	.["user_show_general"] = !!(user.client.prefs.status_toggle_flags & HIVE_STATUS_SHOW_GENERAL)
+	.["user_show_population"] = !!(user.client.prefs.status_toggle_flags & HIVE_STATUS_SHOW_POPULATION)
+	.["user_show_xeno_list"] = !!(user.client.prefs.status_toggle_flags & HIVE_STATUS_SHOW_XENO_LIST)
+	.["user_show_structures"] = !!(user.client.prefs.status_toggle_flags & HIVE_STATUS_SHOW_STRUCTURES)
 
 /// Returns a data entry for the "xeno structures" list based on the structure passed
 /datum/hive_status/proc/get_structure_packet(obj/structure/xeno/struct)
@@ -192,24 +220,52 @@
 
 	.["user_ref"] = REF(user)
 	.["user_xeno"] = isxeno(user)
-	.["user_queen"] = isxenoqueen(user)
+	if(isxeno(user))
+		var/mob/living/carbon/xenomorph/x = user
+		if(x == living_xeno_ruler)
+			.["user_ruler"] = user
+
+
+
 
 	.["user_index"] = 0
 	if(isxeno(user))
 		var/mob/living/carbon/xenomorph/xeno_user = user
-		.["user_index"] = GLOB.hive_ui_caste_index[xeno_user.xeno_caste.caste_type_path]
+		.["user_index"] = GLOB.hive_ui_caste_index[xeno_user.xeno_caste.base_strain_type]
 
 	.["user_purchase_perms"] = FALSE
 	if(isxeno(user))
 		var/mob/living/carbon/xenomorph/xeno_user = user
-		var/datum/xeno_caste/caste = xeno_user.xeno_caste
-		.["user_purchase_perms"] = (/datum/action/ability/xeno_action/blessing_menu in caste.actions)
+		if(xeno_user.actions_by_path[/datum/action/ability/xeno_action/blessing_menu])
+			.["user_purchase_perms"] = TRUE
 
 /datum/hive_status/ui_act(action, list/params, datum/tgui/ui, datum/ui_state/state)
 	. = ..()
+	/// Actions that don't require you to be a xeno
+	switch(action)
+		if("ToggleGeneral")
+			usr.client.prefs.status_toggle_flags ^= HIVE_STATUS_SHOW_GENERAL
+			usr.client.prefs.save_preferences()
+		if("ToggleCompact")
+			usr.client.prefs.status_toggle_flags ^= HIVE_STATUS_COMPACT_MODE
+			usr.client.prefs.save_preferences()
+		if("TogglePopulation")
+			usr.client.prefs.status_toggle_flags ^= HIVE_STATUS_SHOW_POPULATION
+			usr.client.prefs.save_preferences()
+		if("ToggleXenoList")
+			usr.client.prefs.status_toggle_flags ^= HIVE_STATUS_SHOW_XENO_LIST
+			usr.client.prefs.save_preferences()
+		if("ToggleStructures")
+			usr.client.prefs.status_toggle_flags ^= HIVE_STATUS_SHOW_STRUCTURES
+			usr.client.prefs.save_preferences()
+		if("ToggleEmpty")
+			usr.client.prefs.status_toggle_flags ^= HIVE_STATUS_SHOW_EMPTY
+
+	/// If the action we're sending is to observe, this will be the xeno being observed. Otherwise it's the xeno pressing the button.
 	var/mob/living/carbon/xenomorph/xeno_target = locate(params["xeno"])
 	if(QDELETED(xeno_target))
 		return
+
 	switch(action)
 		if("Evolve")
 			if(!isxeno(usr))
@@ -227,7 +283,7 @@
 				return
 			attempt_deevolve(usr, xeno_target)
 		if("Leader")
-			if(!isxenoqueen(usr)) // Queen only. No boys allowed.
+			if(living_xeno_ruler != usr) // Only the current hive ruler can assign leaders
 				return
 			SEND_SIGNAL(usr, COMSIG_XENOMORPH_LEADERSHIP, xeno_target)
 		if("Plasma")
@@ -238,10 +294,10 @@
 			if(!isxeno(usr))
 				return
 			SEND_SIGNAL(usr, COMSIG_XENOABILITY_BLESSINGSMENU)
-		if("ToggleEmpty")
+		if("Mutations")
 			if(!isxeno(usr))
 				return
-			TOGGLE_BITFIELD(xeno_target.status_toggle_flags, HIVE_STATUS_SHOW_EMPTY)
+			GLOB.mutation_selector.interact(usr)
 		if("Compass")
 			var/atom/target = locate(params["target"])
 			if(isobserver(usr))
@@ -250,26 +306,6 @@
 			if(!isxeno(usr))
 				return
 			xeno_target.set_tracked(target)
-		if("ToggleGeneral")
-			if(!isxeno(usr))
-				return
-			TOGGLE_BITFIELD(xeno_target.status_toggle_flags, HIVE_STATUS_SHOW_GENERAL)
-		if("ToggleCompact")
-			if(!isxeno(usr))
-				return
-			TOGGLE_BITFIELD(xeno_target.status_toggle_flags, HIVE_STATUS_COMPACT_MODE)
-		if("TogglePopulation")
-			if(!isxeno(usr))
-				return
-			TOGGLE_BITFIELD(xeno_target.status_toggle_flags, HIVE_STATUS_SHOW_POPULATION)
-		if("ToggleXenoList")
-			if(!isxeno(usr))
-				return
-			TOGGLE_BITFIELD(xeno_target.status_toggle_flags, HIVE_STATUS_SHOW_XENO_LIST)
-		if("ToggleStructures")
-			if(!isxeno(usr))
-				return
-			TOGGLE_BITFIELD(xeno_target.status_toggle_flags, HIVE_STATUS_SHOW_STRUCTURES)
 
 /// Returns the string location of the xeno
 /datum/hive_status/proc/get_xeno_location(atom/xeno)
@@ -290,6 +326,16 @@
 		if(t == XENO_TIER_MINION)
 			continue
 		. += length(xenos_by_tier[t])
+
+///returns a list of all caste members, including other strains of this xeno caste
+/datum/hive_status/proc/get_all_caste_members(caste_type)
+	RETURN_TYPE(/list)
+
+	ASSERT(ispath(caste_type, /datum/xeno_caste))
+	. = list()
+	var/list/all_strain_types = get_strain_options(caste_type)
+	for(var/strain_type in all_strain_types)
+		. += xenos_by_typepath[strain_type]
 
 /datum/hive_status/proc/post_add(mob/living/carbon/xenomorph/X)
 	X.color = color
@@ -337,7 +383,7 @@
 /datum/hive_status/proc/get_all_xenos(queen = TRUE)
 	var/list/xenos = list()
 	for(var/typepath in xenos_by_typepath)
-		if(!queen && typepath == /mob/living/carbon/xenomorph/queen) // hardcoded check for now
+		if(!queen && typepath == /datum/xeno_caste/queen) // hardcoded check for now // TODO still hardcoded 5 years later...
 			continue
 		xenos += xenos_by_typepath[typepath]
 	return xenos
@@ -356,7 +402,7 @@
 /datum/hive_status/proc/get_leaderable_xenos()
 	var/list/xenos = list()
 	for(var/typepath in xenos_by_typepath)
-		if(typepath == /mob/living/carbon/xenomorph/queen) // hardcoded check for now
+		if(typepath == /datum/xeno_caste/queen) // hardcoded check for now // TODO STILL HARDCODED 5 YEARS LATER BTW
 			continue
 		for(var/i in xenos_by_typepath[typepath])
 			var/mob/living/carbon/xenomorph/X = i
@@ -373,6 +419,12 @@
 	. = 0
 	for(var/obj/structure/xeno/evotower/tower AS in evotowers)
 		. += tower.boost_amount
+
+///fetches number of bonus maturity points given to the hive
+/datum/hive_status/proc/get_upgrade_boost()
+	. = 0
+	for(var/obj/structure/xeno/evotower/tower AS in evotowers)
+		. += tower.maturty_boost_amount
 
 // ***************************************
 // *********** Adding xenos
@@ -395,16 +447,16 @@
 		LAZYADD(xenos_by_zlevel["[X.z]"], X)
 	RegisterSignal(X, COMSIG_MOVABLE_Z_CHANGED, PROC_REF(xeno_z_changed))
 
-	if(!xenos_by_typepath[X.caste_base_type])
+	if(!xenos_by_typepath[get_base_caste_type(X.xeno_caste.type)])
 		stack_trace("trying to add an invalid typepath into hivestatus list [X.caste_base_type]")
 		return FALSE
 
-	xenos_by_typepath[X.caste_base_type] += X
+	xenos_by_typepath[get_base_caste_type(X.xeno_caste.type)] += X
 	update_tier_limits() //Update our tier limits.
 
 	return TRUE
 
-/mob/living/carbon/xenomorph/proc/add_to_hive(datum/hive_status/HS, force=FALSE)
+/mob/living/carbon/xenomorph/proc/add_to_hive(datum/hive_status/HS, force=FALSE, prevent_ruler=FALSE)
 	if(!force && hivenumber != XENO_HIVE_NONE)
 		CRASH("trying to do a dirty add_to_hive")
 
@@ -420,25 +472,9 @@
 
 	SSdirection.start_tracking(HS.hivenumber, src)
 	hive.update_tier_limits() //Update our tier limits.
+	hive.update_ruler()
 
-/mob/living/carbon/xenomorph/queen/add_to_hive(datum/hive_status/HS, force=FALSE) // override to ensure proper queen/hive behaviour
-	. = ..()
-	if(HS.living_xeno_queen) // theres already a queen
-		return
-
-	HS.living_xeno_queen = src
-
-	HS.update_ruler()
-
-
-/mob/living/carbon/xenomorph/shrike/add_to_hive(datum/hive_status/HS, force = FALSE) // override to ensure proper queen/hive behaviour
-	. = ..()
-
-	if(HS.living_xeno_ruler)
-		return
-	HS.update_ruler()
-
-/mob/living/carbon/xenomorph/hivemind/add_to_hive(datum/hive_status/HS, force = FALSE)
+/mob/living/carbon/xenomorph/hivemind/add_to_hive(datum/hive_status/HS, force = FALSE, prevent_ruler=FALSE)
 	. = ..()
 	if(!GLOB.xeno_structures_by_hive[HS.hivenumber])
 		GLOB.xeno_structures_by_hive[HS.hivenumber] = list()
@@ -459,23 +495,16 @@
 	hive_core.name = "[HS.hivenumber == XENO_HIVE_NORMAL ? "" : "[HS.name] "]hivemind core"
 	hive_core.color = HS.color
 
-/mob/living/carbon/xenomorph/king/add_to_hive(datum/hive_status/HS, force = FALSE)
-	. = ..()
-
-	if(HS.living_xeno_ruler)
-		return
-	HS.update_ruler()
-
-/mob/living/carbon/xenomorph/proc/add_to_hive_by_hivenumber(hivenumber, force=FALSE) // helper function to add by given hivenumber
+/mob/living/carbon/xenomorph/proc/add_to_hive_by_hivenumber(hivenumber, force=FALSE, prevent_ruler=FALSE) // helper function to add by given hivenumber
 	if(!GLOB.hive_datums[hivenumber])
 		CRASH("add_to_hive_by_hivenumber called with invalid hivenumber")
 	var/datum/hive_status/HS = GLOB.hive_datums[hivenumber]
-	add_to_hive(HS, force)
+	add_to_hive(HS, force, prevent_ruler)
 	hive.update_tier_limits() //Update our tier limits.
 
 // This is a special proc called only when a xeno is first created to set their hive and name properly
-/mob/living/carbon/xenomorph/proc/set_initial_hivenumber()
-	add_to_hive_by_hivenumber(hivenumber, force=TRUE)
+/mob/living/carbon/xenomorph/proc/set_initial_hivenumber(prevent_ruler=FALSE)
+	add_to_hive_by_hivenumber(hivenumber, force=TRUE, prevent_ruler=prevent_ruler)
 
 // ***************************************
 // *********** Removing xenos
@@ -504,11 +533,11 @@
 		stack_trace("trying to remove a xeno from hivestatus upgrade list, nothing was removed!?")
 		return FALSE
 
-	if(!xenos_by_typepath[X.caste_base_type])
+	if(!xenos_by_typepath[get_base_caste_type(X.xeno_caste.type)])
 		stack_trace("trying to remove an invalid typepath from hivestatus list")
 		return FALSE
 
-	if(!xenos_by_typepath[X.caste_base_type].Remove(X))
+	if(!xenos_by_typepath[get_base_caste_type(X.xeno_caste.type)].Remove(X))
 		stack_trace("failed to remove a xeno from hive status typepath list, nothing was removed!?")
 		return FALSE
 
@@ -528,8 +557,12 @@
 	if(!hive.remove_xeno(src))
 		CRASH("failed to remove xeno from a hive")
 
-	if(queen_chosen_lead || (src in hive.xeno_leader_list))
+	if((xeno_flags & XENO_LEADER) || (src in hive.xeno_leader_list))
 		hive.remove_leader(src)
+
+	if(hive.living_xeno_ruler == src)
+		hive.set_ruler(null)
+		hive.update_ruler()
 
 	SSdirection.stop_tracking(hive.hivenumber, src)
 
@@ -549,39 +582,6 @@
 	. = ..()
 	UnregisterSignal(SSdcs, COMSIG_GLOB_NUKE_START)
 
-/mob/living/carbon/xenomorph/queen/remove_from_hive() // override to ensure proper queen/hive behaviour
-	var/datum/hive_status/hive_removed_from = hive
-	if(hive_removed_from.living_xeno_queen == src)
-		hive_removed_from.living_xeno_queen = null
-
-	. = ..()
-
-	if(hive_removed_from.living_xeno_ruler == src)
-		hive_removed_from.set_ruler(null)
-		hive_removed_from.update_ruler() //Try to find a successor.
-
-
-
-/mob/living/carbon/xenomorph/shrike/remove_from_hive()
-	var/datum/hive_status/hive_removed_from = hive
-
-	. = ..()
-
-	if(hive_removed_from.living_xeno_ruler == src)
-		hive_removed_from.set_ruler(null)
-		hive_removed_from.update_ruler() //Try to find a successor.
-
-
-
-/mob/living/carbon/xenomorph/king/remove_from_hive()
-	var/datum/hive_status/hive_removed_from = hive
-
-	. = ..()
-
-	if(hive_removed_from.living_xeno_ruler == src)
-		hive_removed_from.set_ruler(null)
-		hive_removed_from.update_ruler() //Try to find a successor.
-
 /mob/living/carbon/xenomorph/hivemind/remove_from_hive()
 	var/obj/structure/xeno/hivemindcore/hive_core = get_core()
 	GLOB.xeno_structures_by_hive[hivenumber] -= hive_core
@@ -597,19 +597,21 @@
 // ***************************************
 /datum/hive_status/proc/add_leader(mob/living/carbon/xenomorph/X)
 	xeno_leader_list += X
-	X.queen_chosen_lead = TRUE
+	X.xeno_flags |= XENO_LEADER
 	X.give_rally_abilities()
+	X.handle_xeno_leader_pheromones(living_xeno_ruler)
 
 /datum/hive_status/proc/remove_leader(mob/living/carbon/xenomorph/X)
 	xeno_leader_list -= X
-	X.queen_chosen_lead = FALSE
+	X.xeno_flags &= ~XENO_LEADER
+	X.handle_xeno_leader_pheromones(living_xeno_ruler)
 
 	if(!isxenoshrike(X) && !isxenoqueen(X) && !isxenohivemind(X)) //These innately have the Rally Hive ability
 		X.remove_rally_hive_ability()
 
 /datum/hive_status/proc/update_leader_pheromones() // helper function to easily trigger an update of leader pheromones
 	for(var/mob/living/carbon/xenomorph/leader AS in xeno_leader_list)
-		leader.handle_xeno_leader_pheromones(living_xeno_queen)
+		leader.handle_xeno_leader_pheromones(living_xeno_ruler)
 
 // ***************************************
 // *********** Status changes
@@ -644,9 +646,7 @@
 	if(!target.xeno_caste.deevolves_to)
 		to_chat(devolver, span_xenonotice("Cannot deevolve [target]."))
 		return
-
-	var/datum/xeno_caste/new_caste = GLOB.xeno_caste_datums[target.xeno_caste.deevolves_to][XENO_UPGRADE_NORMAL]
-
+	var/datum/xeno_caste/new_caste = GLOB.xeno_caste_datums[target.xeno_caste.deevolves_to][XENO_UPGRADE_BASETYPE]
 	var/confirm = tgui_alert(devolver, "Are you sure you want to deevolve [target] from [target.xeno_caste.caste_name] to [new_caste.caste_name]?", null, list("Yes", "No"))
 	if(confirm != "Yes")
 		return
@@ -668,36 +668,34 @@
 	if((target.health < target.maxHealth) || (target.plasma_stored < (target.xeno_caste.plasma_max * target.xeno_caste.plasma_regen_limit)))
 		return
 
-	target.balloon_alert(target, "Forced deevolution")
-	to_chat(target, span_xenowarning("[devolver] deevolved us for the following reason: [reason]."))
+	target.balloon_alert(target, "forced deevolution!")
+	to_chat(target, span_xenouserdanger("[devolver] deevolved us for the following reason: <i>[reason]</i>"))
 
-	target.do_evolve(new_caste.caste_type_path, new_caste.caste_name, TRUE)
+	target.do_evolve(new_caste.type, TRUE) // This already handles qdel and statistics.
 
 	log_game("[key_name(devolver)] has deevolved [key_name(target)]. Reason: [reason]")
 	message_admins("[ADMIN_TPMONTY(devolver)] has deevolved [ADMIN_TPMONTY(target)]. Reason: [reason]")
 
-	GLOB.round_statistics.total_xenos_created-- //so an evolved xeno doesn't count as two.
-	SSblackbox.record_feedback("tally", "round_statistics", -1, "total_xenos_created")
-	qdel(target)
-
-
 // ***************************************
 // *********** Xeno death
 // ***************************************
-/datum/hive_status/proc/on_xeno_death(mob/living/carbon/xenomorph/X)
-	remove_from_lists(X)
-	dead_xenos += X
 
-	SEND_SIGNAL(X, COMSIG_HIVE_XENO_DEATH)
+///Handles any effects when a xeno dies
+/datum/hive_status/proc/on_xeno_death(mob/living/carbon/xenomorph/dead_xeno)
+	remove_from_lists(dead_xeno)
+	dead_xenos += dead_xeno
 
-	if(X == living_xeno_ruler)
-		on_ruler_death(X)
-	var/datum/xeno_caste/caste = X?.xeno_caste
-	if(caste.death_evolution_delay <= 0)
+	SEND_SIGNAL(dead_xeno, COMSIG_HIVE_XENO_DEATH)
+
+	if(dead_xeno == living_xeno_ruler)
+		on_ruler_death(dead_xeno)
+	var/datum/xeno_caste/base_caste = GLOB.xeno_caste_datums[get_parent_caste_type(dead_xeno.xeno_caste)][XENO_UPGRADE_BASETYPE]
+	if(base_caste.death_evolution_delay <= 0)
 		return
-	if(!caste_death_timers[caste.caste_type_path])
-		caste_death_timers[caste.caste_type_path] = addtimer(CALLBACK(src, PROC_REF(end_caste_death_timer), caste), caste.death_evolution_delay , TIMER_STOPPABLE)
+	if(!caste_death_timers[base_caste])
+		caste_death_timers[base_caste] = addtimer(CALLBACK(src, PROC_REF(end_caste_death_timer), base_caste), base_caste.death_evolution_delay , TIMER_STOPPABLE)
 
+///Handles effects if a xeno is revived
 /datum/hive_status/proc/on_xeno_revive(mob/living/carbon/xenomorph/X)
 	dead_xenos -= X
 	add_to_lists(X)
@@ -712,48 +710,93 @@
 
 /// Gets the hivemind conduit's death timer, AKA, the time before a replacement can evolve
 /datum/hive_status/proc/get_hivemind_conduit_death_timer()
-	return caste_death_timers[/mob/living/carbon/xenomorph/queen]
+	return caste_death_timers[GLOB.xeno_caste_datums[/datum/xeno_caste/queen][XENO_UPGRADE_BASETYPE]]
 
 /// Gets the total time that the death timer for the hivemind conduit will last
 /datum/hive_status/proc/get_total_hivemind_conduit_time()
-	var/datum/xeno_caste/xeno = GLOB.xeno_caste_datums[/mob/living/carbon/xenomorph/queen]["basetype"]
+	var/datum/xeno_caste/xeno = GLOB.xeno_caste_datums[/datum/xeno_caste/queen][XENO_UPGRADE_BASETYPE]
 	return initial(xeno.death_evolution_delay)
 
 /datum/hive_status/proc/on_ruler_death(mob/living/carbon/xenomorph/ruler)
-	if(living_xeno_ruler == ruler)
-		set_ruler(null)
+	set_ruler(null)
 	var/announce = TRUE
 	if(SSticker.current_state == GAME_STATE_FINISHED || SSticker.current_state == GAME_STATE_SETTING_UP)
 		announce = FALSE
 	if(announce)
 		xeno_message("A sudden tremor ripples through the hive... \the [ruler] has been slain! Vengeance!", "xenoannounce", 6, TRUE)
 	notify_ghosts("\The <b>[ruler]</b> has been slain!", source = ruler, action = NOTIFY_JUMP)
+	update_leader_pheromones()
+	for(var/mob/living/carbon/xenomorph/leader AS in xeno_leader_list)
+		remove_leader(leader)
+		leader.hud_set_queen_overwatch()
+	ruler.hud_set_queen_overwatch()
 	update_ruler()
 	return TRUE
 
-
-// This proc attempts to find a new ruler to lead the hive.
-/datum/hive_status/proc/update_ruler()
+/// If the current ruler devolves or caste_swaps we want to properly handle it
+/datum/hive_status/proc/on_missing_ruler(mob/living/carbon/xenomorph/old_mob, mob/living/carbon/xenomorph/new_mob)
+	SIGNAL_HANDLER
+	if(old_mob == living_xeno_ruler)
+		living_xeno_ruler = null
+	update_leader_pheromones()
+	for(var/mob/living/carbon/xenomorph/leader AS in xeno_leader_list)
+		remove_leader(leader)
+		leader.hud_set_queen_overwatch()
+		leader.update_leader_icon(FALSE)
 	if(living_xeno_ruler)
-		return //No succession required.
+		living_xeno_ruler.remove_ruler_abilities()
+		UnregisterSignal(living_xeno_ruler, list(COMSIG_XENOMORPH_EVOLVED, COMSIG_XENOMORPH_DEEVOLVED))
+	set_ruler(null)
+	update_ruler(old_mob)
+
+/// This proc attempts to find a new ruler to lead the hive.
+/datum/hive_status/proc/update_ruler(mob/living/carbon/xenomorph/previous_ruler)
+	SIGNAL_HANDLER
+	if(isxenoqueen(living_xeno_ruler))
+		return
 
 	var/mob/living/carbon/xenomorph/successor
+	var/list/mob/living/carbon/xenomorph/prio_candidates = xenos_by_tier[XENO_TIER_FOUR]
+	var/list/mob/living/carbon/xenomorph/seco_candidates = xenos_by_tier[XENO_TIER_THREE]
 
-	var/list/candidates = xenos_by_typepath[/mob/living/carbon/xenomorph/queen] + xenos_by_typepath[/mob/living/carbon/xenomorph/shrike] + xenos_by_typepath[/mob/living/carbon/xenomorph/king]
-	if(length(candidates)) //Priority to the queens.
-		successor = candidates[1] //First come, first serve.
+	for(var/mob/living/carbon/xenomorph/potential_successor in prio_candidates)
+		if(!(potential_successor.xeno_caste.can_flags & CASTE_CAN_BE_RULER))
+			continue
+		successor = potential_successor
+		if(isxenoqueen(potential_successor))
+			break
+
+	if(!successor)
+		for(var/mob/living/carbon/xenomorph/potential_successor in seco_candidates)
+			if(potential_successor.xeno_caste.can_flags & CASTE_CAN_BE_RULER && !living_xeno_ruler)
+				if(previous_ruler == potential_successor)
+					continue
+				successor = potential_successor
+
+	if(!successor || living_xeno_ruler == successor)
+		return
 
 	var/announce = TRUE
 	if(SSticker.current_state == GAME_STATE_FINISHED || SSticker.current_state == GAME_STATE_SETTING_UP)
 		announce = FALSE
 
+	if(living_xeno_ruler) /// Remove the old ruler if T4 or queen is taking over
+		living_xeno_ruler.remove_ruler_abilities()
+		living_xeno_ruler.update_leader_icon(FALSE)
+		UnregisterSignal(living_xeno_ruler, list(COMSIG_XENOMORPH_EVOLVED, COMSIG_XENOMORPH_DEEVOLVED))
+
+	var/mob/living/carbon/xenomorph/prev = living_xeno_ruler // ref to the ruler we're replacing
+	remove_leader(successor)
 	set_ruler(successor)
+	successor.give_ruler_abilities()
+	successor.hud_set_queen_overwatch()
+	if(prev)
+		prev.hud_set_queen_overwatch() // we want to remove the ruler star from the previous ruler
+		prev = null // instantly null it
+		successor.update_leader_icon(FALSE) // We dont want to call this if its the first xeno
 
 	handle_ruler_timer()
-
-	if(!living_xeno_ruler)
-		return //Succession failed.
-
+	update_leader_pheromones()
 	if(announce)
 		xeno_message("\A [successor] has risen to lead the Hive! Rejoice!", "xenoannounce", 6)
 		notify_ghosts("\The [successor] has risen to lead the Hive!", source = successor, action = NOTIFY_ORBIT)
@@ -763,13 +806,9 @@
 	SSdirection.clear_leader(hivenumber)
 	if(!isnull(successor))
 		SSdirection.set_leader(hivenumber, successor)
-		SEND_SIGNAL(successor, COMSIG_HIVE_BECOME_RULER)
+		RegisterSignals(successor, list(COMSIG_XENOMORPH_EVOLVED, COMSIG_XENOMORPH_DEEVOLVED), PROC_REF(on_missing_ruler), TRUE)
 	living_xeno_ruler = successor
-
-
-/mob/living/carbon/xenomorph/queen/proc/on_becoming_ruler()
-	SIGNAL_HANDLER
-	hive.update_leader_pheromones()
+	handle_ruler_timer()
 
 
 /datum/hive_status/proc/handle_ruler_timer()
@@ -783,14 +822,14 @@
 ///Allows death delay caste to evolve. Safe for use by gamemode code, this allows per hive overrides
 /datum/hive_status/proc/end_caste_death_timer(datum/xeno_caste/caste)
 	xeno_message("The Hive is ready for a new [caste.caste_name] to evolve.", "xenoannounce", 6, TRUE)
-	caste_death_timers[caste.caste_type_path] = null
+	caste_death_timers[caste] = null
 
 /datum/hive_status/proc/check_ruler()
 	return TRUE
 
 
 /datum/hive_status/normal/check_ruler()
-	if(!(SSticker.mode?.flags_round_type & MODE_XENO_RULER))
+	if(!(SSticker.mode?.round_type_flags & MODE_XENO_RULER))
 		return TRUE
 	return living_xeno_ruler
 
@@ -798,11 +837,6 @@
 // ***************************************
 // *********** Queen
 // ***************************************
-
-// If the queen dies, update the hive's queen, and the leader pheromones
-/datum/hive_status/proc/on_queen_death()
-	living_xeno_queen = null
-	update_leader_pheromones()
 
 /mob/living/carbon/xenomorph/larva/proc/burrow()
 	if(ckey && client)
@@ -861,17 +895,11 @@ to_chat will check for valid clients itself already so no need to double check f
 
 		to_chat(X, "<span class='[span_class]'><font size=[size]> [message][report_distance ? " Distance: [get_dist(X, target)]" : ""]</font></span>")
 
-// This is to simplify the process of talking in hivemind, this will invoke the receive proc of all xenos in this hive
-/datum/hive_status/proc/hive_mind_message(mob/living/carbon/xenomorph/sender, message)
-	for(var/i in get_all_xenos())
-		var/mob/living/carbon/xenomorph/X = i
-		X.receive_hivemind_message(sender, message)
-
 ///Used for setting the trackers of all xenos in the hive, like when a nuke activates
 /datum/hive_status/proc/set_all_xeno_trackers(atom/target)
 	for(var/mob/living/carbon/xenomorph/X AS in get_all_xenos())
 		X.set_tracked(target)
-		to_chat(X, span_notice(" Now tracking [target.name]"))
+		to_chat(X, span_notice("Now tracking [target.name]"))
 
 // ***************************************
 // *********** Normal Xenos
@@ -892,7 +920,7 @@ to_chat will check for valid clients itself already so no need to double check f
 /datum/hive_status/normal/handle_ruler_timer()
 	if(!isinfestationgamemode(SSticker.mode)) //Check just need for unit test
 		return
-	if(!(SSticker.mode?.flags_round_type & MODE_XENO_RULER))
+	if(!(SSticker.mode?.round_type_flags & MODE_XENO_RULER))
 		return
 	if(SSmonitor.gamestate == SHUTTERS_CLOSED) //don't trigger orphan hivemind if the shutters are closed
 		return
@@ -939,7 +967,7 @@ to_chat will check for valid clients itself already so no need to double check f
 	if(!length(possible_mothers))
 		if(length(possible_silos))
 			return attempt_to_spawn_larva_in_silo(xeno_candidate, possible_silos, larva_already_reserved)
-		if(SSticker.mode?.flags_round_type & MODE_SILO_RESPAWN && !SSsilo.can_fire) // Distress mode & prior to shutters opening, so let the queue bypass silos if needed
+		if(SSticker.mode?.round_type_flags & MODE_SILO_RESPAWN && !SSsilo.can_fire) // Distress mode & prior to shutters opening, so let the queue bypass silos if needed
 			return do_spawn_larva(xeno_candidate, pick(GLOB.spawns_by_job[/datum/job/xenomorph]), larva_already_reserved)
 		to_chat(xeno_candidate, span_warning("There are no places currently available to receive new larvas."))
 		return FALSE
@@ -967,7 +995,7 @@ to_chat will check for valid clients itself already so no need to double check f
 		xeno_candidate.mob.reset_perspective(chosen_silo)
 		var/double_check = tgui_alert(xeno_candidate.mob, "Spawn here?", "Spawn location", list("Yes","Pick another silo","Abort"), timeout = 20 SECONDS)
 		if(double_check == "Pick another silo")
-			return attempt_to_spawn_larva_in_silo(xeno_candidate, possible_silos)
+			return attempt_to_spawn_larva_in_silo(xeno_candidate, possible_silos, larva_already_reserved)
 		else if(double_check != "Yes")
 			xeno_candidate.mob.reset_perspective(null)
 			remove_from_larva_candidate_queue(xeno_candidate)
@@ -1026,7 +1054,7 @@ to_chat will check for valid clients itself already so no need to double check f
 	message_admins("[key_name(xeno_candidate)] has joined as [ADMIN_TPMONTY(new_xeno)].")
 
 	xeno_candidate.mob.mind.transfer_to(new_xeno, TRUE)
-	new_xeno.playsound_local(new_xeno, 'sound/effects/xeno_newlarva.ogg')
+	new_xeno.playsound_local(new_xeno, 'sound/effects/alien/new_larva.ogg')
 	to_chat(new_xeno, span_xenoannounce("We are a xenomorph larva awakened from slumber!"))
 	if(!larva_already_reserved)
 		xeno_job.occupy_job_positions(1)
@@ -1043,7 +1071,7 @@ to_chat will check for valid clients itself already so no need to double check f
 			continue
 		qdel(structure)
 
-	if(SSticker.mode?.flags_round_type & MODE_PSY_POINTS_ADVANCED)
+	if(SSticker.mode?.round_type_flags & MODE_PSY_POINTS_ADVANCED)
 		SSpoints.xeno_strategic_points_by_hive[hivenumber] = SILO_PRICE //Give a free silo when going shipside and a turret
 		SSpoints.xeno_tactical_points_by_hive[hivenumber] = (XENO_TURRET_PRICE*4)
 
@@ -1089,9 +1117,12 @@ to_chat will check for valid clients itself already so no need to double check f
 	var/list/possible_mothers = list()
 	var/list/possible_silos = list()
 	SEND_SIGNAL(src, COMSIG_HIVE_XENO_MOTHER_PRE_CHECK, possible_mothers, possible_silos)
-	if(stored_larva > 0 && !LAZYLEN(candidates) && !XENODEATHTIME_CHECK(waiter.mob) && (length(possible_mothers) || length(possible_silos) || (SSticker.mode?.flags_round_type & MODE_SILO_RESPAWN && SSmonitor.gamestate == SHUTTERS_CLOSED)))
-		attempt_to_spawn_larva(waiter)
-		return
+	if(stored_larva > 0 && !LAZYLEN(candidates) && (length(possible_mothers) || length(possible_silos) || (SSticker.mode?.round_type_flags & MODE_SILO_RESPAWN && SSmonitor.gamestate == SHUTTERS_CLOSED)))
+		xeno_job.occupy_job_positions(1)
+		if(!attempt_to_spawn_larva(waiter, TRUE))
+			xeno_job.free_job_positions(1)
+			return FALSE
+		return TRUE
 	if(LAZYFIND(candidates, waiter))
 		remove_from_larva_candidate_queue(waiter)
 		return FALSE
@@ -1122,7 +1153,7 @@ to_chat will check for valid clients itself already so no need to double check f
 	var/list/possible_mothers = list()
 	var/list/possible_silos = list()
 	SEND_SIGNAL(src, COMSIG_HIVE_XENO_MOTHER_PRE_CHECK, possible_mothers, possible_silos)
-	if(!length(possible_mothers) && !length(possible_silos) && (!(SSticker.mode?.flags_round_type & MODE_SILO_RESPAWN) || SSsilo.can_fire))
+	if(!length(possible_mothers) && !length(possible_silos) && (!(SSticker.mode?.round_type_flags & MODE_SILO_RESPAWN) || SSsilo.can_fire))
 		return
 	var/datum/job/xeno_job = SSjob.GetJobType(/datum/job/xenomorph)
 	var/stored_larva = round(xeno_job.total_positions - xeno_job.current_positions)
@@ -1135,14 +1166,7 @@ to_chat will check for valid clients itself already so no need to double check f
 	var/client/client_in_queue
 	var/oldest_death = 0
 	while(stored_larva > 0 && LAZYLEN(candidates))
-		for(var/i in 1 to LAZYLEN(candidates))
-			client_in_queue = LAZYACCESS(candidates, i)
-			if(!XENODEATHTIME_CHECK(client_in_queue.mob))
-				break
-			var/candidate_death_time = (GLOB.key_to_time_of_xeno_death[client_in_queue.key] + SSticker.mode?.xenorespawn_time) - world.time
-			if(oldest_death > candidate_death_time || !oldest_death)
-				oldest_death = candidate_death_time
-			client_in_queue = null // Deathtimer still running
+		client_in_queue = LAZYACCESS(candidates, 1)
 
 		if(!client_in_queue) // No valid candidates in the queue
 			if(oldest_death)
@@ -1183,8 +1207,27 @@ to_chat will check for valid clients itself already so no need to double check f
 	var/threes = length(xenos_by_tier[XENO_TIER_THREE])
 	var/fours = length(xenos_by_tier[XENO_TIER_FOUR])
 
-	tier3_xeno_limit = max(threes, FLOOR((zeros + ones + twos + fours) / 3 + length(psychictowers) + 1, 1))
+	tier3_xeno_limit = max(threes, FLOOR((zeros + ones + twos + fours + threes*SSticker.mode.tier_three_inclusion) / 3 + length(psychictowers) + 1  - SSticker.mode.tier_three_penalty, 1))
 	tier2_xeno_limit = max(twos, (zeros + ones + fours) + length(psychictowers) * 2 + 1 - threes)
+
+/// Returns TRUE if the hive owns any mutation structures.
+/datum/hive_status/proc/has_any_mutation_structures()
+	return length(shell_chambers) || length(spur_chambers) || length(veil_chambers)
+
+/// Returns TRUE if the hive owns any mutation structures in a particular category.
+/datum/hive_status/proc/has_any_mutation_structures_in_category(category)
+	switch(category)
+		if(MUTATION_SHELL)
+			if(length(shell_chambers))
+				return TRUE
+		if(MUTATION_SPUR)
+			if(length(spur_chambers))
+				return TRUE
+		if(MUTATION_VEIL)
+			if(length(veil_chambers))
+				return TRUE
+	return FALSE
+
 
 // ***************************************
 // *********** Corrupted Xenos
@@ -1536,7 +1579,7 @@ to_chat will check for valid clients itself already so no need to double check f
 
 // Everything below can have a hivenumber set and these ensure easy hive comparisons can be made
 
-// atom level because of /obj/projectile/var/atom/firer
+// atom level because of /atom/movable/projectile/var/atom/firer
 /atom/proc/issamexenohive(atom/A)
 	if(!get_xeno_hivenumber() || !A?.get_xeno_hivenumber())
 		return FALSE
@@ -1567,8 +1610,8 @@ to_chat will check for valid clients itself already so no need to double check f
 	return ..()
 
 /obj/structure/xeno/trap/get_xeno_hivenumber()
-	if(hugger)
-		return hugger.hivenumber
+	if(length(huggers))
+		return huggers[1].hivenumber
 	return ..()
 
 /mob/living/carbon/human/get_xeno_hivenumber()

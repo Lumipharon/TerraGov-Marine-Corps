@@ -134,11 +134,11 @@
 	icon = 'icons/obj/machines/floodlight.dmi'
 	icon_state = "floodlightcombat"
 	max_integrity = 200
-	flags_item = IS_DEPLOYABLE
+	item_flags = IS_DEPLOYABLE
 	w_class = WEIGHT_CLASS_NORMAL
 	var/deployable_item = /obj/machinery/deployable/floodlight
 
-/obj/item/deployable_floodlight/Initialize()
+/obj/item/deployable_floodlight/Initialize(mapload)
 	. = ..()
 	AddComponent(/datum/component/deployable_item, deployable_item, 5 SECONDS, 3 SECONDS)
 

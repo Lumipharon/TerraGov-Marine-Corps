@@ -14,7 +14,7 @@
 	if(.)
 		return
 
-	var/dat = "PIPING LAYER: <A href='?src=[REF(src)];layer_down=1'>--</A><b>[piping_layer]</b><A href='?src=[REF(src)];layer_up=1'>++</A><BR>"
+	var/dat = "PIPING LAYER: <A href='byond://?src=[REF(src)];layer_down=1'>--</A><b>[piping_layer]</b><A href='byond://?src=[REF(src)];layer_up=1'>++</A><BR>"
 
 	var/recipes = GLOB.atmos_pipe_recipes
 
@@ -64,6 +64,8 @@
 
 /obj/machinery/pipedispenser/attackby(obj/item/I, mob/user, params)
 	. = ..()
+	if(.)
+		return
 
 	if(istype(I, /obj/item/pipe) || istype(I, /obj/item/pipe_meter))
 		to_chat(usr, span_notice("You put [I] back into [src]."))
@@ -78,7 +80,7 @@
 				return
 
 			user.visible_message("[user] unfastens \the [src].", \
-				span_notice(" You have unfastened \the [src]. Now it can be pulled somewhere else."), \
+				span_notice("You have unfastened \the [src]. Now it can be pulled somewhere else."), \
 				"You hear ratchet.")
 			anchored = FALSE
 			machine_stat |= MAINT
@@ -93,7 +95,7 @@
 				return
 
 			user.visible_message("[user] fastens \the [src].", \
-				span_notice(" You have fastened \the [src]. Now it can dispense pipes."), \
+				span_notice("You have fastened \the [src]. Now it can dispense pipes."), \
 				"You hear ratchet.")
 			anchored = TRUE
 			machine_stat &= ~MAINT
@@ -122,7 +124,7 @@
 	if(user.incapacitated() || !istype(pipe) || get_dist(user, src) > 1 || get_dist(src, pipe) > 1 || pipe.anchored)
 		return
 
-	user.balloon_alert(user, "Recycled pipe.")
+	user.balloon_alert(user, "recycled pipe")
 	qdel(pipe)
 
 /obj/machinery/pipedispenser/disposal/interact(mob/user)

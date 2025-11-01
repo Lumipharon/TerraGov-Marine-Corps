@@ -1,6 +1,6 @@
 /mob/living
 	see_invisible = SEE_INVISIBLE_LIVING
-	flags_atom = CRITICAL_ATOM|PREVENT_CONTENTS_EXPLOSION|BUMP_ATTACKABLE
+	atom_flags = CRITICAL_ATOM|PREVENT_CONTENTS_EXPLOSION|BUMP_ATTACKABLE
 	///0 for no override, sets see_invisible = see_override in silicon & carbon life process via update_sight()
 	var/see_override = 0
 	///Badminnery resize
@@ -8,9 +8,9 @@
 
 	/* Health and life related vars */
 	/// Maximum health that should be possible.
-	var/maxHealth = 100
+	var/maxHealth = LIVING_DEFAULT_MAX_HEALTH
 	/// Mob's current health
-	var/health = 100
+	var/health = LIVING_DEFAULT_MAX_HEALTH
 	/// Health at which a mob dies
 	var/health_threshold_dead = -100
 	/// Health at which a mob goes into crit
@@ -82,12 +82,20 @@
 	var/on_fire
 	///Tracks how many stacks of fire we have on, max is
 	var/fire_stacks = 0
-	///0: normal, 1: bursting, 2: bursted.
-	var/chestburst = 0
 	///more or less efficiency to metabolize helpful/harmful reagents and (TODO) regulate body temperature..
 	var/metabolism_efficiency = 1
 
 	var/tinttotal = TINT_NONE
+
+	/// FOV view that is applied from either nativeness or traits
+	var/fov_view
+	/// Lazy list of FOV traits that will apply a FOV view when handled.
+	var/list/fov_traits
+
+	/// Direction that this mob is looking at, used for the look_up and look_down procs
+	var/looking_vertically = NONE
+	///looking holder we use for look_up and look_down. we use this over resetting to the turf because we want to glide
+	var/atom/movable/looking_holder/looking_holder
 
 	///a list of all status effects the mob has
 	var/list/status_effects
@@ -124,7 +132,10 @@
 	var/grab_resist_level = 0
 	var/datum/job/job
 	var/comm_title = ""
-	///how much blood the mob has
+	/**
+	 * How much blood the mob has.
+	 * !!! Use the adjust_blood_volume() and set_blood_volume() to set this variable instead of directly modifying it!!!
+	 */
 	var/blood_volume = 0
 	///Multiplier.
 	var/heart_multi = 1
@@ -152,3 +163,5 @@
 	var/time_entered_stasis = 0
 	///The world.time of when this mob entered a cryo tube
 	var/time_entered_cryo = 0
+	///The z level this mob is currently registered in
+	var/registered_z = null

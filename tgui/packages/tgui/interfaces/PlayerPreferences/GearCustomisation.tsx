@@ -1,17 +1,25 @@
+import { Box, Button, LabeledList, Section, Stack } from 'tgui-core/components';
+
 import { useBackend } from '../../backend';
-import { Box, Button, LabeledList, Section, Stack } from '../../components';
 
 export const GearCustomization = (props) => {
   const { act, data } = useBackend<GearCustomizationData>();
 
-  const { gearsets, gear, clothing, underwear, undershirt, backpack, gender } =
-    data;
-
+  const {
+    gearsets,
+    gear,
+    clothing,
+    underwear,
+    undershirt,
+    backpack,
+    physique_used,
+  } = data;
   // These correspond to the gear slot and you need to update them if the defines change
   const slotMapping = {
     10: 'Head',
     8: 'Eyewear',
     9: 'Mouth',
+    17: 'Other',
   };
 
   const bySlot = {};
@@ -92,6 +100,30 @@ export const GearCustomization = (props) => {
               ))}
             </LabeledList>
           </Section>
+          <Stack.Item grow>
+            <Section title={'Other'}>
+              <LabeledList>
+                {bySlot['Other']?.map((item) => (
+                  <LabeledList.Item
+                    key={item.name}
+                    label={`${item.name}
+                  (${item.cost})`}
+                  >
+                    <Button.Checkbox
+                      inline
+                      content={'Equipped'}
+                      checked={gear.includes(item.name)}
+                      onClick={() =>
+                        gear.includes(item.name)
+                          ? act('loadoutremove', { gear: item.name })
+                          : act('loadoutadd', { gear: item.name })
+                      }
+                    />
+                  </LabeledList.Item>
+                ))}
+              </LabeledList>
+            </Section>
+          </Stack.Item>
         </Stack.Item>
       </Stack>
       <Stack>
@@ -121,7 +153,7 @@ export const GearCustomization = (props) => {
         <Stack.Item grow>
           <Section title={'Undershirt (select one)'}>
             <LabeledList>
-              {clothing['undershirt'][gender]?.map((item, idx) => (
+              {clothing['undershirt'][physique_used]?.map((item, idx) => (
                 <LabeledList.Item key={item} label={item}>
                   <Button.Checkbox
                     inline
@@ -139,7 +171,7 @@ export const GearCustomization = (props) => {
         <Stack.Item grow>
           <Section title={'Underwear (select one)'}>
             <LabeledList>
-              {clothing['underwear'][gender]?.map((item, idx) => (
+              {clothing['underwear'][physique_used]?.map((item, idx) => (
                 <LabeledList.Item key={item} label={item}>
                   <Button.Checkbox
                     inline

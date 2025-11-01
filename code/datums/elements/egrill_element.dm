@@ -33,12 +33,12 @@
 
 /datum/element/egrill/proc/attackby(obj/source, obj/item/attacked_by, mob/attacker, params)
 	SIGNAL_HANDLER
-	if(!iswirecutter(attacked_by) && !isscrewdriver(attacked_by) && !(attacked_by.flags_atom & CONDUCT))
+	if(!iswirecutter(attacked_by) && !isscrewdriver(attacked_by) && !(attacked_by.atom_flags & CONDUCT))
 		return
 	if(shock(source, attacker))
 		return COMPONENT_NO_AFTERATTACK
 
-/datum/element/egrill/proc/attack_alien(obj/source, mob/living/carbon/xenomorph/attacker)
+/datum/element/egrill/proc/attack_alien(obj/source, mob/living/carbon/xenomorph/attacker, damage_amount)
 	SIGNAL_HANDLER
 	if(attacker.status_flags & INCORPOREAL)
 		return FALSE

@@ -11,19 +11,19 @@
 
 	//exosuits and helmets obscure our view and stuff.
 	if(wear_suit)
-		skipgloves = wear_suit.flags_inv_hide & HIDEGLOVES
-		skipsuitstorage = wear_suit.flags_inv_hide & HIDESUITSTORAGE
-		skipjumpsuit = wear_suit.flags_inv_hide & HIDEJUMPSUIT
-		skipshoes = wear_suit.flags_inv_hide & HIDESHOES
+		skipgloves = wear_suit.inv_hide_flags & HIDEGLOVES
+		skipsuitstorage = wear_suit.inv_hide_flags & HIDESUITSTORAGE
+		skipjumpsuit = wear_suit.inv_hide_flags & HIDEJUMPSUIT
+		skipshoes = wear_suit.inv_hide_flags & HIDESHOES
 
 	if(head)
-		skipmask = head.flags_inv_hide & HIDEMASK
-		skipeyes = head.flags_inv_hide & HIDEEYES
-		skipears = head.flags_inv_hide & HIDEEARS
-		skipface = head.flags_inv_hide & HIDEFACE
+		skipmask = head.inv_hide_flags & HIDEMASK
+		skipeyes = head.inv_hide_flags & HIDEEYES
+		skipears = head.inv_hide_flags & HIDEEARS
+		skipface = head.inv_hide_flags & HIDEFACE
 
 	if(wear_mask)
-		skipface |= wear_mask.flags_inv_hide & HIDEFACE
+		skipface |= wear_mask.inv_hide_flags & HIDEFACE
 
 	var/t_He = p_they(TRUE) //capitalised for use at the start of each line.
 	var/t_he = p_they()
@@ -32,12 +32,10 @@
 	var/t_has = p_have()
 	var/t_is = p_are()
 
-	var/msg = "<span class='info'>This is "
+	var/msg = ""
 
-	if(icon)
-		msg += "[icon2html(icon, user)] " //fucking BYOND: this should stop dreamseeker crashing if we -somehow- examine somebody before their icon is generated
-
-	msg += "<EM>[src.name]</EM>!\n"
+	msg += "<span class='infoplain'>"
+	msg += separator_hr("Outfit")
 
 	//uniform
 	if(w_uniform && !skipjumpsuit)
@@ -150,7 +148,7 @@
 			if(isxeno(user))
 				msg += "[span_xenowarning("[t_He] [t_has] [icon2html(wear_mask, user)] \a little one on [t_his] face!")]\n"
 			else
-				msg += "[span_warning("[t_He] [t_has] [icon2html(wear_mask, user)] \a [wear_mask] on [t_his] face!")]\n"
+				msg += "[span_boldwarning("[t_He] [t_has] [icon2html(wear_mask, user)] \a [wear_mask] on [t_his] face!")]\n"
 		else if(wear_mask.blood_overlay)
 			msg += "[span_alert("[t_He] [t_has] [icon2html(wear_mask, user)] [wear_mask.gender==PLURAL?"some":"a"] [(wear_mask.blood_color != "#030303") ? "blood" : "oil"]-stained [wear_mask.name] on [t_his] face!")]\n"
 		else
@@ -170,6 +168,10 @@
 	//ID
 	if(wear_id)
 		msg += "[t_He] [t_is] wearing [icon2html(wear_id, user)] \a [wear_id].\n"
+
+	msg += separator_hr("Status")
+
+	msg += "[t_He] [t_is] a [species.name].\n"
 
 	//jitters
 	if(stat != DEAD)
@@ -203,7 +205,9 @@
 		if(stat == DEAD)
 			msg += "[span_deadsay("[t_He] [t_is] limp and unresponsive; there are no signs of life")]"
 			if(HAS_TRAIT(src, TRAIT_UNDEFIBBABLE))
-				msg += "[span_deadsay(" and [t_he] won't be coming back...")]\n"
+				msg += "[span_deadsay(" and [t_he] [t_has] degraded beyond revival...")]\n"
+			else if(!mind && !get_ghost(FALSE))
+				msg += "[span_deadsay(" and [t_his] soul has departed, [t_he] might come back later...")]\n"
 			else
 				msg += "[span_deadsay("...")]\n"
 		if(ishuman(user) && !user.stat && Adjacent(user))
@@ -223,40 +227,67 @@
 
 	if((!species.has_organ["brain"] || has_brain()) && stat != DEAD)
 		if(!key)
-			if(species.is_sentient)
-				msg += "[span_deadsay("[t_He] [t_is] fast asleep. It doesn't look like [t_he] [t_is] waking up anytime soon.")]\n"
+			if(!has_ai())
+				msg += "[span_deadsay("[t_He] [t_is] totally catatonic. The stresses of life in deep-space must have been too much for [t_him]. Any recovery is unlikely.")]\n"
 		else if(!client)
 			if(isxeno(user))
 				msg += "[span_xenowarning("[t_He] [p_do()]n't seem responsive.")]\n"
 			else
-				msg += "[span_deadsay("[t_He] [t_is] completely unresponsive to anything and has fallen asleep, as if affected by Space Sleep Disorder. [t_He] may snap out of it soon.")]\n"
+				msg += "[span_deadsay("[t_He] [t_is] completely unresponsive to anything and [t_has] fallen asleep, as if affected by Space Sleep Disorder. [t_He] may snap out of it soon.")]\n"
 
 	var/total_brute = getBruteLoss()
 	var/total_burn = getFireLoss()
 	var/total_clone = getCloneLoss()
 	if(total_brute)
 		if (total_brute < 25)
-			msg += "[span_warning("[t_He] [t_has] minor bruising.")]\n"
+			if(species.species_flags & ROBOTIC_LIMBS)
+				msg += "[span_warning("[t_He] [t_has] minor denting.")]\n"
+			else
+				msg += "[span_warning("[t_He] [t_has] minor bruising.")]\n"
 		else if (total_brute < 50)
-			msg += "[span_warning("[t_He] [t_has] <b>moderate</b> bruising.")]\n"
+			if(species.species_flags & ROBOTIC_LIMBS)
+				msg += "[span_warning("[t_He] [t_has] <b>moderate</b> denting.")]\n"
+			else
+				msg += "[span_warning("[t_He] [t_has] <b>moderate</b> bruising.")]\n"
 		else
-			msg += "[span_warning("<B>[t_He] [t_has] severe bruising.</B>")]\n"
+			if(species.species_flags & ROBOTIC_LIMBS)
+				msg += "[span_warning("<B>[t_He] [t_has] severe denting!</B>")]\n"
+			else
+				msg += "[span_warning("<B>[t_He] [t_has] severe bruising!</B>")]\n"
 
 	if(total_burn)
 		if (total_burn < 25)
-			msg += "[span_warning("[t_He] [t_has] minor burns.")]\n"
+			if(species.species_flags & ROBOTIC_LIMBS)
+				msg += "[span_warning("[t_He] [t_has] minor scorching.")]\n"
+			else
+				msg += "[span_warning("[t_He] [t_has] minor burns.")]\n"
 		else if (total_burn < 50)
-			msg += "[span_warning("[t_He] [t_has] <b>moderate</b> burns.")]\n"
+			if(species.species_flags & ROBOTIC_LIMBS)
+				msg += "[span_warning("[t_He] [t_has] <b>moderate</b> scorching.")]\n"
+			else
+				msg += "[span_warning("[t_He] [t_has] <b>moderate</b> burns.")]\n"
 		else
-			msg += "[span_warning("<B>[t_He] [t_has] severe burns.</B>")]\n"
+			if(species.species_flags & ROBOTIC_LIMBS)
+				msg += "[span_warning("<B>[t_He] [t_has] severe scorching!</B>")]\n"
+			else
+				msg += "[span_warning("<B>[t_He] [t_has] severe burns!</B>")]\n"
 
 	if(total_clone)
 		if(total_clone < 25)
-			msg += "<span class='tinydeadsay'><i>[t_He] [t_is] slightly disfigured, with light signs of cellular damage.</i></span>\n"
+			if(isrobot(src))
+				msg += "[span_tinydeadsay("<i>[t_He] [t_has] minor structural damage, with some solder visibly frayed...</i>")]\n"
+			else
+				msg += "[span_tinydeadsay("<i>[t_He] [t_is] slightly disfigured, with light signs of cellular damage...</i>")]\n"
 		else if (total_clone < 50)
-			msg += "[span_deadsay("<i>[t_He] [t_is] significantly disfigured, with growing clouds of cellular damage.</i>")]\n"
+			if(isrobot(src))
+				msg += "[span_deadsay("<i>[t_He] look[p_s()] very shaky, with significant damage to [t_his] overall structure...</i>")]\n"
+			else
+				msg += "[span_deadsay("<i>[t_He] [t_is] significantly disfigured, with growing clouds of cellular damage...</i>")]\n"
 		else
-			msg += "[span_deadsay("<b><i>[t_He] [t_is] absolutely fucked up, with streaks of sickening, deformed flesh on [t_his] skin.</b></i>")]\n"
+			if(isrobot(src))
+				msg += "[span_deadsay("<b><i>[t_He] look[p_s()] barely functional, nearly collapsing with each step!</b></i>")]\n"
+			else
+				msg += "[span_deadsay("<b><i>[t_He] [t_is] absolutely fucked up, with streaks of sickening, deformed flesh on [t_his] skin!</b></i>")]\n"
 
 	if(fire_stacks > 0)
 		msg += "[t_He] [t_is] covered in something flammable.\n"
@@ -338,9 +369,7 @@
 				healthy = FALSE
 
 			var/overall_desc = ""
-			if(healthy)
-				overall_desc = span_tinynotice("[t_He] [t_has] a healthy [temp_limb.display_name].")
-			else
+			if(!healthy)
 				overall_desc = "[t_He] [t_has] a [germ_desc][temp_limb.display_name]"
 				if(brute_desc || burn_desc)
 					overall_desc += " with [brute_desc]"
@@ -348,7 +377,7 @@
 						overall_desc += " and "
 					overall_desc += burn_desc
 				overall_desc = span_warning(overall_desc + ".")
-			wound_flavor_text["[temp_limb.display_name]"] = overall_desc + "\n"
+				wound_flavor_text["[temp_limb.display_name]"] = overall_desc + "\n"
 
 	//Handles the text strings being added to the actual description.
 	//If they have something that covers the limb, and it is not missing, put flavortext.  If it is covered but bleeding, add other flavortext.
@@ -461,19 +490,25 @@
 					if (display_foot_right)
 						msg += "[span_warning("[t_He] [t_has] blood pooling around [t_his] <b>right boot!</b>")]\n"
 
-	if(chestburst == 2)
+	if(chestburst == CARBON_CHEST_BURSTED)
 		if(isxeno(user))
 			msg += "[span_xenowarning("A larva escaped from [t_him]!")]\n"
 		else
 			msg += "[span_boldwarning("[t_He] [t_has] a giant hole in [t_his] chest!")]\n"
 
 	for(var/i in embedded_objects)
+		msg += EXAMINE_SECTION_BREAK
 		var/obj/item/embedded = i
 		if(!(embedded.embedding.embedded_flags & EMBEDDED_CAN_BE_YANKED_OUT))
 			continue
 		msg += "[span_boldwarning("[t_He] [t_has] \a [embedded] sticking out of [t_his] flesh!")]\n"
 
+	if(flavor_text)
+		msg += separator_hr("Flavor Text")
+		msg += flavor_text
+
 	if(hasHUD(user,"security"))
+		msg += separator_hr("Security HUD")
 		var/perpname = "wot"
 		var/criminal = "None"
 
@@ -490,33 +525,29 @@
 						if(R.fields["id"] == E.fields["id"])
 							criminal = R.fields["criminal"]
 
-			msg += "[span_deptradio("Criminal status:")] <a href='?src=[text_ref(src)];criminal=1'>\[[criminal]\]</a>\n"
-			msg += "[span_deptradio("Security records:")] <a href='?src=[text_ref(src)];secrecord=`'>\[View\]</a>  <a href='?src=[text_ref(src)];secrecordadd=`'>\[Add comment\]</a>\n"
+			msg += "[span_deptradio("Criminal status:")] <a href='byond://?src=[text_ref(src)];criminal=1'>\[[criminal]\]</a>\n"
+			msg += "[span_deptradio("Security records:")] <a href='byond://?src=[text_ref(src)];secrecord=`'>\[View\]</a>  <a href='byond://?src=[text_ref(src)];secrecordadd=`'>\[Add comment\]</a>\n"
 
 	if(hasHUD(user,"medical"))
+		msg += separator_hr("Medical HUD")
 		var/cardcolor = holo_card_color
-		if(!cardcolor) cardcolor = "none"
-		msg += "[span_deptradio("Triage holo card:")] <a href='?src=[text_ref(src)];medholocard=1'>\[[cardcolor]\]</a> - "
+		if(!cardcolor)
+			cardcolor = "none"
+		msg += "[span_deptradio("Triage holo card:")] <a href='byond://?src=[text_ref(src)];medholocard=1'>\[[cardcolor]\]</a> | "
 
 		// scan reports
-		var/datum/data/record/N = null
-		for(var/datum/data/record/R in GLOB.datacore.medical)
-			if (R.fields["name"] == real_name)
-				N = R
-				break
-		if(!isnull(N))
-			if(!(N.fields["last_scan_time"]))
-				msg += "[span_deptradio("No scan report on record")]\n"
-			else
-				msg += "[span_deptradio("<a href='?src=[text_ref(src)];scanreport=1'>Scan from [N.fields["last_scan_time"]]</a>")]\n"
+		var/datum/data/record/medical_record = find_medical_record(src)
+		if(!isnull(medical_record?.fields["historic_scan"]))
+			msg += "<a href='byond://?src=[text_ref(src)];scanreport=1'>Body scan from [medical_record.fields["historic_scan_time"]]...</a>\n"
+		else
+			msg += "[span_deptradio("No body scan report on record")]\n"
 
 	if(hasHUD(user,"squadleader"))
+		msg += separator_hr("SL Utilities")
 		var/mob/living/carbon/human/H = user
 		if(assigned_squad) //examined mob is a marine in a squad
 			if(assigned_squad == H.assigned_squad) //same squad
-				msg += "<a href='?src=[text_ref(src)];squadfireteam=1'>\[Assign to a fireteam.\]</a>\n"
-
-	msg += "[flavor_text]<br>"
+				msg += "<a href='byond://?src=[text_ref(src)];squadfireteam=1'>\[Assign to a fireteam.\]</a>\n"
 
 	if(HAS_TRAIT(src, TRAIT_HOLLOW))
 		if(isxeno(user))
@@ -525,23 +556,56 @@
 			msg += "[span_deadsay("<b>[t_He] [t_is] hollowed out!</b>")]\n"
 
 	if(isxeno(user))
+		msg += separator_hr("Xeno Info")
 		if(species.species_flags & IS_SYNTHETIC)
 			msg += "[span_xenowarning("You sense [t_he] [t_is] not organic.")]\n"
 		if(status_flags & XENO_HOST)
 			msg += "[t_He] [t_is] impregnated.\n"
 		if(reagents.get_reagent_amount(/datum/reagent/toxin/xeno_neurotoxin))
-			msg += "Neurotoxin: Causes increasingly intense pain and stamina damage over time, increasing in intensity at the 40 second and the minute and a half mark of metabolism.\n"
+			msg += "Neurotoxin([reagents.get_reagent_amount(/datum/reagent/toxin/xeno_neurotoxin)]u): Causes increasingly intense pain and stamina damage over time, increasing in intensity at the 40 second and the minute and a half mark of metabolism.\n"
 		if(reagents.get_reagent_amount(/datum/reagent/toxin/xeno_hemodile))
-			msg += "Hemodile: Slows down the target, doubling in power with each other xeno-based toxin present.\n"
+			msg += "Hemodile([reagents.get_reagent_amount(/datum/reagent/toxin/xeno_hemodile)]u): Slows down the target, doubling in power with each other xeno-based toxin present.\n"
 		if(reagents.get_reagent_amount(/datum/reagent/toxin/xeno_transvitox))
-			msg += "Transvitox: Converts burns to toxin over time, as well as causing incoming brute damage to deal additional toxin damage. Both effects intensifying with each xeno-based toxin present. Toxin damage is capped at 180.\n"
+			msg += "Transvitox([reagents.get_reagent_amount(/datum/reagent/toxin/xeno_transvitox)]u): Converts burns to toxin over time, as well as causing incoming brute damage to deal additional toxin damage. Both effects intensifying with each xeno-based toxin present. Toxin damage is capped at 180.\n"
 		if(reagents.get_reagent_amount(/datum/reagent/toxin/xeno_ozelomelyn))
-			msg += "Ozelomelyn: Rapidly purges all medicine in the body, causes toxin damage capped at 40. Metabolizes very quickly.\n"
+			msg += "Ozelomelyn([reagents.get_reagent_amount(/datum/reagent/toxin/xeno_ozelomelyn)]u): Rapidly purges all medicine in the body, causes toxin damage capped at 40. Metabolizes very quickly.\n"
 		if(reagents.get_reagent_amount(/datum/reagent/toxin/xeno_sanguinal))
-			msg += "Sanguinal: Causes brute damage and bleeding from the brute damage. Does additional damage types in the presence of other xeno-based toxins. Toxin damage for Neuro, Stamina damage for Hemodile, and Burn damage for Transvitox.\n"
+			msg += "Sanguinal([reagents.get_reagent_amount(/datum/reagent/toxin/xeno_sanguinal)]u): Causes brute damage and bleeding from the brute damage. Does additional damage types in the presence of other xeno-based toxins. Toxin damage for Neuro, Stamina damage for Hemodile, and Burn damage for Transvitox.\n"
+
+//defiler specific examine info
+		if(istype(user, /mob/living/carbon/xenomorph/defiler))
+			if(reagents.get_reagent_amount(/datum/reagent/medicine/bicaridine))
+				msg += "Bicaridine([reagents.get_reagent_amount(/datum/reagent/medicine/bicaridine)]u): Weak brute medication used by most marines. Heals slowly.\n"
+			if(reagents.get_reagent_amount(/datum/reagent/medicine/kelotane))
+				msg += "Kelotane([reagents.get_reagent_amount(/datum/reagent/medicine/kelotane)]u): Weak burn medication used by most marines. Heals slowly.\n"
+			if(reagents.get_reagent_amount(/datum/reagent/medicine/tricordrazine))
+				msg += "Tricordrazine([reagents.get_reagent_amount(/datum/reagent/medicine/tricordrazine)]u): General healing chem, heals all types of common damage by a small ammount.\n"
+			if(reagents.get_reagent_amount(/datum/reagent/medicine/meralyne))
+				msg += "Meralyne([reagents.get_reagent_amount(/datum/reagent/medicine/meralyne)]u): Strong brute medication used commonly by corpsman.\n"
+			if(reagents.get_reagent_amount(/datum/reagent/medicine/dermaline))
+				msg += "Dermaline([reagents.get_reagent_amount(/datum/reagent/medicine/dermaline)]u): Strong burn medication used commonly by corpsman.\n"
+
+			if(reagents.get_reagent_amount(/datum/reagent/medicine/tramadol))
+				msg += "Tramadol([reagents.get_reagent_amount(/datum/reagent/medicine/tramadol)]u): General use anti-pain medication used by most marines.\n"
+			if(reagents.get_reagent_amount(/datum/reagent/medicine/paracetamol))
+				msg += "Paracetamol([reagents.get_reagent_amount(/datum/reagent/medicine/paracetamol)]u): Weak anti-pain medication. rarely used.\n"
+			if(reagents.get_reagent_amount(/datum/reagent/medicine/oxycodone))
+				msg += "Oxycodone([reagents.get_reagent_amount(/datum/reagent/medicine/oxycodone)]u): Very strong anti-pain medication commonly found on corpsman.\n"
+
+			if(reagents.get_reagent_amount(/datum/reagent/medicine/dylovene))
+				msg += "Dylovene([reagents.get_reagent_amount(/datum/reagent/medicine/dylovene)]u): Basic toxin removal medication.\n"
+			if(reagents.get_reagent_amount(/datum/reagent/medicine/inaprovaline))
+				msg += "Inaprovaline([reagents.get_reagent_amount(/datum/reagent/medicine/inaprovaline)]u):  Heals vast ammount of damage after injection in crit and prevents further oxygen damage while present.\n"
+			if(reagents.get_reagent_amount(/datum/reagent/medicalnanites))
+				msg += "Medical nanites([reagents.get_reagent_amount(/datum/reagent/medicalnanites)]u): Uses marines blood healing moderate ammounts of burn and brute all the time. Cannot be purged by ozelomelyn but can be by defiling.\n"
 
 	if(has_status_effect(STATUS_EFFECT_ADMINSLEEP))
-		msg += span_highdanger("<b>This player has been slept by staff. Best to leave them be.</b>\n")
+		msg += separator_hr("[span_boldwarning("Admin Slept")]")
+		msg += span_userdanger("This player has been slept by staff. Leave them be.\n")
+
+	if(isadmin(user))
+		msg += separator_hr("Admin Interactions")
+		msg += span_admin("<span class='notice linkify'>[ADMIN_FULLMONTY(src)]</span>")
 
 	msg += "</span>"
 	return list(msg)
@@ -567,7 +631,7 @@
 			if("medical")
 				return istype(H.glasses, /obj/item/clothing/glasses/hud/health)
 			if("squadleader")
-				return H.mind && H.assigned_squad && H.assigned_squad.squad_leader == H && istype(H.wear_ear, /obj/item/radio/headset/mainship/marine)
+				return H.mind && H.assigned_squad && H.assigned_squad.squad_leader == H && istype(H.wear_ear, /obj/item/radio/headset/mainship)
 			else
 				return 0
 	else

@@ -3,19 +3,19 @@
 	desc = "A traditional red fire extinguisher."
 	icon = 'icons/obj/items/tank.dmi'
 	icon_state = "fire_extinguisher0"
-	item_icons = list(
+	worn_icon_list = list(
 		slot_l_hand_str = 'icons/mob/inhands/equipment/tools_left.dmi',
 		slot_r_hand_str = 'icons/mob/inhands/equipment/tools_right.dmi',
 	)
-	item_state = "fire_extinguisher"
+	worn_icon_state = "fire_extinguisher"
 	hitsound = 'sound/weapons/smash.ogg'
-	flags_atom = CONDUCT
+	atom_flags = CONDUCT
 	throwforce = 10
 	w_class = WEIGHT_CLASS_NORMAL
 	throw_speed = 2
 	throw_range = 10
 	force = 10
-	attack_verb = list("slammed", "whacked", "bashed", "thunked", "battered", "bludgeoned", "thrashed")
+	attack_verb = list("slams", "whacks", "bashes", "thunks", "batters", "bludgeos", "thrashes")
 	var/max_water = 50
 	var/last_use = 1
 	var/safety = 1
@@ -29,7 +29,7 @@
 	name = "mini fire extinguisher"
 	desc = "A light and compact fibreglass-framed model fire extinguisher."
 	icon_state = "miniFE0"
-	item_state = "miniFE"
+	worn_icon_state = "miniFE"
 	hitsound = null	//it is much lighter, after all.
 	throwforce = 2
 	w_class = WEIGHT_CLASS_SMALL
@@ -44,7 +44,7 @@
 /obj/item/tool/extinguisher/attack_self(mob/user as mob)
 	safety = !safety
 	icon_state = "[sprite_name][!safety]"
-	balloon_alert(user, "Safety [safety ? "on" : "off"]")
+	balloon_alert(user, "safety [safety ? "on" : "off"]")
 
 /obj/item/tool/extinguisher/attack(mob/M, mob/user)
 	if(user.a_intent == INTENT_HELP && !safety) //If we're on help intent and going to spray people, don't bash them.
@@ -58,7 +58,7 @@
 	if( istype(target, /obj/structure/reagent_dispensers/watertank) && get_dist(src,target) <= 1)
 		var/obj/o = target
 		o.reagents.trans_to(src, 50)
-		balloon_alert(user, "Refilled")
+		balloon_alert(user, "refilled")
 		playsound(src.loc, 'sound/effects/refill.ogg', 25, 1, 3)
 		return
 

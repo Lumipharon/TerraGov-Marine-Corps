@@ -70,8 +70,14 @@
 #define SMOOTH_GROUP_BASALT S_TURF(38)
 #define SMOOTH_GROUP_RIVER S_TURF(39)
 #define SMOOTH_GROUP_ICE_WALL S_TURF(40)
+#define SMOOTH_GROUP_SAND S_TURF(41)
 
-#define MAX_S_TURF SMOOTH_GROUP_ICE_WALL //Always match this value with the one above it.
+#define SMOOTH_GROUP_ROOF_NORMAL S_TURF(42)				////turf/open/floor/plating/roof
+#define SMOOTH_GROUP_ROOF_SHEET S_TURF(43)				////turf/open/floor/plating/roof/sheet
+#define SMOOTH_GROUP_ROOF_ASPHALT S_TURF(44)			////turf/open/floor/plating/roof/asphalt
+#define SMOOTH_GROUP_ROOF_WOOD S_TURF(45)				////turf/open/floor/plating/roof/wood
+
+#define MAX_S_TURF SMOOTH_GROUP_ROOF_WOOD //Always match this value with the one above it.
 
 
 #define S_OBJ(num) (MAX_S_TURF + 1 + num)
@@ -105,6 +111,7 @@
 #define SMOOTH_GROUP_LATTICE  S_OBJ(30)
 #define SMOOTH_GROUP_FENCE  S_OBJ(31)
 #define SMOOTH_GROUP_GIRDER  S_OBJ(32)
+#define SMOOTH_GROUP_LATTICE_ABOVE  S_OBJ(33)
 
 #define SMOOTH_GROUP_AIRLOCK  S_OBJ(40)							///obj/structure/lattice
 #define SMOOTH_GROUP_GRILLE  S_OBJ(41)
@@ -112,6 +119,8 @@
 #define SMOOTH_GROUP_DECAL  S_OBJ(43)
 #define SMOOTH_GROUP_DECAL_WARNING_STRIPE  S_OBJ(44)
 
+#define SMOOTH_GROUP_INDUSTRIAL_LIFT S_OBJ(46) ///obj/structure/transport/linear
+#define SMOOTH_GROUP_TRAM_STRUCTURE S_OBJ(47) //obj/structure/tram
 
 #define SMOOTH_GROUP_WOOD_TABLES S_OBJ(51)				///obj/structure/table/wood
 #define SMOOTH_GROUP_FANCY_WOOD_TABLES S_OBJ(52)		///obj/structure/table/wood/fancy
@@ -140,3 +149,5 @@
 #define SMOOTH_GROUP_FOAM_WALL S_OBJ(70) //foam walls.
 #define SMOOTH_GROUP_TALL_GRASS S_OBJ(71) //tall grass
 #define SMOOTH_GROUP_GRASS_DECAL S_OBJ(72) //grass decal
+
+#define SMOOTH_GROUP_HOLOGRAM S_OBJ(73) //build holograms

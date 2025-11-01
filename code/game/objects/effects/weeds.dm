@@ -28,15 +28,18 @@
 	///If these weeds are not destroyed but just swapped
 	var/swapped = FALSE
 
-/obj/alien/weeds/deconstruct(disassembled = TRUE)
+/obj/alien/weeds/deconstruct(disassembled = TRUE, mob/living/blame_mob)
 	GLOB.round_statistics.weeds_destroyed++
 	SSblackbox.record_feedback("tally", "round_statistics", 1, "weeds_destroyed")
 	return ..()
 
+/obj/alien/weeds/plasmacutter_act(mob/living/user, obj/item/I)
+	return FALSE // Just attack normally.
+
 /obj/alien/weeds/Initialize(mapload, obj/alien/weeds/node/node, swapped = FALSE)
 	. = ..()
 	var/static/list/connections = list(
-		COMSIG_FIND_FOOTSTEP_SOUND = PROC_REF(footstep_override)
+		COMSIG_FIND_FOOTSTEP_SOUND = TYPE_PROC_REF(/atom/movable, footstep_override)
 	)
 	AddElement(/datum/element/connect_loc, connections)
 
@@ -82,6 +85,11 @@
 			if(W)
 				W.update_icon()
 
+/obj/alien/weeds/ex_act(severity)
+	if(severity == EXPLODE_WEAK)
+		return
+	return ..()
+
 ///Check if we have a parent node, if not, qdel ourselve
 /obj/alien/weeds/proc/check_for_parent_node()
 	if(parent_node)
@@ -125,8 +133,7 @@
 	parent_node = null
 
 ///overrides the turf's normal footstep sound
-/obj/alien/weeds/proc/footstep_override(atom/movable/source, list/footstep_overrides)
-	SIGNAL_HANDLER
+/obj/alien/weeds/footstep_override(atom/movable/source, list/footstep_overrides)
 	footstep_overrides[FOOTSTEP_RESIN] = layer
 
 /obj/alien/weeds/sticky
@@ -146,9 +153,9 @@
 	if(crosser.throwing || crosser.buckled)
 		return
 
-	if(isvehicle(crosser))
-		var/obj/vehicle/vehicle = crosser
-		vehicle.last_move_time += WEED_SLOWDOWN
+	if(issealedvehicle(crosser))
+		var/obj/vehicle/sealed/vehicle = crosser
+		COOLDOWN_INCREMENT(vehicle, cooldown_vehicle_move, WEED_SLOWDOWN)
 		return
 
 	if(isxeno(crosser))
@@ -179,8 +186,8 @@
 // =================
 // weed wall
 /obj/alien/weeds/weedwall
-	layer = RESIN_STRUCTURE_LAYER
-	plane = GAME_PLANE
+	layer = WEEDWALL_LAYER
+	plane = WALL_PLANE
 	icon = 'icons/obj/smooth_objects/weedwall.dmi'
 	icon_state = "weedwall"
 
@@ -199,7 +206,7 @@
 // =================
 // windowed weed wall
 /obj/alien/weeds/weedwall/window
-	layer = ABOVE_TABLE_LAYER
+	layer = GIB_LAYER
 	///The type of window we're expecting to grow on
 	var/window_type = /obj/structure/window/framed
 
@@ -218,11 +225,11 @@
 		return ..()
 	return window.MouseDrop_T(dropping, user)
 
-/obj/alien/weeds/weedwall/window/specialclick(mob/living/carbon/user)
+/obj/alien/weeds/weedwall/window/CtrlClick(mob/living/carbon/user)
 	var/obj/structure/window = locate(window_type) in loc
 	if(!window)
 		return ..()
-	return window.specialclick(user)
+	return window.CtrlClick(user)
 
 /obj/alien/weeds/weedwall/window/attackby(obj/item/I, mob/user, params) //yes, this blocks attacking the weed itself, but if you destroy the frame you destroy the weed!
 	var/obj/structure/window = locate(window_type) in loc
@@ -230,11 +237,11 @@
 		return ..()
 	return window.attackby(I, user, params)
 
-/obj/alien/weeds/weedwall/window/attack_alien(mob/living/carbon/xenomorph/X, damage_amount, damage_type, damage_flag, effects, armor_penetration, isrightclick)
+/obj/alien/weeds/weedwall/window/attack_alien(mob/living/carbon/xenomorph/xeno_attacker, damage_amount = xeno_attacker.xeno_caste.melee_damage, damage_type = BRUTE, armor_type = MELEE, effects = TRUE, armor_penetration = xeno_attacker.xeno_caste.melee_ap, isrightclick = FALSE)
 	var/obj/structure/window = locate(window_type) in loc
 	if(!window)
 		return ..()
-	return window.attack_alien(X, damage_amount, damage_type, damage_flag, effects, armor_penetration, isrightclick)
+	return window.attack_alien(xeno_attacker, damage_amount, damage_type, armor_type, effects, armor_penetration, isrightclick)
 
 /obj/alien/weeds/weedwall/window/frame
 	window_type = /obj/structure/window_frame
@@ -297,8 +304,7 @@
 
 /obj/alien/weeds/node/update_overlays()
 	. = ..()
-	overlays.Cut()
-	overlays += node_icon + "[rand(0,5)]"
+	. += mutable_appearance(icon, node_icon + "[rand(0,5)]")
 
 //Sticky weed node
 /obj/alien/weeds/node/sticky

@@ -54,18 +54,21 @@
 	key = "me"
 	key_third_person = "custom"
 	message = null
-	flags_emote = NO_KEYBIND //This shouldn't have a keybind
+	emote_flags = NO_KEYBIND //This shouldn't have a keybind
 
 
 /datum/emote/custom/run_emote(mob/user, params, type_override, intentional = FALSE, prefix)
 	message = params
-	return ..()
+	. = ..()
+	message = null
 
+/datum/emote/custom/replace_pronoun(mob/user, message)
+	return message
 
 /datum/emote/spin
 	key = "spin"
 	key_third_person = "spins"
-	flags_emote = EMOTE_RESTRAINT_CHECK
+	emote_flags = EMOTE_RESTRAINT_CHECK
 	mob_type_allowed_typecache = list(/mob/living, /mob/dead/observer)
 	mob_type_ignore_stat_typecache = list(/mob/dead/observer)
 

@@ -7,8 +7,8 @@
 	use_power = IDLE_POWER_USE
 	idle_power_usage = 5
 	active_power_usage = 360
-	flags_atom = HTML_USE_INITAL_ICON_1
-	obj_flags = CAN_BE_HIT
+	atom_flags = HTML_USE_INITAL_ICON_1
+	obj_flags = parent_type::obj_flags|CAN_BE_HIT
 
 	var/aiControlDisabled = 0 //If 1, AI control is disabled until the AI hacks back in and disables the lock. If 2, the AI has bypassed the lock. If -1, the control is enabled but the AI had bypassed it earlier, so if it is disabled again the AI would have no trouble getting back in.
 	var/hackProof = 0 // if 1, this door can't be hacked by the AI
@@ -40,14 +40,14 @@
 /obj/machinery/door/airlock/bumpopen(mob/living/user) //Airlocks now zap you when you 'bump' them open when they're electrified. --NeoFite
 	if(issilicon(user))
 		return ..(user)
-	if(iscarbon(user) && isElectrified())
+	if(iscarbon(user) && isElectrified() && isturf(user.loc))
 		if(!justzap)
 			if(shock(user, 100))
 				justzap = TRUE
 				spawn (openspeed)
 					justzap = FALSE
 				return
-		else /*if(justzap)*/
+		else
 			return
 	else if(ishuman(user) && user.hallucination > 50 && prob(10) && !operating)
 		var/mob/living/carbon/human/H = user
@@ -57,7 +57,7 @@
 			return
 	return ..(user)
 
-/obj/machinery/door/airlock/Initialize()
+/obj/machinery/door/airlock/Initialize(mapload)
 	..()
 	return INITIALIZE_HINT_LATELOAD
 
@@ -71,7 +71,7 @@
 	switch(outcome)
 		if(1 to 9)
 			var/turf/here = get_turf(src)
-			for(var/turf/closed/T in range(2, src))
+			for(var/turf/closed/T in RANGE_TURFS(2, src))
 				here.PlaceOnTop(T.type)
 				return
 			here.PlaceOnTop(/turf/closed/wall)
@@ -85,6 +85,13 @@
 			welded = TRUE
 		if(24 to 30)
 			machine_stat ^= PANEL_OPEN
+
+/obj/machinery/door/airlock/emp_act(severity)
+	. = ..()
+	if(prob(75 / severity))
+		set_electrified(MACHINE_DEFAULT_ELECTRIFY_TIME)
+	if(prob(30 / severity))
+		open()
 
 ///connect potential airlocks to each other for cycling
 /obj/machinery/door/airlock/proc/cyclelinkairlock()
@@ -235,17 +242,17 @@
 			var/image/access_overlay = image('icons/obj/doors/overlays.dmi', "unres_[heading]", layer = DOOR_HELPER_LAYER, pixel_y = -4)
 			switch(heading)
 				if(NORTH)
-					access_overlay.pixel_x = 0
-					access_overlay.pixel_y = 32
+					access_overlay.pixel_w = 0
+					access_overlay.pixel_z = 32
 				if(SOUTH)
-					access_overlay.pixel_x = 0
-					access_overlay.pixel_y = -32
+					access_overlay.pixel_w = 0
+					access_overlay.pixel_z = -32
 				if(EAST)
-					access_overlay.pixel_x = 32
-					access_overlay.pixel_y = 0
+					access_overlay.pixel_w = 32
+					access_overlay.pixel_z = 0
 				if(WEST)
-					access_overlay.pixel_x = -32
-					access_overlay.pixel_y = 0
+					access_overlay.pixel_w = -32
+					access_overlay.pixel_z = 0
 			. += access_overlay
 
 /obj/machinery/door/airlock/do_animate(animation)
@@ -273,46 +280,46 @@
 
 
 //Prying open doors
-/obj/machinery/door/airlock/attack_alien(mob/living/carbon/xenomorph/X, damage_amount = X.xeno_caste.melee_damage, damage_type = BRUTE, damage_flag = "", effects = TRUE, armor_penetration = 0, isrightclick = FALSE)
-	if(X.status_flags & INCORPOREAL)
+/obj/machinery/door/airlock/attack_alien(mob/living/carbon/xenomorph/xeno_attacker, damage_amount = xeno_attacker.xeno_caste.melee_damage, damage_type = BRUTE, armor_type = MELEE, effects = TRUE, armor_penetration = xeno_attacker.xeno_caste.melee_ap, isrightclick = FALSE)
+	if(xeno_attacker.status_flags & INCORPOREAL)
 		return FALSE
 
-	var/turf/cur_loc = X.loc
+	var/turf/cur_loc = xeno_attacker.loc
 	if(isElectrified())
-		if(shock(X, 70))
+		if(shock(xeno_attacker, 70))
 			return
 	if(locked)
-		to_chat(X, span_warning("\The [src] is bolted down tight."))
+		to_chat(xeno_attacker, span_warning("\The [src] is bolted down tight."))
 		return FALSE
 	if(welded)
-		to_chat(X, span_warning("\The [src] is welded shut."))
+		to_chat(xeno_attacker, span_warning("\The [src] is welded shut."))
 		return FALSE
 	if(!istype(cur_loc))
 		return FALSE //Some basic logic here
 	if(!density)
-		to_chat(X, span_warning("\The [src] is already open!"))
+		to_chat(xeno_attacker, span_warning("\The [src] is already open!"))
 		return FALSE
 
-	if(X.do_actions)
+	if(xeno_attacker.do_actions)
 		return FALSE
 
 	playsound(loc, 'sound/effects/metal_creaking.ogg', 25, 1)
 
 	if(hasPower())
-		X.visible_message(span_warning("\The [X] digs into \the [src] and begins to pry it open."), \
+		xeno_attacker.visible_message(span_warning("\The [xeno_attacker] digs into \the [src] and begins to pry it open."), \
 		span_warning("We dig into \the [src] and begin to pry it open."), null, 5)
-		if(!do_after(X, 4 SECONDS, IGNORE_HELD_ITEM, src, BUSY_ICON_HOSTILE) && !X.lying_angle)
+		if(!do_after(xeno_attacker, 4 SECONDS, IGNORE_HELD_ITEM, src, BUSY_ICON_HOSTILE) && !xeno_attacker.lying_angle)
 			return FALSE
 	if(locked)
-		to_chat(X, span_warning("\The [src] is bolted down tight."))
+		to_chat(xeno_attacker, span_warning("\The [src] is bolted down tight."))
 		return FALSE
 	if(welded)
-		to_chat(X, span_warning("\The [src] is welded shut."))
+		to_chat(xeno_attacker, span_warning("\The [src] is welded shut."))
 		return FALSE
 
 	if(density) //Make sure it's still closed
 		open(TRUE)
-		X.visible_message(span_danger("\The [X] pries \the [src] open."), \
+		xeno_attacker.visible_message(span_danger("\The [xeno_attacker] pries \the [src] open."), \
 			span_danger("We pry \the [src] open."), null, 5)
 
 /obj/machinery/door/airlock/attack_larva(mob/living/carbon/xenomorph/larva/M)
@@ -335,12 +342,18 @@
 	if(!issilicon(user) && isElectrified())
 		shock(user, 100)
 
-/obj/machinery/door/airlock/projectile_hit(obj/projectile/proj, cardinal_move, uncrossing)
+/obj/machinery/door/airlock/projectile_hit(atom/movable/projectile/proj, cardinal_move, uncrossing)
 	. = ..()
-	if(. && is_mainship_level(z)) //log shipside greytiders
-		log_attack("[key_name(proj.firer)] shot [src] with [proj] at [AREACOORD(src)]")
-		if(SSmonitor.gamestate != SHIPSIDE)
-			msg_admin_ff("[ADMIN_TPMONTY(proj.firer)] shot [src] with [proj] in [ADMIN_VERBOSEJMP(src)].")
+	if(!.)
+		return
+	if(!is_mainship_level(z))
+		return
+	if(!proj.firer)
+		return
+	//log shipside greytiders
+	log_attack("[key_name(proj.firer)] shot [src] with [proj] at [AREACOORD(src)]")
+	if(SSmonitor.gamestate != SHIPSIDE)
+		msg_admin_ff("[ADMIN_TPMONTY(proj.firer)] shot [src] with [proj] in [ADMIN_VERBOSEJMP(src)].")
 
 /obj/machinery/door/airlock/attacked_by(obj/item/I, mob/living/user, def_zone)
 	. = ..()
@@ -351,6 +364,8 @@
 
 /obj/machinery/door/airlock/attackby(obj/item/I, mob/user, params)
 	. = ..()
+	if(.)
+		return
 
 	if(istype(I, /obj/item/clothing/mask/cigarette) && isElectrified())
 		var/obj/item/clothing/mask/cigarette/L = I

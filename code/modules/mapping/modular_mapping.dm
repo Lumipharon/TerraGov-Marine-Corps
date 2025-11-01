@@ -1,6 +1,7 @@
 /datum/map_template/modular
 	name = "Generic modular template"
 	mappath = "_maps/modularmaps"
+	should_place_on_top = FALSE
 	///ID of this map template
 	var/modular_id = "none"
 	///Number for its height, used for sanity
@@ -1201,3 +1202,286 @@
 	modular_id = "EORG"
 	template_width = 46
 	template_height = 46
+
+/datum/map_template/modular/jungle_outpost/westtowerone
+	name = "Western Dome"
+	mappath = "_maps/modularmaps/jungle_outpost/joutpostwtower1.dmm"
+	modular_id = "jowesttower"
+	template_width = 12
+	template_height = 14
+
+/datum/map_template/modular/jungle_outpost/westtowertwo
+	name = "Western Bar Dome"
+	mappath = "_maps/modularmaps/jungle_outpost/joutpostwtower2.dmm"
+	modular_id = "jowesttower"
+	template_width = 12
+	template_height = 14
+
+/datum/map_template/modular/jungle_outpost/westtowerthree
+	name = "Western Bungalow"
+	mappath = "_maps/modularmaps/jungle_outpost/joutpostwtower3.dmm"
+	modular_id = "jowesttower"
+	template_width = 12
+	template_height = 14
+
+/datum/map_template/modular/jungle_outpost/westtowerfour
+	name = "Western Pond"
+	mappath = "_maps/modularmaps/jungle_outpost/joutpostwtower4.dmm"
+	modular_id = "jowesttower"
+	template_width = 12
+	template_height = 14
+
+/datum/map_template/modular/jungle_outpost/southcratesone
+	name = "South Crates"
+	mappath = "_maps/modularmaps/jungle_outpost/joutpostscrates1.dmm"
+	modular_id = "josouthcrates"
+	template_width = 12
+	template_height = 14
+
+/datum/map_template/modular/jungle_outpost/southcratestwo
+	name = "South Office"
+	mappath = "_maps/modularmaps/jungle_outpost/joutpostscrates2.dmm"
+	modular_id = "josouthcrates"
+	template_width = 12
+	template_height = 14
+
+/datum/map_template/modular/jungle_outpost/southcratesthree
+	name = "South Crates "
+	mappath = "_maps/modularmaps/jungle_outpost/joutpostscrates3.dmm"
+	modular_id = "josouthcrates"
+	template_width = 12
+	template_height = 14
+
+/datum/map_template/modular/jungle_outpost/southcratesfour
+	name = "South Garage"
+	mappath = "_maps/modularmaps/jungle_outpost/joutpostscrates4.dmm"
+	modular_id = "josouthcrates"
+	template_width = 12
+	template_height = 14
+
+/datum/map_template/modular/jungle_outpost/hydroponicsone
+	name = "Hydroponics"
+	mappath = "_maps/modularmaps/jungle_outpost/joutposthydro1.dmm"
+	modular_id = "johydroponics"
+	template_width = 19
+	template_height = 18
+
+/datum/map_template/modular/jungle_outpost/hydroponicstwo
+	name = "Hydroponics"
+	mappath = "_maps/modularmaps/jungle_outpost/joutposthydro2.dmm"
+	modular_id = "johydroponics"
+	template_width = 19
+	template_height = 18
+
+/datum/map_template/modular/jungle_outpost/hydroponicsthree
+	name = "Hydroponics Shack"
+	mappath = "_maps/modularmaps/jungle_outpost/joutposthydro3.dmm"
+	modular_id = "johydroponics"
+	template_width = 19
+	template_height = 18
+
+/datum/map_template/modular/jungle_outpost/medicalone
+	name = "Medical"
+	mappath = "_maps/modularmaps/jungle_outpost/joutpostmedbay1.dmm"
+	modular_id = "jomedbay"
+	template_width = 16
+	template_height = 24
+
+/datum/map_template/modular/jungle_outpost/medicaltwo
+	name = "Medical"
+	mappath = "_maps/modularmaps/jungle_outpost/joutpostmedbay2.dmm"
+	modular_id = "jomedbay"
+	template_width = 16
+	template_height = 24
+
+/datum/map_template/modular/jungle_outpost/medicalthree
+	name = "Outdoor Medical"
+	mappath = "_maps/modularmaps/jungle_outpost/joutpostmedbay3.dmm"
+	modular_id = "jomedbay"
+	template_width = 16
+	template_height = 24
+
+/datum/map_template/modular/jungle_outpost/engineeringone
+	name = "Engineering"
+	mappath = "_maps/modularmaps/jungle_outpost/joutpostengi1.dmm"
+	modular_id = "joengineering"
+	template_width = 21
+	template_height = 21
+
+/datum/map_template/modular/jungle_outpost/engineeringtwo
+	name = "Engineering"
+	mappath = "_maps/modularmaps/jungle_outpost/joutpostengi2.dmm"
+	modular_id = "joengineering"
+	template_width = 21
+	template_height = 21
+
+/datum/map_template/modular/jungle_outpost/engineeringthree
+	name = "Outdoor Engineering"
+	mappath = "_maps/modularmaps/jungle_outpost/joutpostengi3.dmm"
+	modular_id = "joengineering"
+	template_width = 21
+	template_height = 21
+
+/datum/map_template/modular/corsat/bigreddome
+	name = "Sigma Dome"
+	mappath = "_maps/modularmaps/corsatdome/corsatdomebigred.dmm"
+	modular_id = "corsatdome"
+	template_width = 80
+	template_height = 80
+	keepcentered = TRUE
+
+/datum/map_template/modular/corsat/lvdome
+	name = "Sigma Dome"
+	mappath = "_maps/modularmaps/corsatdome/corsatdomelv.dmm"
+	modular_id = "corsatdome"
+	template_width = 80
+	template_height = 80
+	keepcentered = TRUE
+
+/datum/map_template/modular/corsat/icecolonydome
+	name = "Sigma Dome"
+	mappath = "_maps/modularmaps/corsatdome/corsatdomeicecolony.dmm"
+	modular_id = "corsatdome"
+	template_width = 80
+	template_height = 80
+	keepcentered = TRUE
+
+/datum/map_template/modular/fiorina/shipone
+	name = "Scavenger Ship"
+	mappath = "_maps/modularmaps/fiorina/scavshipvar1.dmm"
+	modular_id = "scavship"
+	template_width = 14
+	template_height = 21
+
+/datum/map_template/modular/fiorina/shiptwo
+	name = "Scavenger Ship"
+	mappath = "_maps/modularmaps/fiorina/scavshipvar1.dmm"
+	modular_id = "scavship"
+	template_width = 14
+	template_height = 21
+
+/datum/map_template/modular/fiorina/medbayone
+	name = "Medbay"
+	mappath = "_maps/modularmaps/fiorina/medicalvar1.dmm"
+	modular_id = "fimedbay"
+	template_width = 14
+	template_height = 18
+
+/datum/map_template/modular/fiorina/medbaytwo
+	name = "Medbay"
+	mappath = "_maps/modularmaps/fiorina/medicalvar2.dmm"
+	modular_id = "fimedbay"
+	template_width = 14
+	template_height = 18
+
+/datum/map_template/modular/fiorina/wardenone
+	name = "Warden"
+	mappath = "_maps/modularmaps/fiorina/wardenofficevar1.dmm"
+	modular_id = "fiwarden"
+	template_width = 9
+	template_height = 7
+
+/datum/map_template/modular/fiorina/wardentwo
+	name = "Warden"
+	mappath = "_maps/modularmaps/fiorina/wardenofficevar2.dmm"
+	modular_id = "fiwarden"
+	template_width = 9
+	template_height = 7
+
+/datum/map_template/modular/fiorina/kitchenone
+	name = "Kitchen"
+	mappath = "_maps/modularmaps/fiorina/pizzavar1.dmm"
+	modular_id = "fikitchen"
+	template_width = 9
+	template_height = 10
+
+/datum/map_template/modular/fiorina/kitchentwo
+	name = "Kitchen"
+	mappath = "_maps/modularmaps/fiorina/pizzavar2.dmm"
+	modular_id = "fikitchen"
+	template_width = 9
+	template_height = 10
+
+/datum/map_template/modular/fiorina/gearone
+	name = "Gear"
+	mappath = "_maps/modularmaps/fiorina/gearvar1.dmm"
+	modular_id = "figear"
+	template_width = 9
+	template_height = 8
+
+/datum/map_template/modular/fiorina/geartwo
+	name = "Gear"
+	mappath = "_maps/modularmaps/fiorina/gearvar2.dmm"
+	modular_id = "figear"
+	template_width = 9
+	template_height = 8
+
+/datum/map_template/modular/fiorina/panelone
+	name = "Panels"
+	mappath = "_maps/modularmaps/fiorina/panelsvarone.dmm"
+	modular_id = "fipanel"
+	template_width = 13
+	template_height = 9
+
+/datum/map_template/modular/fiorina/paneltwo
+	name = "Panels"
+	mappath = "_maps/modularmaps/fiorina/panelsvartwo.dmm"
+	modular_id = "fipanel"
+	template_width = 13
+	template_height = 9
+
+/datum/map_template/modular/fiorina/meetingroomone
+	name = "Meeting Room"
+	mappath = "_maps/modularmaps/fiorina/meetingroomsvar1.dmm"
+	modular_id = "fimeetingroom"
+	template_width = 12
+	template_height = 13
+
+/datum/map_template/modular/fiorina/meetingroomtwo
+	name = "Meeting Room"
+	mappath = "_maps/modularmaps/fiorina/meetingroomsvar2.dmm"
+	modular_id = "fimeetingroom"
+	template_width = 12
+	template_height = 13
+
+/datum/map_template/modular/fiorina/engiofficeone
+	name = "Engi Office"
+	mappath = "_maps/modularmaps/fiorina/engiofficevar1.dmm"
+	modular_id = "fiengioffice"
+	template_width = 9
+	template_height = 7
+
+/datum/map_template/modular/fiorina/engiofficetwo
+	name = "Engi Office"
+	mappath = "_maps/modularmaps/fiorina/engiofficevar2.dmm"
+	modular_id = "fiengioffice"
+	template_width = 9
+	template_height = 7
+
+/datum/map_template/modular/fiorina/researchone
+	name = "Research Room"
+	mappath = "_maps/modularmaps/fiorina/researchvar1.dmm"
+	modular_id = "firesearch"
+	template_width = 25
+	template_height = 18
+
+/datum/map_template/modular/fiorina/researchtwo
+	name = "Research Room"
+	mappath = "_maps/modularmaps/fiorina/researchvar2.dmm"
+	modular_id = "firesearch"
+	template_width = 25
+	template_height = 18
+
+/datum/map_template/modular/fiorina/ringone
+	name = "Core Ring"
+	mappath = "_maps/modularmaps/fiorina/ringvar1.dmm"
+	modular_id = "ficore"
+	template_width = 25
+	template_height = 25
+
+/datum/map_template/modular/fiorina/ringtwo
+	name = "Core Ring"
+	mappath = "_maps/modularmaps/fiorina/ringvar2.dmm"
+	modular_id = "ficore"
+	template_width = 25
+	template_height = 25

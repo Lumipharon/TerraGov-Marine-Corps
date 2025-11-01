@@ -12,8 +12,8 @@
 	can_unwrench = FALSE
 	welded = FALSE
 	level = 1
-	layer = ATMOS_DEVICE_LAYER
-	flags_atom = SHUTTLE_IMMUNE
+	layer = GAS_SCRUBBER_LAYER
+	atom_flags = SHUTTLE_IMMUNE
 	var/scrubbing = SCRUBBING //0 = siphoning, 1 = scrubbing
 
 	var/filter_types = list()///datum/gas/carbon_dioxide)
@@ -65,8 +65,8 @@
 	..()
 	update_icon_nopipes()
 
-/obj/machinery/atmospherics/components/unary/vent_scrubber/weld_cut_act(mob/living/user, obj/item/W)
-	if(istype(W, /obj/item/tool/pickaxe/plasmacutter))
+/obj/machinery/atmospherics/components/unary/vent_scrubber/plasmacutter_act(mob/living/user, obj/item/W)
+	if(isplasmacutter(W))
 		var/obj/item/tool/pickaxe/plasmacutter/P = W
 
 		if(!welded)
@@ -87,30 +87,21 @@
 		if(WT.isOn())
 			user.visible_message(span_notice("[user] starts welding [src] with [WT]."), \
 			span_notice("You start welding [src] with [WT]."))
-			add_overlay(GLOB.welding_sparks)
-			playsound(loc, 'sound/items/weldingtool_weld.ogg', 25)
-			if(do_after(user, 5 SECONDS, NONE, src, BUSY_ICON_BUILD, extra_checks = CALLBACK(WT, TYPE_PROC_REF(/obj/item/tool/weldingtool, isOn))) && WT.remove_fuel(1, user))
-				playsound(get_turf(src), 'sound/items/welder2.ogg', 25, 1)
+			if(WT.use_tool(src, user, 5 SECONDS, 1, 25, null, BUSY_ICON_BUILD))
 				if(!welded)
 					user.visible_message(span_notice("[user] welds [src] shut."), \
 					span_notice("You weld [src] shut."))
-					cut_overlay(GLOB.welding_sparks)
 					welded = TRUE
 				else
 					user.visible_message(span_notice("[user] welds [src] open."), \
 					span_notice("You weld [src] open."))
-					cut_overlay(GLOB.welding_sparks)
 					welded = FALSE
 				update_icon()
-				pipe_vision_img = image(src, loc, layer = ABOVE_HUD_LAYER, dir = dir)
-				pipe_vision_img.plane = ABOVE_HUD_PLANE
-				cut_overlay(GLOB.welding_sparks)
+				pipe_vision_img = image(src, loc, dir = dir)
+				SET_PLANE_EXPLICIT(pipe_vision_img, ABOVE_HUD_PLANE, src)
 				return TRUE
-			else
-				cut_overlay(GLOB.welding_sparks)
 		else
 			to_chat(user, span_warning("[WT] needs to be on to start this task."))
-			cut_overlay(GLOB.welding_sparks)
 	return FALSE
 
 /obj/machinery/atmospherics/components/unary/vent_scrubber/can_unwrench(mob/user)
@@ -127,16 +118,16 @@
 /obj/machinery/atmospherics/components/unary/vent_scrubber/can_crawl_through()
 	return !welded
 
-/obj/machinery/atmospherics/components/unary/vent_scrubber/attack_alien(mob/living/carbon/xenomorph/X, damage_amount = X.xeno_caste.melee_damage, damage_type = BRUTE, damage_flag = "", effects = TRUE, armor_penetration = 0, isrightclick = FALSE)
-	if(X.status_flags & INCORPOREAL)
+/obj/machinery/atmospherics/components/unary/vent_scrubber/attack_alien(mob/living/carbon/xenomorph/xeno_attacker, damage_amount = xeno_attacker.xeno_caste.melee_damage, damage_type = BRUTE, armor_type = MELEE, effects = TRUE, armor_penetration = xeno_attacker.xeno_caste.melee_ap, isrightclick = FALSE)
+	if(xeno_attacker.status_flags & INCORPOREAL)
 		return
-	if(!welded || !(do_after(X, 2 SECONDS, IGNORE_HELD_ITEM, src, BUSY_ICON_HOSTILE)))
+	if(!welded || !(do_after(xeno_attacker, 2 SECONDS, IGNORE_HELD_ITEM, src, BUSY_ICON_HOSTILE)))
 		return
-	X.visible_message("[X] furiously claws at [src]!", "We manage to clear away the stuff blocking the scrubber.", "You hear loud scraping noises.")
+	xeno_attacker.visible_message("[xeno_attacker] furiously claws at [src]!", "We manage to clear away the stuff blocking the scrubber.", "You hear loud scraping noises.")
 	welded = FALSE
 	update_icon()
-	pipe_vision_img = image(src, loc, layer = ABOVE_HUD_LAYER, dir = dir)
-	pipe_vision_img.plane = ABOVE_HUD_PLANE
+	pipe_vision_img = image(src, loc, dir = dir)
+	SET_PLANE_EXPLICIT(pipe_vision_img, ABOVE_HUD_PLANE, src)
 	playsound(loc, 'sound/weapons/bladeslice.ogg', 100, 1)
 
 

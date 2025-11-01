@@ -63,7 +63,7 @@
 	targets_from = null
 	return ..()
 
-/mob/living/simple_animal/hostile/Life()
+/mob/living/simple_animal/hostile/Life(seconds_per_tick, times_fired)
 	. = ..()
 	if(!.) //dead
 		walk(src, 0) //stops walking
@@ -114,11 +114,11 @@
 		face_atom(target) //Looks better if they keep looking at you when dodging
 
 
-/mob/living/simple_animal/hostile/bullet_act(obj/projectile/P)
+/mob/living/simple_animal/hostile/bullet_act(atom/movable/projectile/proj)
 	if(stat == CONSCIOUS && !target && AIStatus != AI_OFF && !client)
-		if(P.firer && get_dist(src, P.firer) <= aggro_vision_range)
-			FindTarget(list(P.firer), 1)
-		Goto(P.starting_turf, move_to_delay, 3)
+		if(proj.firer && get_dist(src, proj.firer) <= aggro_vision_range)
+			FindTarget(list(proj.firer), 1)
+		Goto(proj.starting_turf, move_to_delay, 3)
 	return ..()
 
 //////////////HOSTILE MOB TARGETTING AND AGGRESSION////////////
@@ -354,7 +354,7 @@
 
 /mob/living/simple_animal/hostile/proc/CheckFriendlyFire(atom/A)
 	if(check_friendly_fire)
-		for(var/turf/T in getline(src,A)) // Not 100% reliable but this is faster than simulating actual trajectory
+		for(var/turf/T in get_traversal_line(src,A)) // Not 100% reliable but this is faster than simulating actual trajectory
 			for(var/mob/living/L in T)
 				if(L == src || L == A)
 					continue
@@ -383,17 +383,17 @@
 	var/turf/startloc = get_turf(targets_from)
 	new casingtype(startloc)
 	playsound(src, projectilesound, 100, 1)
-	var/obj/projectile/P = new(startloc)
+	var/atom/movable/projectile/P = new(startloc)
 	playsound(src, projectilesound, 100, 1)
 	P.generate_bullet(GLOB.ammo_list[ammotype])
-	P.fire_at(targeted_atom, src)
+	P.fire_at(targeted_atom, src, src)
 
 
 /mob/living/simple_animal/hostile/proc/CanSmashTurfs(turf/T)
 	return iswallturf(T) || ismineralturf(T)
 
 
-/mob/living/simple_animal/hostile/Move(atom/newloc, dir , step_x , step_y)
+/mob/living/simple_animal/hostile/Move(atom/newloc, direction, glide_size_override)
 	if(dodging && approaching_target && prob(dodge_prob) && isturf(loc) && isturf(newloc))
 		return dodge(newloc,dir)
 	else

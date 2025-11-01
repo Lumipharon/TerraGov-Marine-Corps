@@ -1,5 +1,6 @@
 /mob/new_player
 	invisibility = INVISIBILITY_ABSTRACT
+	lighting_cutoff = LIGHTING_CUTOFF_FULLBRIGHT
 	stat = DEAD
 	density = FALSE
 	canmove = FALSE
@@ -124,6 +125,9 @@
 		if("manifest")
 			view_manifest()
 
+		if("xenomanifest")
+			view_xeno_manifest()
+
 		if("lore")
 			view_lore()
 
@@ -164,7 +168,7 @@
 			DIRECT_OUTPUT(usr, browse(null, "window=xenosunbalanced"))
 
 	if(href_list["showpoll"])
-		handle_playeR_DBRANKSing()
+		handle_playeR_POLLSing()
 		return
 
 	if(href_list["viewpoll"])
@@ -179,14 +183,21 @@
 	return "\nYou might have to wait a certain time to respawn or be unable to, depending on the game mode!"
 
 /datum/game_mode/infestation/observe_respawn_message()
-	return "\nYou will have to wait at least [SSticker.mode?.respawn_time * 0.1 / 60] minutes before being able to respawn as a marine!"
+	. = "\nYou will have to wait at least [SSticker.mode?.respawn_time * 0.1 / 60] minutes before being able to respawn as a marine!"
+	var/datum/hive_status/normal_hive = GLOB.hive_datums[XENO_HIVE_NORMAL]
+	if(!normal_hive)
+		return
+	if(length(normal_hive.candidates) <= 2)
+		return
+	. += " There are [length(normal_hive.candidates)] people in the larva queue."
+
 
 /mob/new_player/proc/late_choices()
 	var/list/dat = list("<div class='notice'>Round Duration: [DisplayTimeText(world.time - SSticker.round_start_time)]</div>")
 	if(!GLOB.enter_allowed)
 		dat += "<div class='notice red'>You may no longer join the round.</div><br>"
 	var/forced_faction
-	if(SSticker.mode.flags_round_type & MODE_TWO_HUMAN_FACTIONS)
+	if(SSticker.mode.round_type_flags & MODE_TWO_HUMAN_FACTIONS)
 		if(faction in SSticker.mode.get_joinable_factions(FALSE))
 			forced_faction = faction
 		else
@@ -233,6 +244,14 @@
 	popup.set_content(dat)
 	popup.open(FALSE)
 
+/// Proc for lobby button "View Hive Leaders" to see current leader/queen status.
+/mob/new_player/proc/view_xeno_manifest()
+	var/dat = GLOB.datacore.get_xeno_manifest()
+
+	var/datum/browser/popup = new(src, "xenomanifest", "<div align='center'>Xeno Manifest</div>", 400, 420)
+	popup.set_content(dat)
+	popup.open(FALSE)
+
 /mob/new_player/proc/view_lore()
 	var/output = "<div align='center'>"
 	output += "<a href='byond://?src=[REF(src)];lobby_choice=marines'>TerraGov Marine Corps</A><br><br><a href='byond://?src=[REF(src)];lobby_choice=aliens'>Xenomorph Hive</A><br><br><a href='byond://?src=[REF(src)];lobby_choice=som'>Sons of Mars</A>"
@@ -276,7 +295,7 @@
 	popup.set_content(output)
 	popup.open(FALSE)
 
-/mob/new_player/Move()
+/mob/new_player/Move(atom/newloc, direction, glide_size_override)
 	return FALSE
 
 
@@ -284,7 +303,6 @@
 	if(!user)
 		user = src
 	DIRECT_OUTPUT(user, browse(null, "window=latechoices")) //closes late choices window
-	DIRECT_OUTPUT(user, browse(null, "window=playersetup")) //closes the player setup window
 	user.stop_sound_channel(CHANNEL_LOBBYMUSIC)
 
 
@@ -299,7 +317,7 @@
 
 /mob/new_player/get_gender()
 	if(!client?.prefs)
-		. = ..()
+		return ..()
 	return client.prefs.gender
 
 /mob/new_player/proc/create_character()
@@ -434,7 +452,7 @@
 		to_chat(src, span_warning("The round is either not ready, or has already finished."))
 		return
 
-	if(SSticker.mode.flags_round_type & MODE_NO_LATEJOIN)
+	if(SSticker.mode.round_type_flags & MODE_NO_LATEJOIN)
 		to_chat(src, span_warning("Sorry, you cannot late join during [SSticker.mode.name]. You have to start at the beginning of the round. You may observe or try to join as an alien, if possible."))
 		return
 

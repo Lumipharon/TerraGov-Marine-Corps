@@ -6,13 +6,17 @@
 	hit_sound = 'sound/effects/Glasshit.ogg'
 	density = TRUE
 	anchored = TRUE
-	layer = WINDOW_LAYER
-	flags_atom = ON_BORDER|DIRLOCK
+	layer = ABOVE_WINDOW_LAYER
+	obj_flags = CAN_BE_HIT|BLOCKS_CONSTRUCTION_DIR|IGNORE_DENSITY|BLOCK_Z_OUT_DOWN|BLOCK_Z_IN_UP
+
+	atom_flags = ON_BORDER|DIRLOCK
 	allow_pass_flags = PASS_GLASS
 	resistance_flags = XENO_DAMAGEABLE | DROPSHIP_IMMUNE
 	coverage = 20
 	var/dismantle = FALSE //If we're dismantling the window properly no smashy smashy
 	max_integrity = 15
+	///Optimization for dynamic explosion block values, for things whose explosion block is dependent on certain conditions.
+	var/real_explosion_block = 0
 	var/state = 2
 	var/reinf = FALSE
 	var/basestate = "window"
@@ -20,16 +24,15 @@
 	var/windowknock_cooldown = 0
 	var/static_frame = FALSE //If true, can't move the window
 	var/junction = 0 //Because everything is terrible, I'm making this a window-level var
-	var/damageable = TRUE
 	var/deconstructable = TRUE
 
 /obj/structure/window/add_debris_element()
-	AddElement(/datum/element/debris, DEBRIS_GLASS, -10, 5)
+	AddElement(/datum/element/debris, DEBRIS_GLASS, -40, 5)
 
 //I hate this as much as you do
 /obj/structure/window/full
 	dir = 10
-	flags_atom = DIRLOCK
+	atom_flags = DIRLOCK
 
 /obj/structure/window/Initialize(mapload, start_dir, constructed)
 	..()
@@ -83,7 +86,7 @@
 		throw_damage *= thrown_mob.mob_size * 8
 	take_damage(throw_damage)
 	if(obj_integrity > 0) //we only stop if we don't break the window
-		AM.stop_throw()
+		AM.set_throwing(FALSE)
 		. = TRUE
 	if(thrown_mob)
 		thrown_mob.take_overall_damage(speed * 5, BRUTE, MELEE, !., FALSE, TRUE, 0, 4) //done here for dramatic effect, and to make the damage sharp if we broke the window
@@ -93,7 +96,7 @@
 //Once a full window, it will always be a full window, so there's no point
 //having the same type for both.
 /obj/structure/window/proc/is_full_window()
-	if(!(flags_atom & ON_BORDER) || ISDIAGONALDIR(dir))
+	if(!(atom_flags & ON_BORDER) || ISDIAGONALDIR(dir))
 		return TRUE
 	return FALSE
 
@@ -125,43 +128,41 @@
 		span_notice("You hear a knocking sound."))
 		windowknock_cooldown = world.time + 100
 
+/obj/structure/window/grab_interact(obj/item/grab/grab, mob/user, base_damage = BASE_OBJ_SLAM_DAMAGE, is_sharp = FALSE)
+	if(!isliving(grab.grabbed_thing))
+		return
+
+	var/mob/living/grabbed_mob = grab.grabbed_thing
+	var/state = user.grab_state
+	user.drop_held_item()
+	step_towards(grabbed_mob, src)
+	var/damage = (user.skills.getRating(SKILL_UNARMED) * UNARMED_SKILL_DAMAGE_MOD)
+	switch(state)
+		if(GRAB_PASSIVE)
+			damage += base_damage
+			grabbed_mob.visible_message(span_warning("[user] slams [grabbed_mob] against \the [src]!"))
+			log_combat(user, grabbed_mob, "slammed", "", "against \the [src]")
+		if(GRAB_AGGRESSIVE)
+			damage += base_damage * 1.5
+			grabbed_mob.visible_message(span_danger("[user] bashes [grabbed_mob] against \the [src]!"))
+			log_combat(user, grabbed_mob, "bashed", "", "against \the [src]")
+			if(prob(50))
+				grabbed_mob.Paralyze(2 SECONDS)
+		if(GRAB_NECK)
+			damage += base_damage * 2
+			grabbed_mob.visible_message(span_danger("<big>[user] crushes [grabbed_mob] against \the [src]!</big>"))
+			log_combat(user, grabbed_mob, "crushed", "", "against \the [src]")
+			grabbed_mob.Paralyze(2 SECONDS)
+	grabbed_mob.apply_damage(damage, blocked = MELEE, updating_health = TRUE, attacker = user)
+	take_damage(damage * 2, BRUTE, MELEE)
+	return TRUE
+
 /obj/structure/window/attackby(obj/item/I, mob/user, params)
 	. = ..()
+	if(.)
+		return
 
-	if(istype(I, /obj/item/grab) && get_dist(src, user) < 2)
-		if(isxeno(user))
-			return
-		var/obj/item/grab/G = I
-		if(!isliving(G.grabbed_thing))
-			return
-
-		var/mob/living/M = G.grabbed_thing
-		var/state = user.grab_state
-		user.drop_held_item()
-		switch(state)
-			if(GRAB_PASSIVE)
-				M.visible_message(span_warning("[user] slams [M] against \the [src]!"))
-				log_combat(user, M, "slammed", "", "against \the [src]")
-				M.apply_damage(7, blocked = MELEE)
-				UPDATEHEALTH(M)
-				take_damage(10, BRUTE, MELEE)
-			if(GRAB_AGGRESSIVE)
-				M.visible_message(span_danger("[user] bashes [M] against \the [src]!"))
-				log_combat(user, M, "bashed", "", "against \the [src]")
-				if(prob(50))
-					M.Paralyze(2 SECONDS)
-				M.apply_damage(10, blocked = MELEE)
-				UPDATEHEALTH(M)
-				take_damage(25, BRUTE, MELEE)
-			if(GRAB_NECK)
-				M.visible_message(span_danger("<big>[user] crushes [M] against \the [src]!</big>"))
-				log_combat(user, M, "crushed", "", "against \the [src]")
-				M.Paralyze(10 SECONDS)
-				M.apply_damage(20, blocked = MELEE)
-				UPDATEHEALTH(M)
-				take_damage(50, BRUTE, MELEE)
-
-	else if(I.flags_item & NOBLUDGEON)
+	if(I.item_flags & NOBLUDGEON)
 		return
 
 	else if(isscrewdriver(I) && deconstructable)
@@ -190,7 +191,7 @@
 		to_chat(user, (state ? span_notice("You have pried the window into the frame.") : span_notice("You have pried the window out of the frame.")))
 
 
-/obj/structure/window/deconstruct(disassembled = TRUE)
+/obj/structure/window/deconstruct(disassembled = TRUE, mob/living/blame_mob)
 	if(disassembled)
 		if(reinf)
 			new /obj/item/stack/sheet/glass/reinforced(loc, 2)
@@ -207,7 +208,7 @@
 
 /obj/structure/window/verb/rotate()
 	set name = "Rotate Window Counter-Clockwise"
-	set category = "Object"
+	set category = "IC.Object"
 	set src in oview(1)
 
 	if(static_frame)
@@ -224,7 +225,7 @@
 
 /obj/structure/window/verb/revrotate()
 	set name = "Rotate Window Clockwise"
-	set category = "Object"
+	set category = "IC.Object"
 	set src in oview(1)
 
 	if(static_frame)
@@ -265,10 +266,9 @@
 		else
 			icon_state = "[basestate][junction]"
 
-/obj/structure/window/fire_act(exposed_temperature, exposed_volume)
-	if(exposed_temperature > T0C + 800)
-		take_damage(round(exposed_volume / 100), BURN, FIRE)
-	return ..()
+/obj/structure/window/fire_act(burn_level)
+	if(burn_level > 25)
+		take_damage(burn_level, BURN, FIRE)
 
 /obj/structure/window/GetExplosionBlock(explosion_dir)
 	return (!explosion_dir || ISDIAGONALDIR(dir) || dir & explosion_dir || REVERSE_DIR(dir) & explosion_dir) ? real_explosion_block : 0
@@ -283,10 +283,9 @@
 	explosion_block = EXPLOSION_BLOCK_PROC
 	real_explosion_block = 2
 
-/obj/structure/window/phoronbasic/fire_act(exposed_temperature, exposed_volume)
-	if(exposed_temperature > T0C + 32000)
-		take_damage(round(exposed_volume / 1000), BURN, FIRE)
-	return ..()
+/obj/structure/window/phoronbasic/fire_act(burn_level)
+	if(burn_level > 30)
+		take_damage(burn_level * 0.5, BURN, FIRE)
 
 /obj/structure/window/phoronreinforced
 	name = "reinforced phoron window"
@@ -299,7 +298,7 @@
 	explosion_block = EXPLOSION_BLOCK_PROC
 	real_explosion_block = 4
 
-/obj/structure/window/phoronreinforced/fire_act(exposed_temperature, exposed_volume)
+/obj/structure/window/phoronreinforced/fire_act(burn_level)
 	return
 
 /obj/structure/window/reinforced
@@ -327,8 +326,8 @@
 /obj/structure/window/reinforced/Initialize(mapload)
 	. = ..()
 	if(dir == NORTH)
-		add_overlay(image(icon, "rwindow_overlay", layer = WINDOW_LAYER))
-		layer = WINDOW_FRAME_LAYER
+		add_overlay(image(icon, "rwindow_overlay", layer = ABOVE_WINDOW_LAYER))
+		layer = TABLE_LAYER
 	if(dir == WEST || dir == EAST)
 		var/turf/adj = get_step(src, SOUTH)
 		if(isclosedturf(adj))
@@ -387,7 +386,7 @@
 	basestate = "window"
 	max_integrity = 40
 	reinf = TRUE
-	flags_atom = NONE
+	atom_flags = NONE
 
 /obj/structure/window/shuttle/update_icon_state()
 	return
@@ -398,7 +397,7 @@
 	name = "theoretical window"
 	layer = TABLE_LAYER
 	static_frame = TRUE
-	flags_atom = NONE //This is not a border object; it takes up the entire tile.
+	atom_flags = NONE //This is not a border object; it takes up the entire tile.
 	explosion_block = 2
 	smoothing_flags = SMOOTH_BITMASK
 	smoothing_groups = list(
@@ -412,15 +411,15 @@
 		SMOOTH_GROUP_WINDOW_FRAME,
 		SMOOTH_GROUP_ESCAPESHUTTLE,
 	)
+	minimap_color = MINIMAP_FENCE
 	///For perspective windows,so the window frame doesn't magically disappear.
 	var/window_frame
 
 /obj/structure/window/framed/update_nearby_icons()
 	QUEUE_SMOOTH_NEIGHBORS(src)
 
-/obj/structure/window/framed/update_icon()
-	QUEUE_SMOOTH(src)
-	return ..()
+/obj/structure/window/framed/update_icon_state()
+	QUEUE_SMOOTH(src) //we update icon state through the smoothing system exclusively
 
 /obj/structure/window/framed/deconstruct(disassembled = TRUE, leave_frame = TRUE)
 	if(window_frame && leave_frame)
@@ -470,7 +469,6 @@
 	name = "hull window"
 	desc = "A glass window with a special rod matrice inside a wall frame. This one was made out of exotic materials to prevent hull breaches. No way to get through here."
 	//icon_state = "rwindow0_debug" //Uncomment to check hull in the map editor
-	damageable = FALSE
 	deconstructable = FALSE
 	resistance_flags = RESIST_ALL
 	icon_state = "window-invincible"
@@ -535,7 +533,6 @@
 /obj/structure/window/framed/mainship/gray/toughened/hull
 	name = "hull window"
 	desc = "A glass window with a special rod matrice inside a wall frame. This one was made out of exotic materials to prevent hull breaches. No way to get through here."
-	damageable = FALSE
 	deconstructable = FALSE
 	resistance_flags = RESIST_ALL
 	icon_state = "window-invincible"
@@ -544,7 +541,6 @@
 	name = "hull window"
 	icon_state = "window-invincible"
 	desc = "A glass window with a special rod matrice inside a wall frame. This one was made out of exotic materials to prevent hull breaches. No way to get through here."
-	damageable = FALSE
 	deconstructable = FALSE
 	resistance_flags = RESIST_ALL
 
@@ -565,6 +561,13 @@
 	reinf = 1
 	window_frame = /obj/structure/window_frame/colony/reinforced
 
+/obj/structure/window/framed/colony/cmwindow
+	name = "window"
+	icon = 'icons/obj/smooth_objects/cmwindow.dmi'
+	icon_state = "cmwindow-0"
+	base_icon_state = "cmwindow"
+	window_frame = /obj/structure/window_frame/colony
+
 /obj/structure/window/framed/colony/reinforced/tinted
 	name = "tinted reinforced window"
 	desc = "A glass window with a special rod matrice inside a wall frame. It looks rather strong. Might take a few good hits to shatter it. This one is opaque. You have an uneasy feeling someone might be watching from the other side."
@@ -574,7 +577,6 @@
 	name = "hull window"
 	desc = "A glass window with a special rod matrice inside a wall frame. This one was made out of exotic materials to prevent hull breaches. No way to get through here."
 	//icon_state = "rwindow0_debug" //Uncomment to check hull in the map editor
-	damageable = FALSE
 	deconstructable = FALSE
 	resistance_flags = RESIST_ALL
 	max_integrity = 1000000 //Failsafe, shouldn't matter
@@ -638,12 +640,18 @@
 	basestate = "prison_rwindow"
 	window_frame = /obj/structure/window_frame/prison/reinforced
 
+/obj/structure/window/framed/prison/colony
+	name = "window"
+	icon = 'icons/obj/smooth_objects/prison_rwindow.dmi'
+	icon_state = "window-reinforced"
+	base_icon_state = "prison_rwindow"
+	basestate = "prison_rwindow"
+
 /obj/structure/window/framed/prison/reinforced/hull
 	name = "hull window"
 	desc = "A glass window with a special rod matrice inside a wall frame. This one has an automatic shutter system to prevent any atmospheric breach."
 	max_integrity = 200
 	//icon_state = "rwindow0_debug" //Uncomment to check hull in the map editor
-	resistance_flags = BANISH_IMMUNE
 	icon_state = "window-invincible"
 
 /obj/structure/window/framed/prison/reinforced/hull/Initialize(mapload)
@@ -653,7 +661,6 @@
 /obj/structure/window/framed/prison/reinforced/nonshutter_hull
 	name = "hull window"
 	desc = "A glass window with a special rod matrice inside a wall frame. This one was made out of exotic materials to prevent hull breaches. No way to get through here."
-	damageable = FALSE
 	deconstructable = FALSE
 	resistance_flags = RESIST_ALL
 
@@ -698,3 +705,67 @@
 	name = "reinforced orbital insertion safety window"
 	desc = "A durable glass window with a specialized reinforced rod matrice inside a wall frame, 6 times as strong as a normal window to be spaceworthy and withstand impacts."
 	max_integrity = 600 // 25 hunter slashes
+
+/obj/structure/window/framed/kutjevo
+	name = "window"
+	icon = 'icons/obj/smooth_objects/kutjevo_window_blue.dmi'
+	icon_state = "chigusa_wall-0"
+	base_icon_state = "chigusa_wall"
+	window_frame = /obj/structure/window_frame/kutjevo
+
+/obj/structure/window/framed/kutjevo/orange
+	icon = 'icons/obj/smooth_objects/kutjevo_window_orange.dmi'
+
+/obj/structure/window/framed/kutjevo/reinforced
+	name = "window"
+	icon = 'icons/obj/smooth_objects/kutjevo_window_blue_reinforced.dmi'
+	icon_state = "window-reinforced"
+	base_icon_state = "chigusa_wall"
+	window_frame = /obj/structure/window_frame/kutjevo
+
+/obj/structure/window/framed/kutjevo/reinforced/orange
+	name = "window"
+	icon = 'icons/obj/smooth_objects/kutjevo_window_orange_reinforced.dmi'
+	icon_state = "window-reinforced"
+	base_icon_state = "chigusa_wall"
+	window_frame = /obj/structure/window_frame/kutjevo
+
+/obj/structure/window/framed/kutjevo/reinforced/hull
+	name = "hull window"
+	icon = 'icons/obj/smooth_objects/kutjevo_window_orange_reinforced.dmi'
+	desc = "A glass window with a special rod matrice inside a wall frame. This one was made out of exotic materials to prevent hull breaches. No way to get through here."
+	icon_state = "window-invincible"
+	base_icon_state = "chigusa_wall"
+	resistance_flags = RESIST_ALL
+
+/obj/structure/window/framed/urban
+	name = "window"
+	icon = 'icons/obj/smooth_objects/urban_window.dmi'
+	icon_state = "chigusa_wall-0"
+	base_icon_state = "chigusa_wall"
+	max_integrity = 100 //Was 600
+	reinf = TRUE
+	dir = 5
+	window_frame = /obj/structure/window_frame/urban
+
+/obj/structure/window/framed/urban/reinforced
+
+/obj/structure/window/framed/urban/marshalls/cell
+
+/obj/structure/window/framed/urban/colony/office
+
+/obj/structure/window/framed/urban/spaceport/reinforced
+
+/obj/structure/window/framed/urban/colony/hospital
+
+/obj/structure/window/framed/urban/colony/engineering/hull
+
+/obj/structure/window/framed/urban/junk_window
+	name = "window"
+	icon = 'icons/obj/smooth_objects/junk_window.dmi'
+	icon_state = "chigusa_wall-0"
+	base_icon_state = "chigusa_wall"
+	max_integrity = 100 //Was 600
+	reinf = TRUE
+	dir = 5
+	window_frame = /obj/structure/window_frame/junk_frame

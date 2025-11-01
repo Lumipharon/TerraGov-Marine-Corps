@@ -1,34 +1,31 @@
 /mob/living/carbon/human/gib()
-
-	var/is_a_synth = issynth(src)
+	visible_message(
+		span_boldwarning("[src] is blown apart!"),
+		span_userdanger("You're blown apart!"),
+		span_boldwarning("You hear terrible cracking and squelching."),
+	)
 	for(var/datum/limb/E in limbs)
 		if(istype(E, /datum/limb/chest))
 			continue
-		if(istype(E, /datum/limb/groin) && is_a_synth)
+		if(istype(E, /datum/limb/groin))
 			continue
 		// Only make the limb drop if it's not too damaged
 		if(prob(100 - E.get_damage()))
 			// Override the current limb status
-			E.droplimb()
-
-
-	if(is_a_synth)
-		spawn_gibs()
-		return
-	..()
-
-
-
-
+			E.droplimb(silent = TRUE)
+	return ..()
 
 /mob/living/carbon/human/gib_animation()
-	new /obj/effect/overlay/temp/gib_animation(loc, 0, src, species ? species.gibbed_anim : "gibbed-h")
+	var/datum/ethnicity/ethnic_datum = GLOB.ethnicities_list[ethnicity]
+	new /obj/effect/overlay/temp/gib_animation/human(loc, 0, src, species?.gibbed_anim ? species.gibbed_anim : ethnic_datum ? ethnic_datum.icon_name : "default")
 
 /mob/living/carbon/human/spawn_gibs()
 	if(species)
 		hgibs(loc, species.flesh_color, species.blood_color)
+		new /obj/effect/temp_visual/gib_particles(get_turf(src), species.blood_color)
 	else
 		hgibs(loc)
+		new /obj/effect/temp_visual/gib_particles(get_turf(src), get_blood_color())
 
 
 
@@ -54,8 +51,8 @@
 
 
 /mob/living/carbon/human/on_death()
-	if(pulledby)
-		pulledby.stop_pulling()
+	if(!ishuman(pulledby))
+		pulledby?.stop_pulling()
 
 	//Handle species-specific deaths.
 	species.handle_death(src)

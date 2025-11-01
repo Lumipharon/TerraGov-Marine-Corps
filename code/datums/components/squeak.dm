@@ -21,7 +21,7 @@
 	if(!isatom(parent))
 		return COMPONENT_INCOMPATIBLE
 	RegisterSignals(parent, list(COMSIG_ATOM_ENTERED, COMSIG_ATOM_ATTACKBY), PROC_REF(play_squeak))
-	if(ismovableatom(parent))
+	if(ismovable(parent))
 		AddComponent(/datum/component/connect_loc_behalf, parent, item_connections)
 		RegisterSignals(parent, list(COMSIG_MOVABLE_BUMP, COMSIG_MOVABLE_IMPACT), PROC_REF(play_squeak))
 		RegisterSignal(parent, COMSIG_MOVABLE_DISPOSING, PROC_REF(disposing_react))
@@ -76,11 +76,11 @@
 	SIGNAL_HANDLER
 	if(isitem(AM))
 		var/obj/item/I = AM
-		if(I.flags_item & ITEM_ABSTRACT)
+		if(I.item_flags & ITEM_ABSTRACT)
 			return
 
-	if(istype(AM, /obj/projectile))
-		var/obj/projectile/P = AM
+	if(istype(AM, /atom/movable/projectile))
+		var/atom/movable/projectile/P = AM
 		if(P.original_target != parent)
 			return
 

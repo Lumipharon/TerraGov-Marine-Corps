@@ -3,6 +3,7 @@
 	display_name = "Hivelord"
 	upgrade_name = ""
 	caste_desc = "A builder of REALLY BIG hives."
+	base_strain_type = /mob/living/carbon/xenomorph/hivelord
 	caste_type_path = /mob/living/carbon/xenomorph/hivelord
 	tier = XENO_TIER_TWO
 	upgrade = XENO_UPGRADE_BASETYPE
@@ -16,28 +17,28 @@
 
 	// *** Plasma *** //
 	plasma_max = 2400
-	plasma_gain = 65
+	plasma_gain = 80
 	plasma_regen_limit = 0.5
 	plasma_icon_state = "hivelord_plasma"
 
 	// *** Health *** //
-	max_health = 350
+	max_health = 410
 
 
 	// *** Evolution *** //
 	evolution_threshold = 225
 	upgrade_threshold = TIER_TWO_THRESHOLD
 
-	deevolves_to = /mob/living/carbon/xenomorph/drone
+	deevolves_to = /datum/xeno_caste/drone
 
 	// *** Flags *** //
-	caste_flags = CASTE_EVOLUTION_ALLOWED|CASTE_IS_BUILDER
+	caste_flags = CASTE_EVOLUTION_ALLOWED|CASTE_IS_BUILDER|CASTE_MUTATIONS_ALLOWED
 	can_hold_eggs = CAN_HOLD_TWO_HANDS
-	can_flags = CASTE_CAN_BE_QUEEN_HEALED|CASTE_CAN_HOLD_FACEHUGGERS|CASTE_CAN_BE_GIVEN_PLASMA|CASTE_CAN_BE_LEADER|CASTE_CAN_HOLD_JELLY
-	caste_traits = null
+	can_flags = parent_type::can_flags|CASTE_CAN_HOLD_FACEHUGGERS|CASTE_CAN_BE_GIVEN_PLASMA
+	caste_traits = list(TRAIT_CAN_TEAR_HOLE, TRAIT_CAN_DISABLE_MINER)
 
 	// *** Defense *** //
-	soft_armor = list(MELEE = 30, BULLET = 30, LASER = 30, ENERGY = 30, BOMB = 0, BIO = 20, FIRE = 30, ACID = 20)
+	soft_armor = list(MELEE = 35, BULLET = 35, LASER = 35, ENERGY = 35, BOMB = 0, BIO = 20, FIRE = 30, ACID = 20)
 
 	// *** Ranged Attack *** //
 	spit_delay = 1.3 SECONDS
@@ -74,7 +75,21 @@
 		/datum/action/ability/activable/xeno/xeno_spit,
 		/datum/action/ability/xeno_action/create_jelly,
 		/datum/action/ability/xeno_action/place_jelly_pod,
+		/datum/action/ability/xeno_action/place_recovery_pylon,
 		/datum/action/ability/activable/xeno/recycle,
+		/datum/action/ability/activable/xeno/place_pattern,
+	)
+
+	mutations = list(
+		/datum/mutation_upgrade/shell/hardened_travel,
+		/datum/mutation_upgrade/shell/costly_travel,
+		/datum/mutation_upgrade/shell/rejuvenating_build,
+		/datum/mutation_upgrade/spur/combustive_jelly,
+		/datum/mutation_upgrade/spur/resin_splash,
+		/datum/mutation_upgrade/spur/hostile_pylon,
+		/datum/mutation_upgrade/veil/protective_light,
+		/datum/mutation_upgrade/veil/forward_light,
+		/datum/mutation_upgrade/veil/weed_specialist
 	)
 
 /datum/xeno_caste/hivelord/normal
@@ -110,5 +125,7 @@
 		/datum/action/ability/activable/xeno/xeno_spit,
 		/datum/action/ability/xeno_action/create_jelly,
 		/datum/action/ability/xeno_action/place_jelly_pod,
+		/datum/action/ability/xeno_action/place_recovery_pylon,
 		/datum/action/ability/activable/xeno/recycle,
+		/datum/action/ability/activable/xeno/place_pattern,
 	)

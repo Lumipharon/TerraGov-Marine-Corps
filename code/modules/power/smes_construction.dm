@@ -148,7 +148,7 @@
 						visible_message("Magnetic containment stabilised.")
 						return
 					visible_message("DANGER! Magnetic containment field failure in 3 ... 2 ... 1 ...")
-					explosion(loc, 2, 3, 5, 0, 8)
+					explosion(loc, 2, 3, 5, 0, 8, explosion_cause=src)
 					// Not sure if this is necessary, but just in case the SMES *somehow* survived..
 					qdel(src)
 
@@ -223,8 +223,6 @@
 		M.state = 2
 		M.icon_state = "box_1"
 		for(var/obj/O in component_parts)
-			if(O.reliability != 100 && crit_fail)
-				O.crit_fail = TRUE
 			O.forceMove(loc)
 		qdel(src)
 

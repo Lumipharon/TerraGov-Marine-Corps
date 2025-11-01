@@ -16,7 +16,7 @@
 #define PLATINUM_DROPSHIP_BONUS_AMOUNT 30
 ///Resource generator that produces a certain material that can be repaired by marines and attacked by xenos, Intended as an objective for marines to play towards to get more req gear
 /obj/machinery/miner
-	name = "\improper Nanotrasen phoron Mining Well"
+	name = "\improper Nanotrasen phoron mining well"
 	desc = "Top-of-the-line Nanotrasen research drill with it's own export module, used to extract phoron in vast quantities. Selling the phoron mined by these would net a nice profit..."
 	icon = 'icons/obj/mining_drill.dmi'
 	density = TRUE
@@ -26,6 +26,7 @@
 	layer = ABOVE_MOB_LAYER
 	resistance_flags = RESIST_ALL | DROPSHIP_IMMUNE
 	allow_pass_flags = PASS_PROJECTILE|PASS_AIR
+	faction = FACTION_TERRAGOV
 	///How many sheets of material we have stored
 	var/stored_mineral = 0
 	///Current status of the miner
@@ -44,8 +45,6 @@
 	var/max_miner_integrity = 100
 	///What type of upgrade it has installed , used to change the icon of the miner.
 	var/miner_upgrade_type
-	///What faction secured that miner
-	var/faction = FACTION_TERRAGOV
 
 /obj/machinery/miner/damaged	//mapping and all that shebang
 	miner_status = MINER_DESTROYED
@@ -55,7 +54,7 @@
 	return //Marker will be set by itself once processing pauses when it detects this miner is broke.
 
 /obj/machinery/miner/damaged/platinum
-	name = "\improper Nanotrasen platinum Mining Well"
+	name = "\improper Nanotrasen platinum mining well"
 	desc = "A Nanotrasen platinum drill with an internal export module. Produces even more valuable materials than it's phoron counterpart"
 	mineral_value = PLATINUM_CRATE_SELL_AMOUNT
 	dropship_bonus = PLATINUM_DROPSHIP_BONUS_AMOUNT
@@ -71,7 +70,7 @@
  **/
 /obj/machinery/miner/proc/init_marker()
 	var/marker_icon = "miner_[mineral_value >= PLATINUM_CRATE_SELL_AMOUNT ? "platinum" : "phoron"]_on"
-	SSminimaps.add_marker(src, MINIMAP_FLAG_ALL, image('icons/UI_icons/map_blips.dmi', null, marker_icon))
+	SSminimaps.add_marker(src, MINIMAP_FLAG_ALL, image('icons/UI_icons/map_blips.dmi', null, marker_icon, MINIMAP_BLIPS_LAYER))
 
 /obj/machinery/miner/update_icon_state()
 	. = ..()
@@ -128,6 +127,8 @@
 
 /obj/machinery/miner/attackby(obj/item/I,mob/user,params)
 	. = ..()
+	if(.)
+		return
 	if(istype(I, /obj/item/minerupgrade))
 		var/obj/item/minerupgrade/upgrade = I
 		if(!(miner_status == MINER_RUNNING))
@@ -174,24 +175,18 @@
 		user.visible_message(span_notice("[user] fumbles around figuring out [src]'s internals."),
 		span_notice("You fumble around figuring out [src]'s internals."))
 		var/fumbling_time = 10 SECONDS - 2 SECONDS * user.skills.getRating(SKILL_ENGINEER)
-		if(!do_after(user, fumbling_time, NONE, src, BUSY_ICON_UNSKILLED, extra_checks = CALLBACK(weldingtool, /obj/item/tool/weldingtool/proc/isOn)))
+		if(!do_after(user, fumbling_time, NONE, src, BUSY_ICON_UNSKILLED, extra_checks = CALLBACK(weldingtool, TYPE_PROC_REF(/obj/item/tool/weldingtool, isOn))))
 			return FALSE
-	playsound(loc, 'sound/items/weldingtool_weld.ogg', 25)
 	user.visible_message(span_notice("[user] starts welding [src]'s internal damage."),
 	span_notice("You start welding [src]'s internal damage."))
-	add_overlay(GLOB.welding_sparks)
-	if(!do_after(user, 200, NONE, src, BUSY_ICON_BUILD, extra_checks = CALLBACK(weldingtool, /obj/item/tool/weldingtool/proc/isOn)))
-		cut_overlay(GLOB.welding_sparks)
+	if(!I.use_tool(src, user, 20 SECONDS, 2, 25, null, BUSY_ICON_BUILD))
+		return
+	if(miner_status != MINER_DESTROYED)
 		return FALSE
-	if(miner_status != MINER_DESTROYED )
-		cut_overlay(GLOB.welding_sparks)
-		return FALSE
-	playsound(loc, 'sound/items/welder2.ogg', 25, TRUE)
 	miner_integrity = 0.33 * max_miner_integrity
 	set_miner_status()
 	user.visible_message(span_notice("[user] welds [src]'s internal damage."),
 	span_notice("You weld [src]'s internal damage."))
-	cut_overlay(GLOB.welding_sparks)
 	record_miner_repair(user)
 	return TRUE
 
@@ -247,7 +242,7 @@
 
 /obj/machinery/miner/examine(mob/user)
 	. = ..()
-	if(!ishuman(user))
+	if(!ishuman(user) && !isobserver(user))
 		return
 	if(!miner_upgrade_type)
 		. += span_info("[src]'s module sockets seem empty, an upgrade could be installed.")
@@ -289,7 +284,7 @@
 		stop_processing()
 		SSminimaps.remove_marker(src)
 		var/marker_icon = "miner_[mineral_value >= PLATINUM_CRATE_SELL_AMOUNT ? "platinum" : "phoron"]_off"
-		SSminimaps.add_marker(src, MINIMAP_FLAG_ALL, image('icons/UI_icons/map_blips.dmi', null, marker_icon))
+		SSminimaps.add_marker(src, MINIMAP_FLAG_ALL, image('icons/UI_icons/map_blips.dmi', null, marker_icon, MINIMAP_BLIPS_LAYER))
 		return
 	if(add_tick >= required_ticks)
 		if(miner_upgrade_type == MINER_AUTOMATED)
@@ -309,31 +304,33 @@
 			return
 		stored_mineral += 1
 		add_tick = 0
+		say("[stored_mineral] Ore shipment\s is ready to be exported.")
+		playsound(loc,'sound/machines/ping.ogg', 20, FALSE)
 	if(stored_mineral >= 8)	//Stores 8 boxes worth of minerals
 		stop_processing()
 	else
 		add_tick += 1
 
-/obj/machinery/miner/attack_alien(mob/living/carbon/xenomorph/X, damage_amount = X.xeno_caste.melee_damage, damage_type = BRUTE, damage_flag = "", effects = TRUE, armor_penetration = 0, isrightclick = FALSE)
-	if(X.status_flags & INCORPOREAL) //Incorporeal xenos cannot attack physically.
+/obj/machinery/miner/attack_alien(mob/living/carbon/xenomorph/xeno_attacker, damage_amount = xeno_attacker.xeno_caste.melee_damage, damage_type = BRUTE, armor_type = MELEE, effects = TRUE, armor_penetration = xeno_attacker.xeno_caste.melee_ap, isrightclick = FALSE)
+	if(xeno_attacker.status_flags & INCORPOREAL) //Incorporeal xenos cannot attack physically.
 		return
-	if(miner_upgrade_type == MINER_RESISTANT && !(X.mob_size == MOB_SIZE_BIG || X.xeno_caste.caste_flags & CASTE_IS_STRONG))
-		X.visible_message(span_notice("[X]'s claws bounce off of [src]'s reinforced plating."),
+	if(miner_upgrade_type == MINER_RESISTANT && !HAS_TRAIT(xeno_attacker, TRAIT_CAN_DISABLE_MINER))
+		xeno_attacker.visible_message(span_notice("[xeno_attacker]'s claws bounce off of [src]'s reinforced plating."),
 		span_notice("We can't slash through [src]'s reinforced plating!"))
 		return
 	while(miner_status != MINER_DESTROYED)
-		if(X.do_actions)
-			return balloon_alert(X, "busy")
-		if(!do_after(X, 1.5 SECONDS, NONE, src, BUSY_ICON_DANGER, BUSY_ICON_HOSTILE))
+		if(xeno_attacker.do_actions)
+			return balloon_alert(xeno_attacker, "busy!")
+		if(!do_after(xeno_attacker, 1.5 SECONDS, NONE, src, BUSY_ICON_DANGER, BUSY_ICON_HOSTILE))
 			return
-		X.do_attack_animation(src, ATTACK_EFFECT_CLAW)
-		X.visible_message(span_danger("[X] slashes \the [src]!"), \
+		xeno_attacker.do_attack_animation(src, ATTACK_EFFECT_CLAW)
+		xeno_attacker.visible_message(span_danger("[xeno_attacker] slashes \the [src]!"), \
 		span_danger("We slash \the [src]!"), null, 5)
-		playsound(loc, "alien_claw_metal", 25, TRUE)
+		playsound(loc, SFX_ALIEN_CLAW_METAL, 25, TRUE)
 		miner_integrity -= 25
 		set_miner_status()
-		if(miner_status == MINER_DESTROYED && X.client)
-			var/datum/personal_statistics/personal_statistics = GLOB.personal_statistics_list[X.ckey]
+		if(miner_status == MINER_DESTROYED && xeno_attacker.client)
+			var/datum/personal_statistics/personal_statistics = GLOB.personal_statistics_list[xeno_attacker.ckey]
 			personal_statistics.miner_sabotages_performed++
 
 /obj/machinery/miner/proc/set_miner_status()
@@ -352,7 +349,7 @@
 			start_processing()
 			SSminimaps.remove_marker(src)
 			var/marker_icon = "miner_[mineral_value >= PLATINUM_CRATE_SELL_AMOUNT ? "platinum" : "phoron"]_on"
-			SSminimaps.add_marker(src, MINIMAP_FLAG_ALL, image('icons/UI_icons/map_blips.dmi', null, marker_icon))
+			SSminimaps.add_marker(src, MINIMAP_FLAG_ALL, image('icons/UI_icons/map_blips.dmi', null, marker_icon, MINIMAP_BLIPS_LAYER))
 			miner_status = MINER_RUNNING
 	update_icon()
 

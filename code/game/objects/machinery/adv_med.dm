@@ -44,7 +44,7 @@
 		return
 	if(!occupant)
 		return
-	. += emissive_appearance(icon, "[icon_state]_emissive", alpha = src.alpha)
+	. += emissive_appearance(icon, "[icon_state]_emissive", src, alpha = src.alpha)
 	. += mutable_appearance(icon, "[icon_state]_emissive", alpha = src.alpha)
 
 /obj/machinery/bodyscanner/relaymove(mob/user)
@@ -55,7 +55,7 @@
 
 /obj/machinery/bodyscanner/verb/eject()
 	set src in oview(1)
-	set category = "Object"
+	set category = "IC.Object"
 	set name = "Eject Body Scanner"
 
 	if (usr.stat != CONSCIOUS)
@@ -83,7 +83,7 @@
 
 /obj/machinery/bodyscanner/verb/move_inside()
 	set src in oview(1)
-	set category = "Object"
+	set category = "IC.Object"
 	set name = "Enter Body Scanner"
 
 	move_inside_wrapper(usr, usr)
@@ -96,10 +96,10 @@
 /obj/machinery/bodyscanner/proc/go_out()
 	if (!occupant || locked)
 		return
-	for(var/obj/O in src)
-		O.loc = loc
 	occupant.forceMove(loc)
 	occupant = null
+	for(var/obj/O in src)
+		O.forceMove(loc)
 	update_icon()
 
 /obj/machinery/bodyscanner/attack_hand(mob/living/user)
@@ -108,57 +108,59 @@
 		return
 	go_out()
 
-
 /obj/machinery/bodyscanner/attackby(obj/item/I, mob/user, params)
 	. = ..()
+	if(.)
+		return
 
 	if(istype(I, /obj/item/healthanalyzer) && occupant) //Allows us to use the analyzer on the occupant without taking him out; this is here mainly for consistency's sake.
 		var/obj/item/healthanalyzer/J = I
 		J.attack(occupant, user)
 		return
 
-	var/mob/M
-	if(!istype(I, /obj/item/grab))
+/obj/machinery/bodyscanner/grab_interact(obj/item/grab/grab, mob/user, base_damage = BASE_OBJ_SLAM_DAMAGE, is_sharp = FALSE)
+	. = ..()
+	if(.)
 		return
-
-	else if(occupant)
+	if(occupant)
 		to_chat(user, span_warning("The scanner is already occupied!"))
 		return
 
-	var/obj/item/grab/G = I
-	if(istype(G.grabbed_thing,/obj/structure/closet/bodybag/cryobag))
-		var/obj/structure/closet/bodybag/cryobag/C = G.grabbed_thing
-		if(!C.bodybag_occupant)
+	var/mob/grabbed_mob
+	if(ismob(grab.grabbed_thing))
+		grabbed_mob = grab.grabbed_thing
+	else if(istype(grab.grabbed_thing, /obj/structure/closet/bodybag/cryobag))
+		var/obj/structure/closet/bodybag/cryobag/cryobag = grab.grabbed_thing
+		if(!cryobag.bodybag_occupant)
 			to_chat(user, span_warning("The stasis bag is empty!"))
 			return
-		M = C.bodybag_occupant
-		C.open()
-		user.start_pulling(M)
-	else if(ismob(G.grabbed_thing))
-		M = G.grabbed_thing
+		grabbed_mob = cryobag.bodybag_occupant
+		cryobag.open()
+		user.start_pulling(grabbed_mob)
 
-	if(!M)
+	if(!grabbed_mob)
 		return
 
-	if(M.abiotic())
+	if(grabbed_mob.abiotic())
 		to_chat(user, span_warning("Subject cannot have abiotic items on."))
 		return
 
-	M.forceMove(src)
-	occupant = M
+	grabbed_mob.forceMove(src)
+	occupant = grabbed_mob
 	update_icon()
 	for(var/obj/O in src)
 		O.forceMove(loc)
+	return TRUE
 
-/obj/machinery/bodyscanner/attack_alien(mob/living/carbon/xenomorph/X, damage_amount, damage_type, damage_flag, effects, armor_penetration, isrightclick)
+/obj/machinery/bodyscanner/attack_alien(mob/living/carbon/xenomorph/xeno_attacker, damage_amount = xeno_attacker.xeno_caste.melee_damage, damage_type = BRUTE, armor_type = MELEE, effects = TRUE, armor_penetration = xeno_attacker.xeno_caste.melee_ap, isrightclick = FALSE)
 	if(!occupant)
-		to_chat(X, span_xenowarning("There is nothing of interest in there."))
+		to_chat(xeno_attacker, span_xenowarning("There is nothing of interest in there."))
 		return
-	if(X.status_flags & INCORPOREAL || X.do_actions)
+	if(xeno_attacker.status_flags & INCORPOREAL || xeno_attacker.do_actions)
 		return
-	visible_message(span_warning("[X] begins to pry the [src]'s cover!"), 3)
+	visible_message(span_warning("[xeno_attacker] begins to pry the [src]'s cover!"), 3)
 	playsound(src,'sound/effects/metal_creaking.ogg', 25, 1)
-	if(!do_after(X, 2 SECONDS))
+	if(!do_after(xeno_attacker, 2 SECONDS))
 		return
 	playsound(loc, 'sound/effects/metal_creaking.ogg', 25, 1)
 	go_out()
@@ -166,23 +168,23 @@
 /obj/machinery/bodyscanner/ex_act(severity)
 	switch(severity)
 		if(EXPLODE_DEVASTATE)
-			for(var/atom/movable/A as mob|obj in src)
-				A.loc = src.loc
+			for(var/atom/movable/A AS in src)
+				A.forceMove(loc)
 				ex_act(severity)
 			qdel(src)
 			return
 		if(EXPLODE_HEAVY)
 			if (prob(50))
-				for(var/atom/movable/A as mob|obj in src)
-					A.loc = src.loc
+				for(var/atom/movable/A AS in src)
+					A.forceMove(loc)
 					ex_act(severity)
 				qdel(src)
 				return
 		if(EXPLODE_LIGHT)
 			if(!prob(75))
 				return
-			for(var/atom/movable/A as mob|obj in src)
-				A.loc = src.loc
+			for(var/atom/movable/A AS in src)
+				A.forceMove(loc)
 				ex_act(severity)
 			qdel(src)
 
@@ -195,13 +197,20 @@
 	idle_power_usage = 3
 	light_color = LIGHT_COLOR_EMISSIVE_GREEN
 	dir = EAST
+	/// The connected body scanner pod
 	var/obj/machinery/bodyscanner/connected
-	var/delete
-	var/temphtml
+	/// The health scan functionality
+	var/datum/health_scan/scanner
 
 /obj/machinery/computer/body_scanconsole/Initialize(mapload)
 	. = ..()
 	set_connected(locate(/obj/machinery/bodyscanner, get_step(src, REVERSE_DIR(dir))))
+	scanner = new(src, SKILL_MEDICAL_UNTRAINED, SKILL_MEDICAL_UNTRAINED, TRACK_DISTANCE_DISABLED)
+	RegisterSignal(scanner, COMSIG_HEALTH_SCAN_DATA, PROC_REF(on_scanner_data))
+
+/obj/machinery/computer/body_scanconsole/Destroy()
+	QDEL_NULL(scanner)
+	return ..()
 
 /obj/machinery/computer/body_scanconsole/ex_act(severity)
 	switch(severity)
@@ -224,43 +233,21 @@
 
 	return TRUE
 
-
 /obj/machinery/computer/body_scanconsole/interact(mob/user)
 	. = ..()
 	if(.)
 		return
 
-	var/dat
-	if(connected?.occupant) //Is something connected?
-		var/mob/living/carbon/human/H = connected.occupant
-		dat = med_scan(H, dat, GLOB.known_implants)
-	else
-		dat = "<font color='red'> Error: No Body Scanner connected.</font>"
-
-	var/datum/browser/popup = new(user, "scanconsole", "<div align='center'>Body Scanner Console</div>", 430, 600)
-	popup.set_content(dat)
-	popup.open(FALSE)
-
+	scanner.analyze_vitals(connected.occupant, user)
 
 /obj/machinery/bodyscanner/examine(mob/living/user)
 	. = ..()
 	if(!occupant)
 		return
-	if(!hasHUD(user,"medical"))
-		. += span_notice("It contains: [occupant].")
-		return
-	var/mob/living/carbon/human/H = occupant
-	for(var/datum/data/record/R in GLOB.datacore.medical) //Again, for consistency with other medical machines/devices
-		if (!R.fields["name"] == H.real_name)
-			continue
-		if(!(R.fields["last_scan_time"]))
-			. += span_deptradio("No scan report on record")
-		else
-			. += span_deptradio("<a href='?src=[text_ref(src)];scanreport=1'>It contains [occupant]: Scan from [R.fields["last_scan_time"]].</a>")
-		break
+	. += span_notice("It contains: [occupant].")
+	. += span_notice("Scans performed will be archived and viewable when someone with a medical HUD examines a previous patient.")
 
-
-///Wrapper to guarantee connected bodyscanner references are properly nulled and avoid hard deletes.
+/// Wrapper to guarantee connected bodyscanner references are properly nulled and avoid hard deletions
 /obj/machinery/computer/body_scanconsole/proc/set_connected(obj/machinery/bodyscanner/new_connected)
 	if(connected)
 		UnregisterSignal(connected, COMSIG_QDELETING)
@@ -268,8 +255,17 @@
 	if(connected)
 		RegisterSignal(connected, COMSIG_QDELETING, PROC_REF(on_bodyscanner_deletion))
 
-
-///Called by the deletion of the connected bodyscanner.
+/// Called by the deletion of the connected bodyscanner
 /obj/machinery/computer/body_scanconsole/proc/on_bodyscanner_deletion(obj/machinery/bodyscanner/source, force)
 	SIGNAL_HANDLER
 	set_connected(null)
+
+/// Called by the scan datum finishing `ui_data`, updates or creates
+/// a historic scan for the connected pod's occupant
+/obj/machinery/computer/body_scanconsole/proc/on_scanner_data(datum/health_scan/source, mob/living/carbon/human/patient, list/data)
+	SIGNAL_HANDLER
+	var/datum/data/record/medical_record = find_medical_record(patient, TRUE)
+	var/datum/historic_scan/historic_scan = (medical_record.fields["historic_scan"] ||= new /datum/historic_scan(patient))
+	historic_scan.data = data
+	medical_record.fields["historic_scan_time"] = worldtime2text()
+	medical_record.fields["autodoc_data"] = generate_autodoc_surgery_list(connected.occupant)

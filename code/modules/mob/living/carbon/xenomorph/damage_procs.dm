@@ -1,9 +1,6 @@
-/mob/living/carbon/xenomorph/fire_act()
+/mob/living/carbon/xenomorph/fire_act(burn_level)
 	if(status_flags & GODMODE)
 		return
-	return ..()
-
-/mob/living/carbon/xenomorph/flamer_fire_act(burnlevel)
 	if(xeno_caste.caste_flags & CASTE_FIRE_IMMUNE)
 		return
 	return ..()
@@ -36,7 +33,7 @@
 
 	switch(severity)
 		if(EXPLODE_DEVASTATE)
-			ex_damage = rand(190, 210)
+			ex_damage = rand(290, 310)
 			stagger_amount = 4 * bomb_armor_ratio - 1
 			slowdown_amount = 5 * bomb_armor_ratio
 			sunder_amount = 30 * bomb_armor_ratio
@@ -62,7 +59,7 @@
 
 	apply_damages(ex_damage * 0.5, ex_damage * 0.5, blocked = BOMB, updating_health = TRUE)
 
-/mob/living/carbon/xenomorph/apply_damage(damage = 0, damagetype = BRUTE, def_zone, blocked = 0, sharp = FALSE, edge = FALSE, updating_health = FALSE, penetration)
+/mob/living/carbon/xenomorph/apply_damage(damage = 0, damagetype = BRUTE, def_zone, blocked = 0, sharp = FALSE, edge = FALSE, updating_health = FALSE, penetration, mob/living/attacker)
 	if(status_flags & GODMODE)
 		return
 	if(damagetype != BRUTE && damagetype != BURN)
@@ -78,7 +75,7 @@
 	if(damage > 12) //Light damage won't splash.
 		check_blood_splash(damage, damagetype, 0, 1, sharp, edge)
 
-	SEND_SIGNAL(src, COMSIG_XENOMORPH_TAKING_DAMAGE, damage)
+	SEND_SIGNAL(src, COMSIG_XENOMORPH_TAKING_DAMAGE, damage, attacker)
 
 	if(stat == DEAD)
 		return FALSE
@@ -98,7 +95,7 @@
 		stop_pulling()
 
 
-	if(!COOLDOWN_CHECK(src, xeno_health_alert_cooldown))
+	if(!COOLDOWN_FINISHED(src, xeno_health_alert_cooldown))
 		return
 	//If we're alive and health is less than either the alert threshold, or the alert trigger percent, whichever is greater, and we're not on alert cooldown, trigger the hive alert
 	if(stat == DEAD || (health > max(XENO_HEALTH_ALERT_TRIGGER_THRESHOLD, maxHealth * XENO_HEALTH_ALERT_TRIGGER_PERCENT)) || xeno_caste.caste_flags & CASTE_DO_NOT_ALERT_LOW_LIFE)
@@ -117,26 +114,18 @@
 		if(X.client.prefs.mute_xeno_health_alert_messages) //Build the filter list; people who opted not to receive health alert messages
 			filter_list += X //Add the xeno to the filter list
 
-	xeno_message("Our sister [name] is badly hurt with <font color='red'>([health]/[maxHealth])</font> health remaining at [AREACOORD_NO_Z(src)]!", "xenoannounce", 5, hivenumber, FALSE, src, 'sound/voice/alien_help1.ogg', TRUE, filter_list, /atom/movable/screen/arrow/silo_damaged_arrow)
+	xeno_message("Our sister [name] is badly hurt with <font color='red'>([health]/[maxHealth])</font> health remaining at [AREACOORD_NO_Z(src)]!", "xenoannounce", 5, hivenumber, FALSE, src, 'sound/voice/alien/help1.ogg', TRUE, filter_list, /atom/movable/screen/arrow/silo_damaged_arrow)
 	COOLDOWN_START(src, xeno_health_alert_cooldown, XENO_HEALTH_ALERT_COOLDOWN) //set the cooldown.
 
 	return damage
-
-///Handles overheal for xeno receiving damage
-#define HANDLE_OVERHEAL(amount) \
-	if(overheal && amount > 0) { \
-		var/reduction = min(amount, overheal); \
-		amount -= reduction; \
-		adjustOverheal(src, -reduction); \
-	} \
 
 /mob/living/carbon/xenomorph/adjustBruteLoss(amount, updating_health = FALSE, passive = FALSE)
 	var/list/amount_mod = list()
 	SEND_SIGNAL(src, COMSIG_XENOMORPH_BRUTE_DAMAGE, amount, amount_mod, passive)
 	for(var/i in amount_mod)
 		amount -= i
-
-	HANDLE_OVERHEAL(amount)
+	if(overheal && amount > 0)
+		amount += adjustOverheal(-min(amount, overheal))
 
 	bruteloss = max(bruteloss + amount, 0)
 
@@ -148,15 +137,13 @@
 	SEND_SIGNAL(src, COMSIG_XENOMORPH_BURN_DAMAGE, amount, amount_mod, passive)
 	for(var/i in amount_mod)
 		amount -= i
-
-	HANDLE_OVERHEAL(amount)
+	if(overheal && amount > 0)
+		amount += adjustOverheal(-min(amount, overheal))
 
 	fireloss = max(fireloss + amount, 0)
 
 	if(updating_health)
 		updatehealth()
-
-#undef HANDLE_OVERHEAL
 
 /mob/living/carbon/xenomorph/proc/check_blood_splash(damage = 0, damtype = BRUTE, chancemod = 0, radius = 1, sharp = FALSE, edge = FALSE)
 	if(!damage)
@@ -194,3 +181,13 @@
 				if(victim.stat != CONSCIOUS && !(victim.species.species_flags & NO_PAIN) && prob(60))
 					victim.emote("scream")
 				victim.take_overall_damage(rand(15, 30), BURN, ACID, updating_health = TRUE)
+
+/// Changes xenomorph's overheal by an amount. Returns how much it was changed by.
+/mob/living/carbon/xenomorph/proc/adjustOverheal(amount)
+	var/old_overheal = overheal
+	overheal = clamp(overheal + amount, 0, xeno_caste.overheal_max)
+	if(overheal > 0)
+		add_filter("overheal_vis", 1, outline_filter(4 * (overheal / xeno_caste.overheal_max), "#60ce6f60"));
+	else
+		remove_filter("overheal_vis");
+	return (overheal - old_overheal)

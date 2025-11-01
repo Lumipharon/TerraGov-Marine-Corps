@@ -17,9 +17,7 @@
 /turf/open/floor/tile/darkish,
 /area/bigredv2/outside/chapel)
 "d" = (
-/obj/structure/stairs/edge{
-	dir = 1
-	},
+/obj/structure/stairs/edge,
 /turf/open/floor/tile/dark,
 /area/bigredv2/outside/chapel)
 "e" = (
@@ -61,7 +59,9 @@
 /area/bigredv2/outside/chapel)
 "l" = (
 /obj/effect/landmark/weed_node,
-/obj/structure/stairs/edge,
+/obj/structure/stairs/edge{
+	dir = 1
+	},
 /turf/open/floor/tile/dark,
 /area/bigredv2/outside/chapel)
 "m" = (
@@ -99,7 +99,7 @@
 /turf/open/floor/engine/cult,
 /area/bigredv2/outside/chapel)
 "w" = (
-/obj/structure/table/woodentable,
+/obj/structure/table/wood,
 /turf/open/floor/engine/cult,
 /area/bigredv2/outside/chapel)
 "x" = (
@@ -113,7 +113,7 @@
 	},
 /area/bigredv2/outside/chapel)
 "z" = (
-/obj/structure/table/woodentable,
+/obj/structure/table/wood,
 /turf/open/floor/tile/darkish,
 /area/bigredv2/outside/chapel)
 "A" = (
@@ -168,7 +168,7 @@
 /obj/machinery/atmospherics/pipe/simple/green/hidden{
 	dir = 4
 	},
-/obj/structure/table/woodentable,
+/obj/structure/table/wood,
 /obj/item/storage/bible,
 /turf/open/floor/engine/cult,
 /area/bigredv2/outside/chapel)
@@ -190,7 +190,7 @@
 /turf/open/floor/tile/darkish,
 /area/bigredv2/outside/chapel)
 "P" = (
-/obj/structure/table/woodentable,
+/obj/structure/table/wood,
 /obj/effect/landmark/weed_node,
 /turf/open/floor/tile/darkish,
 /area/bigredv2/outside/chapel)
@@ -235,7 +235,7 @@
 /turf/open/floor/tile/darkish,
 /area/bigredv2/outside/chapel)
 "Z" = (
-/obj/structure/table/woodentable,
+/obj/structure/table/wood,
 /obj/item/radio/headset/survivor,
 /obj/effect/landmark/weed_node,
 /turf/open/floor/engine/cult,

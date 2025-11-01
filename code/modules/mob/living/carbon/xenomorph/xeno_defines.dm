@@ -4,7 +4,9 @@
 	var/upgrade_name = "Young"
 	var/caste_desc = null
 	var/job_type = /datum/job/xenomorph
-
+	///The parent strain of this caste
+	var/base_strain_type
+	///The base caste typepath
 	var/caste_type_path = null
 
 	///primordial message that is shown when a caste becomes primordial
@@ -22,6 +24,12 @@
 	// *** Melee Attacks *** //
 	///The amount of damage a xenomorph caste will do with a 'slash' attack.
 	var/melee_damage = 10
+	/// The damage typing of the melee damage.
+	var/melee_damage_type = BRUTE
+	/// The armor typing of the melee damage.
+	var/melee_damage_armor = MELEE
+	///The amount of armour pen their melee attacks have
+	var/melee_ap = 0
 	///number of ticks between attacks for a caste.
 	var/attack_delay = CLICK_CD_MELEE
 
@@ -60,22 +68,23 @@
 	var/evolution_threshold = 0
 	///Threshold amount of upgrade points to next maturity
 	var/upgrade_threshold = 0
+	// The amount of xenos that must be alive in the hive for this caste to be able to evolve
+	var/evolve_min_xenos = 0
+	// Starting Population lock, equivalent to assault crewman availability.
+	var/evolve_population_lock = 0
+	// How many of this caste may be alive at once
+	var/maximum_active_caste = INFINITY
 
 	///Singular type path for the caste to deevolve to when forced to by the queen.
 	var/deevolves_to
-
-	///see_in_dark value while consicious
-	var/conscious_see_in_dark = 8
-	///see_in_dark value while unconscious
-	var/unconscious_see_in_dark = 5
 
 	// *** Flags *** //
 	///Bitwise flags denoting things a caste is or is not. Uses defines.
 	var/caste_flags = CASTE_EVOLUTION_ALLOWED
 	///Bitwise flags denoting things a caste can and cannot do. Uses defines.
-	var/can_flags = CASTE_CAN_BE_QUEEN_HEALED|CASTE_CAN_BE_LEADER
+	var/can_flags = CASTE_CAN_BE_LEADER
 	///list of traits granted to the owner by becoming this caste
-	var/list/caste_traits = list(TRAIT_CAN_VENTCRAWL)
+	var/list/caste_traits = list()
 	// How long the hive must wait before a new one of this caste can evolve
 	var/death_evolution_delay = 0
 	///whether or not a caste can hold eggs, and either 1 or 2 eggs at a time.
@@ -90,6 +99,8 @@
 	var/sunder_recover = 0.5
 	///What is the max amount of sunder that can be applied to a xeno (100 = 100%)
 	var/sunder_max = 100
+	///Multiplier on the weapons sunder, e.g 10 sunder on a projectile is reduced to 5 with a 0.5 multiplier.
+	var/sunder_multiplier = 1
 
 	// *** Ranged Attack *** //
 	///Delay timer for spitting
@@ -98,8 +109,6 @@
 	var/list/spit_types
 
 	// *** Acid spray *** //
-	///Number of tiles of the acid spray cone extends outward to. Not recommended to go beyond 4.
-	var/acid_spray_range = 0
 	///How long the acid spray stays on floor before it deletes itself, should be higher than 0 to avoid runtimes with timers.
 	var/acid_spray_duration = 1
 	///The damage acid spray causes on hit.
@@ -120,19 +129,11 @@
 	// *** Defiler Abilities *** //
 	var/list/available_reagents_define = list() //reagents available for select reagent
 
-	// *** Warrior Abilities *** //
-	///speed increase afforded to the warrior caste when in 'agiility' mode. negative number means faster movement.
-	var/agility_speed_increase = 0 // this opens up possibilities for balancing
-	///amount of soft armor adjusted when in agility mode for the warrior caste. Flat integer amounts only.
-	var/agility_speed_armor = 0 //Same as above
-
 	// *** Boiler Abilities *** //
 	///maximum number of 'globs' of boiler ammunition that can be stored by the boiler caste.
 	var/max_ammo = 0
 	///Multiplier to the effectiveness of the boiler glob. 1 by default.
 	var/bomb_strength = 0
-	///Delay between firing the bombard ability for boilers
-	var/bomb_delay = 0
 
 	// *** Carrier Abilities *** //
 	///maximum amount of huggers a carrier can carry at one time.
@@ -157,8 +158,6 @@
 	var/max_puppets = 0
 
 	// *** Crusher Abilities *** //
-	///The damage the stomp causes, counts armor
-	var/stomp_damage = 0
 	///How many tiles the Crest toss ability throws the victim.
 	var/crest_toss_distance = 0
 
@@ -177,29 +176,11 @@
 	var/queen_leader_limit = 0
 
 	// *** Wraith Abilities *** //
-	//Banish - Values for the Wraith's Banish ability
-	///Base duration of Banish before modifiers
-	var/wraith_banish_base_duration = WRAITH_BANISH_BASE_DURATION
 
-	//Blink - Values for the Wraith's Blink ability
-	///Cooldown multiplier of Blink when used on non-friendlies
-	var/wraith_blink_drag_nonfriendly_living_multiplier = WRAITH_BLINK_DRAG_NONFRIENDLY_MULTIPLIER
-	///Cooldown multiplier of Blink when used on friendlies
-	var/wraith_blink_drag_friendly_multiplier = WRAITH_BLINK_DRAG_FRIENDLY_MULTIPLIER
-	///Base range of Blink
-	var/wraith_blink_range = WRAITH_BLINK_RANGE
 
 	// *** Hunter Abilities ***
 	///Damage breakpoint to knock out of stealth
 	var/stealth_break_threshold = 0
-
-	// *** Warlock Abilities ***
-	///The integrity of psychic shields made by the xeno
-	var/shield_strength = 350
-	///The strength of psychic crush's effects
-	var/crush_strength = 35
-	///The strength of psychic blast's  AOE effects
-	var/blast_strength = 25
 
 	// *** Sentinel Abilities ***
 	/// The additional amount of stacks that the Sentinel will apply on eligible abilities.
@@ -221,30 +202,65 @@
 
 	///How quickly the caste enters vents
 	var/vent_enter_speed = XENO_DEFAULT_VENT_ENTER_TIME
-	///How quickly the caste enters vents
+	///How quickly the caste exits vents
 	var/vent_exit_speed = XENO_DEFAULT_VENT_EXIT_TIME
 	///Whether the caste enters and crawls through vents silently
 	var/silent_vent_crawl = FALSE
-	// The amount of xenos that must be alive in the hive for this caste to be able to evolve
-	var/evolve_min_xenos = 0
-	// How many of this caste may be alive at once
-	var/maximum_active_caste = INFINITY
+	// Accuracy malus, 0 by default. Should NOT go over 70.
+	var/accuracy_malus = 0
+
+	/// All mutations that this caste can view and potentially purchase.
+	var/list/datum/mutation_upgrade/mutations = list()
 
 ///Add needed component to the xeno
 /datum/xeno_caste/proc/on_caste_applied(mob/xenomorph)
 	for(var/trait in caste_traits)
 		ADD_TRAIT(xenomorph, trait, XENO_TRAIT)
 	xenomorph.AddComponent(/datum/component/bump_attack)
-	if(can_flags & CASTE_CAN_RIDE_CRUSHER)
-		xenomorph.RegisterSignal(xenomorph, COMSIG_GRAB_SELF_ATTACK, TYPE_PROC_REF(/mob/living/carbon/xenomorph, grabbed_self_attack))
+	xenomorph.RegisterSignal(xenomorph,COMSIG_XENOMORPH_ATTACK_LIVING, TYPE_PROC_REF(/mob/living/carbon/xenomorph, onhithuman))
 
 /datum/xeno_caste/proc/on_caste_removed(mob/xenomorph)
-	var/datum/component/bump_attack = xenomorph.GetComponent(/datum/component/bump_attack)
-	bump_attack?.RemoveComponent()
-	if(can_flags & CASTE_CAN_RIDE_CRUSHER)
-		xenomorph.UnregisterSignal(xenomorph, COMSIG_GRAB_SELF_ATTACK)
+	xenomorph.remove_component(/datum/component/bump_attack)
+	xenomorph.UnregisterSignal(xenomorph, COMSIG_XENOMORPH_ATTACK_LIVING)
 	for(var/trait in caste_traits)
 		REMOVE_TRAIT(xenomorph, trait, XENO_TRAIT)
+
+///returns the basetype caste from this caste or typepath to get what the base caste is (e.g base rav not primo or strain rav)
+/proc/get_base_caste_type(datum/xeno_caste/current_type)
+	while(current_type::upgrade != XENO_UPGRADE_BASETYPE)
+		current_type = current_type::parent_type
+	return current_type
+
+///returns the parent caste type for the given caste (e.g. bloodthirster would return base rav)
+/proc/get_parent_caste_type(datum/xeno_caste/root_type)
+	while(initial(root_type.parent_type) != /datum/xeno_caste)
+		root_type = root_type::parent_type
+	return root_type
+
+/// basetype = list(strain1, strain2)
+GLOBAL_LIST_INIT(strain_list, init_glob_strain_list())
+/proc/init_glob_strain_list()
+	var/list/strain_list = list()
+	for(var/datum/xeno_caste/root_caste AS in GLOB.xeno_caste_datums)
+		if(root_caste.parent_type != /datum/xeno_caste)
+			continue
+		strain_list[root_caste] = list()
+		for(var/datum/xeno_caste/typepath AS in subtypesof(root_caste))
+			if(typepath::upgrade != XENO_UPGRADE_BASETYPE)
+				continue
+			if(typepath::caste_flags & CASTE_EXCLUDE_STRAINS)
+				continue
+			strain_list[root_caste] += typepath
+	return strain_list
+
+///returns a list of strains(xeno castedatum paths) that this caste can currently evolve to
+/proc/get_strain_options(datum/xeno_caste/root_type)
+	RETURN_TYPE(/list)
+
+	ASSERT(ispath(root_type), "Bad root type passed to get_strain_options")
+	while(initial(root_type.parent_type) != /datum/xeno_caste)
+		root_type = root_type::parent_type
+	return GLOB.strain_list[root_type] + root_type
 
 /mob/living/carbon/xenomorph
 	name = "Drone"
@@ -254,8 +270,7 @@
 	speak_emote = list("hisses")
 	melee_damage = 5 //Arbitrary damage value
 	attacktext = "claws"
-	attack_sound = null
-	friendly = "nuzzles"
+	attack_sound = SFX_ALIEN_CLAW_FLESH
 	wall_smash = FALSE
 	health = 5
 	maxHealth = 5
@@ -264,10 +279,9 @@
 	move_resist = MOVE_FORCE_VERY_STRONG
 	mob_size = MOB_SIZE_XENO
 	hand = 1 //Make right hand active by default. 0 is left hand, mob defines it as null normally
-	see_in_dark = 8
-	lighting_alpha = LIGHTING_PLANE_ALPHA_MOSTLY_INVISIBLE
+	lighting_cutoff =  LIGHTING_CUTOFF_HIGH
 	sight = SEE_SELF|SEE_OBJS|SEE_TURFS|SEE_MOBS
-	appearance_flags = TILE_BOUND|PIXEL_SCALE|KEEP_TOGETHER
+	appearance_flags = TILE_BOUND|PIXEL_SCALE|KEEP_TOGETHER|LONG_GLIDE
 	see_infrared = TRUE
 	hud_type = /datum/hud/alien
 	hud_possible = list(HEALTH_HUD_XENO, PLASMA_HUD, PHEROMONE_HUD, XENO_RANK_HUD, QUEEN_OVERWATCH_HUD, ARMOR_SUNDER_HUD, XENO_DEBUFF_HUD, XENO_FIRE_HUD, XENO_BLESSING_HUD, XENO_EVASION_HUD)
@@ -278,25 +292,27 @@
 	gib_chance = 5
 	light_system = MOVABLE_LIGHT
 
+	///Hive name define
 	var/hivenumber = XENO_HIVE_NORMAL
-
+	///Hive datum we belong to
 	var/datum/hive_status/hive
+	///Xeno mob specific flags
+	var/xeno_flags = NONE
 
 	///State tracking of hive status toggles
 	var/status_toggle_flags = HIVE_STATUS_DEFAULTS
-
-	var/list/overlays_standing[X_TOTAL_LAYERS]
+	///Handles displaying the various wound states of the xeno.
 	var/atom/movable/vis_obj/xeno_wounds/wound_overlay
+	///Handles displaying the various fire states of the xeno
 	var/atom/movable/vis_obj/xeno_wounds/fire_overlay/fire_overlay
+	///Handles displaying any equipped backpack item, such as a saddle
+	var/atom/movable/vis_obj/xeno_wounds/backpack_overlay/backpack_overlay
 	var/datum/xeno_caste/xeno_caste
+	/// /datum/xeno_caste that we will be on init
 	var/caste_base_type
 	var/language = "Xenomorph"
-	var/obj/item/clothing/suit/wear_suit = null
-	var/obj/item/clothing/head/head = null
-	var/obj/item/r_store = null
-	var/obj/item/l_store = null
+	///Plasma currently stored
 	var/plasma_stored = 0
-	var/time_of_birth
 
 	///A mob the xeno ate
 	var/mob/living/carbon/eaten_mob
@@ -310,9 +326,6 @@
 	var/sunder = 0
 	///The ammo datum for our spit projectiles. We're born with this, it changes sometimes.
 	var/datum/ammo/xeno/ammo = null
-
-	var/list/upgrades_bought = list()
-
 	///The aura we're currently emitted. Destroyed whenever we change or stop pheromones.
 	var/datum/aura_bearer/current_aura
 	/// If we're chosen as leader, this is the leader aura we emit.
@@ -331,20 +344,17 @@
 	///Increases by xeno_caste.regen_ramp_amount every decisecond. If you want to balance this, look at the xeno_caste defines mentioned above.
 	var/regen_power = 0
 
-	var/is_zoomed = 0
 	var/zoom_turf = null
 
 	///Type of weeds the xeno is standing on, null when not on weeds
 	var/obj/alien/weeds/loc_weeds_type
-	///Bonus or pen to time in between attacks. + makes slashes slower.
-	var/attack_delay = 0
 	///This will track their "tier" to restrict/limit evolutions
 	var/tier = XENO_TIER_ONE
-
-	var/emotedown = 0
 	///which resin structure to build when we secrete resin
 	var/selected_resin = /turf/closed/wall/resin/regenerating
-	///which reagent to slash with using reagent slash
+	//which special resin structure to build when we secrete special resin
+	var/selected_special_resin = /turf/closed/wall/resin/regenerating/special/bulletproof
+	/// Which reagent to slash with using reagent slash. Use `set_selected_reagent` when changing this.
 	var/selected_reagent = /datum/reagent/toxin/xeno_hemodile
 	///which plant to place when we use sow
 	var/obj/structure/xeno/plant/selected_plant = /obj/structure/xeno/plant/heal_fruit
@@ -361,32 +371,20 @@
 
 	///Multiplicative melee damage modifier; referenced by attack_alien.dm, most notably attack_alien_harm
 	var/xeno_melee_damage_modifier = 1
-	///whether the xeno mobhud is activated or not.
-	var/xeno_mobhud = FALSE
-	///whether the xeno has been selected by the queen as a leader.
-	var/queen_chosen_lead = FALSE
+
+	/// Visual effect that appears when doing a normal attack.
+	var/attack_effect = ATTACK_EFFECT_REDSLASH
 
 	//Charge vars
 	///Will the mob charge when moving ? You need the charge verb to change this
 	var/is_charging = CHARGE_OFF
 
-	//Pounce vars
-	var/usedPounce = 0
-
 	// Gorger vars
 	var/overheal = 0
-
-	// Warrior vars
-	///0 - upright, 1 - all fours
-	var/agility = 0
 
 	// Defender vars
 	var/fortify = 0
 	var/crest_defense = 0
-
-	// Baneling vars
-	/// Respawn charges, each charge makes respawn take 30 seconds. Maximum of 2 charges. If there is no charge the respawn takes 120 seconds.
-	var/stored_charge = 0
 
 	// *** Ravager vars *** //
 	/// when true the rav will not go into crit or take crit damage.
@@ -397,11 +395,34 @@
 	// *** Carrier vars *** //
 	var/selected_hugger_type = /obj/item/clothing/mask/facehugger
 
+	// *** Boiler vars *** //
+	/// If their stored globs (corrosive + neurotoxin) surpasses this amount, they begin to glow at an increasing intensity.
+	var/glob_luminosity_threshold = BOILER_LUMINOSITY_THRESHOLD
+	/// Should the glow be replaced with a movement modifier? If so, how much for each glob above the threshold?
+	var/glob_luminosity_slowing = 0
+	/// Stored corrosive globs created from Boiler's Create Bomb.
+	var/corrosive_ammo = 0
+	/// Stored neurotoxin globs created from Boiler's Create Bomb.
+	var/neurotoxin_ammo = 0
+
+	// *** Globadier vars *** //
+	var/obj/item/explosive/grenade/globadier/selected_grenade = /obj/item/explosive/grenade/globadier
+
 	// *** Behemoth vars *** //
 	/// Whether we are currently charging or not.
 	var/behemoth_charging = FALSE
 	/// The amount of Wrath currently stored.
 	var/wrath_stored = 0
+
+	// *** Conqueror vars *** //
+	/// If Endurance is currently active.
+	var/endurance_active = FALSE
+	/// The amount of remaining health that Endurance has.
+	var/endurance_health = 1
+	/// The maximum amount of health that Endurance can have.
+	var/endurance_health_max = 1
+	/// Whether our Endurance has been broken, due to losing all of its health.
+	var/endurance_broken = FALSE
 
 	//Notification spam controls
 	var/recent_notice = 0
@@ -412,13 +433,39 @@
 	///The xenos/silo/nuke currently tracked by the xeno_tracker arrow
 	var/atom/tracked
 
-	///Are we the roony version of this xeno
-	var/is_a_rouny = FALSE
-
 	/// The type of footstep this xeno has.
 	var/footstep_type = FOOTSTEP_XENO_MEDIUM
+
+	//list of active tunnels
+	var/list/tunnels = list()
+	///Number of huggers the xeno is currently carrying
+	var/huggers = 0
+
+	/// All active mutations they own.
+	var/list/datum/mutation_upgrade/owned_mutations = list()
 
 	COOLDOWN_DECLARE(xeno_health_alert_cooldown)
 
 	///The resting cooldown
 	COOLDOWN_DECLARE(xeno_resting_cooldown)
+	///The unresting cooldown
+	COOLDOWN_DECLARE(xeno_unresting_cooldown)
+
+///Called whenever a xeno slashes a human
+/mob/living/carbon/xenomorph/proc/onhithuman(attacker, target) //For globadiers lifesteal debuff
+	SIGNAL_HANDLER
+	if(!ishuman(target))
+		return
+	var/mob/living/carbon/human/victim = target
+	if(!victim.has_status_effect(STATUS_EFFECT_LIFEDRAIN))
+		return
+	var/mob/living/carbon/xenomorph/xeno = attacker
+	var/healamount = xeno.maxHealth * 0.06 //% of the xenos max health
+	HEAL_XENO_DAMAGE(xeno, healamount, FALSE)
+
+/// Sets the xenomorph's selected reagent & sends a signal indicating that it happened.
+/mob/living/carbon/xenomorph/proc/set_selected_reagent(datum/reagent/new_reagent_typepath)
+	if(selected_reagent == new_reagent_typepath)
+		return
+	SEND_SIGNAL(src, COMSIG_XENO_SELECTED_REAGENT_CHANGED, selected_reagent, new_reagent_typepath)
+	selected_reagent = new_reagent_typepath

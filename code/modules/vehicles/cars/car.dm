@@ -1,6 +1,7 @@
 /obj/vehicle/sealed/car
 	layer = ABOVE_MOB_LAYER
 	move_resist = MOVE_FORCE_VERY_STRONG
+	move_delay = 1
 	///Bitflags for special behavior such as kidnapping
 	var/car_traits = NONE
 	///Sound file(s) to play when we drive around
@@ -9,8 +10,6 @@
 	var/engine_sound_length = 2 SECONDS
 	///Time it takes to break out of the car.
 	var/escape_time = 6 SECONDS
-	/// How long it takes to move, cars don't use the riding component similar to mechs so we handle it ourselves
-	var/vehicle_move_delay = 1
 	/// How long it takes to rev (vrrm vrrm!)
 	COOLDOWN_DECLARE(enginesound_cooldown)
 
@@ -72,30 +71,30 @@
 	kidnapped.forceMove(src)
 	add_occupant(kidnapped, VEHICLE_CONTROL_KIDNAPPED)
 
-/obj/vehicle/sealed/car/obj_destruction(damage_flag)
-	explosion(src, heavy_impact_range = 1, light_impact_range = 2, flash_range = 3, adminlog = FALSE)
+/obj/vehicle/sealed/car/obj_destruction(damage_amount, damage_type, damage_flag, mob/living/blame_mob)
+	explosion(src, heavy_impact_range = 1, light_impact_range = 2, flash_range = 3, adminlog = FALSE, explosion_cause=blame_mob)
 	log_message("[src] exploded due to destruction", LOG_ATTACK)
 	return ..()
 
 /obj/vehicle/sealed/car/relaymove(mob/living/user, direction)
 	if(is_driver(user) && canmove && (!key_type || istype(inserted_key, key_type)))
-		vehicle_move(direction)
+		vehicle_move(user, direction)
 	return TRUE
 
-/obj/vehicle/sealed/car/vehicle_move(direction)
-	if(!COOLDOWN_CHECK(src, cooldown_vehicle_move))
-		return FALSE
-	COOLDOWN_START(src, cooldown_vehicle_move, vehicle_move_delay)
+/obj/vehicle/sealed/car/vehicle_move(mob/living/user, direction)
+	. = ..()
+	if(!.)
+		return
 
-	if(COOLDOWN_CHECK(src, enginesound_cooldown))
+	if(COOLDOWN_FINISHED(src, enginesound_cooldown))
 		COOLDOWN_START(src, enginesound_cooldown, engine_sound_length)
 		playsound(get_turf(src), engine_sound, 100, TRUE)
 
 	if(trailer)
 		var/dir_to_move = get_dir(trailer.loc, loc)
-		var/did_move = step(src, direction)
+		var/did_move = try_step_multiz(direction)
 		if(did_move)
 			step(trailer, dir_to_move)
 		return did_move
 	after_move(direction)
-	return step(src, direction)
+	return try_step_multiz(direction)

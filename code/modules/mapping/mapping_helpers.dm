@@ -1,16 +1,14 @@
 //Landmarks and other helpers which speed up the mapping process and reduce the number of unique instances/subtypes of items/turf/ect
 
 
-
 /obj/effect/baseturf_helper //Set the baseturfs of every turf in the /area/ it is placed.
 	name = "baseturf editor"
 	icon = 'icons/effects/mapping_helpers.dmi'
 	icon_state = ""
-
+	plane = POINT_PLANE
 	var/list/baseturf_to_replace
 	var/baseturf
 
-	layer = POINT_LAYER
 
 /obj/effect/baseturf_helper/Initialize(mapload)
 	. = ..()
@@ -117,7 +115,22 @@
 		stack_trace("### MAP WARNING, [src] at [AREACOORD(src)] tried to bolt [airlock] but it's already locked!")
 	airlock.locked = TRUE
 	var/turf/current_turf = get_turf(airlock)
-	current_turf.flags_atom |= AI_BLOCKED
+	current_turf.atom_flags |= AI_BLOCKED
+
+/obj/effect/mapping_helpers/airlock/free_access
+	name = "airlock free access helper"
+	icon_state = "airlock_free_access"
+
+/obj/effect/mapping_helpers/airlock/free_access/Initialize(mapload)
+	. = ..()
+	if(!mapload)
+		log_world("### MAP WARNING, [src] spawned outside of mapload!")
+		return
+	var/obj/machinery/door/airlock/airlock = locate(/obj/machinery/door/airlock) in loc
+	if(!airlock)
+		CRASH("### MAP WARNING, [src] failed to find an airlock at [AREACOORD(src)]")
+	airlock.req_access = null
+	airlock.req_one_access = null
 
 /obj/effect/mapping_helpers/airlock/abandoned
 	name = "airlock abandoned helper"
@@ -135,7 +148,7 @@
 		stack_trace("### MAP WARNING, [src] at [AREACOORD(src)] tried to make [airlock] abandoned but it's already abandoned!")
 	airlock.abandoned = TRUE
 	var/turf/current_turf = get_turf(airlock)
-	current_turf.flags_atom |= AI_BLOCKED
+	current_turf.atom_flags |= AI_BLOCKED
 
 /obj/effect/mapping_helpers/airlock/welded
 	name = "airlock welded helper"
@@ -153,7 +166,7 @@
 		stack_trace("### MAP WARNING, [src] at [AREACOORD(src)] tried to bolt [airlock] but it's already welded!")
 	airlock.welded = TRUE
 	var/turf/current_turf = get_turf(airlock)
-	current_turf.flags_atom |= AI_BLOCKED
+	current_turf.atom_flags |= AI_BLOCKED
 
 /obj/effect/mapping_helpers/broken_apc
 	name = "broken apc helper"
@@ -243,7 +256,7 @@
 /obj/effect/mapping_helpers/area_flag_injector/Initialize(mapload)
 	. = ..()
 	var/area/area = get_area(src)
-	area.flags_area |= flag_type
+	area.area_flags |= flag_type
 
 /obj/effect/mapping_helpers/area_flag_injector/marine_base
 	flag_type = MARINE_BASE
@@ -260,6 +273,8 @@
 /obj/effect/mapping_helpers/area_flag_injector/near_fob
 	flag_type = NEAR_FOB
 
+/obj/effect/mapping_helpers/area_flag_injector/no_construction
+	flag_type = NO_CONSTRUCTION
 
 /obj/effect/mapping_helpers/simple_pipes
 	name = "Simple Pipes"
@@ -358,10 +373,13 @@
 	var/obj/machinery/light/light = locate(/obj/machinery/light) in loc
 	if(!light)
 		CRASH("### MAP WARNING, [src] failed to find an light at [AREACOORD(src)]")
-	if(light.status == LIGHT_BROKEN || light.status == LIGHT_EMPTY)
+	if(light.status == LIGHT_BROKEN) //already broken, go home
+		return
+	if(light.status == LIGHT_EMPTY)
 		log_mapping("[src] at [AREACOORD(src)] tried to make [light] broken, but it couldn't be done!")
-	else
-		light.broken()
+		return
+
+	light.broken()
 
 /obj/effect/mapping_helpers/light/turnedoff
 	name = "light area turnoff helper"
@@ -536,6 +554,126 @@
 		log_world("### MAP WARNING, [src] at [AREACOORD(src)] tried to set [airlock] cyclelinkeddir, but it's already set!")
 	else
 		airlock.cyclelinkeddir = dir
+
+/obj/effect/mapping_helpers/barricade
+	name = "base barricade helper"
+
+/obj/effect/mapping_helpers/barricade/wired
+	name = "wired barricade helper"
+	icon_state = "barricade_wired"
+
+/obj/effect/mapping_helpers/barricade/wired/Initialize(mapload)
+	. = ..()
+	if(!mapload)
+		log_world("### MAP WARNING, [src] spawned outside of mapload!")
+		return
+	var/obj/structure/barricade/foundbarricade = locate(/obj/structure/barricade) in loc
+	if(!foundbarricade)
+		CRASH("### MAP WARNING, [src] failed to find a barricade at [AREACOORD(src)]")
+	if(foundbarricade.is_wired || !foundbarricade.can_wire)
+		stack_trace("### MAP WARNING, [src] at [AREACOORD(src)] tried to make [foundbarricade] wired but it's already wired!")
+	foundbarricade.wire()
+
+/obj/effect/mapping_helpers/barricade/bomb
+	name = "bomb armor barricade helper"
+	icon_state = "barricade_bomb"
+
+/obj/effect/mapping_helpers/barricade/bomb/Initialize(mapload)
+	. = ..()
+	if(!mapload)
+		log_world("### MAP WARNING, [src] spawned outside of mapload!")
+		return
+	var/obj/structure/barricade/solid/foundbarricade = locate(/obj/structure/barricade/solid) in loc
+	if(!foundbarricade)
+		CRASH("### MAP WARNING, [src] failed to find a barricade at [AREACOORD(src)]")
+	if(foundbarricade.barricade_upgrade_type)
+		stack_trace("### MAP WARNING, [src] at [AREACOORD(src)] tried to upgrade [foundbarricade] but it already has armor!")
+	foundbarricade.soft_armor = soft_armor.modifyRating(bomb = 50)
+	foundbarricade.barricade_upgrade_type = CADE_TYPE_BOMB
+	foundbarricade.update_icon()
+
+/obj/effect/mapping_helpers/barricade/acid
+	name = "acid armor barricade helper"
+	icon_state = "barricade_acid"
+
+/obj/effect/mapping_helpers/barricade/acid/Initialize(mapload)
+	. = ..()
+	if(!mapload)
+		log_world("### MAP WARNING, [src] spawned outside of mapload!")
+		return
+	var/obj/structure/barricade/solid/foundbarricade = locate(/obj/structure/barricade/solid) in loc
+	if(!foundbarricade)
+		CRASH("### MAP WARNING, [src] failed to find a barricade at [AREACOORD(src)]")
+	if(foundbarricade.barricade_upgrade_type)
+		stack_trace("### MAP WARNING, [src] at [AREACOORD(src)] tried to upgrade [foundbarricade] but it already has armor!")
+	foundbarricade.barricade_upgrade_type = CADE_TYPE_ACID
+	foundbarricade.soft_armor = soft_armor.modifyRating(acid = 20)
+	foundbarricade.resistance_flags |= UNACIDABLE
+	foundbarricade.update_icon()
+
+/obj/effect/mapping_helpers/barricade/melee
+	name = "melee armor barricade helper"
+	icon_state = "barricade_melee"
+
+/obj/effect/mapping_helpers/barricade/melee/Initialize(mapload)
+	. = ..()
+	if(!mapload)
+		log_world("### MAP WARNING, [src] spawned outside of mapload!")
+		return
+	var/obj/structure/barricade/solid/foundbarricade = locate(/obj/structure/barricade/solid) in loc
+	if(!foundbarricade)
+		CRASH("### MAP WARNING, [src] failed to find a barricade at [AREACOORD(src)]")
+	if(foundbarricade.barricade_upgrade_type)
+		stack_trace("### MAP WARNING, [src] at [AREACOORD(src)] tried to upgrade [foundbarricade] but it already has armor!")
+	foundbarricade.barricade_upgrade_type = CADE_TYPE_MELEE
+	foundbarricade.soft_armor = soft_armor.modifyRating(melee = 30, bullet = 30, laser = 30, energy = 30)
+	foundbarricade.update_icon()
+
+/obj/effect/mapping_helpers/barricade/closed
+	name = "closed plasteel barricade helper"
+	icon_state = "barricade_closed"
+
+/obj/effect/mapping_helpers/barricade/closed/Initialize(mapload)
+	. = ..()
+	if(!mapload)
+		log_world("### MAP WARNING, [src] spawned outside of mapload!")
+		return
+	var/obj/structure/barricade/folding/foundbarricade = locate(/obj/structure/barricade/folding) in loc
+	if(!foundbarricade)
+		CRASH("### MAP WARNING, [src] failed to find a plasteel barricade at [AREACOORD(src)]")
+	if(foundbarricade.is_open)
+		stack_trace("### MAP WARNING, [src] at [AREACOORD(src)] tried to open [foundbarricade] but it's already open!")
+	foundbarricade.toggle_open()
+
+/obj/effect/mapping_helpers/weld_vents
+	name = "vents welded helper"
+	icon_state = "airlock_welded_helper"
+	///probability we weld the vent
+	var/weld_chance = 100
+
+/obj/effect/mapping_helpers/weld_vents/Initialize(mapload)
+	. = ..()
+	if(!mapload)
+		log_world("### MAP WARNING, [src] spawned outside of mapload!")
+		return
+	var/obj/machinery/atmospherics/components/unary/vent_pump/foundvent = locate(/obj/machinery/atmospherics/components/unary/vent_pump) in loc
+	var/obj/machinery/atmospherics/components/unary/vent_scrubber/foundscrubber = locate(/obj/machinery/atmospherics/components/unary/vent_scrubber) in loc
+	if(!foundvent && !foundscrubber)
+		CRASH("### MAP WARNING, [src] failed to find a plasteel barricade at [AREACOORD(src)]")
+	if(foundvent && foundvent.welded)
+		stack_trace("### MAP WARNING, [src] at [AREACOORD(src)] tried to weld [foundvent] but it's already welded!")
+	else if(foundvent && prob(weld_chance))
+		foundvent.welded = TRUE
+	if(foundscrubber && foundscrubber.welded)
+		stack_trace("### MAP WARNING, [src] at [AREACOORD(src)] tried to weld [foundscrubber] but it's already welded!")
+	else if(foundscrubber && prob(weld_chance))
+		foundscrubber.welded = TRUE
+
+/obj/effect/mapping_helpers/weld_vents/fiftyfifty
+	weld_chance = 50
+
+/obj/effect/mapping_helpers/weld_vents/lowchance
+	weld_chance = 15
 
 //needs to do its thing before spawn_rivers() is called
 /*

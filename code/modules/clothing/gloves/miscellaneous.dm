@@ -2,9 +2,9 @@
 	desc = "Regal blue gloves, with a nice gold trim. Swanky."
 	name = "captain's gloves"
 	icon_state = "captain"
-	flags_cold_protection = HANDS
+	cold_protection_flags = HANDS
 	min_cold_protection_temperature = GLOVES_MIN_COLD_PROTECTION_TEMPERATURE
-	flags_heat_protection = HANDS
+	heat_protection_flags = HANDS
 	max_heat_protection_temperature = GLOVES_MAX_HEAT_PROTECTION_TEMPERATURE
 
 /obj/item/clothing/gloves/swat
@@ -14,9 +14,9 @@
 	siemens_coefficient = 0.6
 	permeability_coefficient = 0.05
 
-	flags_cold_protection = HANDS
+	cold_protection_flags = HANDS
 	min_cold_protection_temperature = GLOVES_MIN_COLD_PROTECTION_TEMPERATURE
-	flags_heat_protection = HANDS
+	heat_protection_flags = HANDS
 	max_heat_protection_temperature = GLOVES_MAX_HEAT_PROTECTION_TEMPERATURE
 
 /obj/item/clothing/gloves/combat //Combined effect of SWAT gloves and insulated gloves
@@ -25,9 +25,9 @@
 	icon_state = "black"
 	siemens_coefficient = 0
 	permeability_coefficient = 0.05
-	flags_cold_protection = HANDS
+	cold_protection_flags = HANDS
 	min_cold_protection_temperature = GLOVES_MIN_COLD_PROTECTION_TEMPERATURE
-	flags_heat_protection = HANDS
+	heat_protection_flags = HANDS
 	max_heat_protection_temperature = GLOVES_MAX_HEAT_PROTECTION_TEMPERATURE
 
 /obj/item/clothing/gloves/ruggedgloves
@@ -36,9 +36,9 @@
 	icon_state = "black"
 	siemens_coefficient = 0
 	permeability_coefficient = 0.05
-	flags_cold_protection = HANDS
+	cold_protection_flags = HANDS
 	min_cold_protection_temperature = GLOVES_MIN_COLD_PROTECTION_TEMPERATURE
-	flags_heat_protection = HANDS
+	heat_protection_flags = HANDS
 	max_heat_protection_temperature = GLOVES_MAX_HEAT_PROTECTION_TEMPERATURE
 	soft_armor = list(MELEE = 10, BULLET = 10, LASER = 15, ENERGY = 10, BOMB = 10, BIO = 10, FIRE = 10, ACID = 10)
 
@@ -164,16 +164,17 @@
 		return
 
 	playsound(loc, 'sound/effects/knockout.ogg', 25, FALSE)
-	target.balloon_alert_to_viewers("[target] collapses to the ground in exhaustion! K.O!", "You give up and collapse! K.O!")
+	target.balloon_alert_to_viewers("K.O!!!", ignored_mobs = target)
+	to_chat(target, span_userdanger("You give up and collapse! K.O!"))
 	target.Sleeping(10 SECONDS)
 
 /obj/item/weapon/heldglove/boxing/hook
 	icon_state = "boxing_p"
-	attack_verb = list("punched")
+	attack_verb = list("punches")
 
 /obj/item/weapon/heldglove/boxing/jab
 	icon_state = "boxing_j"
-	attack_verb = list("jabbed")
+	attack_verb = list("jabs")
 
 
 /obj/item/clothing/gloves/heldgloves/boxing/green
@@ -216,9 +217,19 @@
 	max_integrity = 750 //This is going to get hit, a lot
 	icon = 'icons/obj/clothing/boxing.dmi'
 	icon_state = "punchingbag"
+	COOLDOWN_DECLARE(punching_bag)
 
 /obj/structure/punching_bag/attackby(obj/item/I, mob/user, params)
 	. = ..()
+	flick("[icon_state]-punch", src)
+
+/obj/structure/punching_bag/attack_hand(mob/living/user)
+	. = ..()
+	if(!COOLDOWN_FINISHED(src, punching_bag))
+		return
+	COOLDOWN_START(src, punching_bag, 0.8 SECONDS)
+	user.do_attack_animation(src, ATTACK_EFFECT_YELLOWPUNCH)
+	playsound(loc, get_sfx(SFX_PUNCH), 40, TRUE)
 	flick("[icon_state]-punch", src)
 
 /obj/item/clothing/gloves/white

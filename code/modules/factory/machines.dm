@@ -6,7 +6,7 @@
 	density = TRUE
 	anchored = FALSE // start off unanchored so its easier to move
 	resistance_flags = XENO_DAMAGEABLE
-	flags_atom = PREVENT_CONTENTS_EXPLOSION
+	atom_flags = PREVENT_CONTENTS_EXPLOSION
 	///process type we will use to determine what step of the production process this machine will do
 	var/process_type = FACTORY_MACHINE_HEATER
 	///Time in ticks that this machine takes to process one item
@@ -28,7 +28,7 @@
 /obj/machinery/factory/examine(mob/user, distance, infix, suffix)
 	. = ..()
 	. += "It is currently facing [dir2text(dir)] and [anchored ? "" : "un"]secured."
-	. += "Processes one package every [cooldown_time*10] seconds."
+	. += "Processes one package every [cooldown_time / 10] seconds."
 
 /obj/machinery/factory/wrench_act(mob/living/user, obj/item/I)
 	anchored = !anchored
@@ -50,7 +50,7 @@
 	if(!isfactorypart(bumper))
 		bumper.forceMove(get_step(src, pick(GLOB.alldirs)))//just find a random tile and throw it there to stop it from clogging
 		return
-	if(!COOLDOWN_CHECK(src, process_cooldown))
+	if(!COOLDOWN_FINISHED(src, process_cooldown))
 		return
 	bumper.forceMove(src)
 	held_item = bumper

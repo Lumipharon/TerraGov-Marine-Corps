@@ -13,6 +13,13 @@
 	var/bioscan_interval = 15 MINUTES
 	/// State of the nuke
 	var/planet_nuked = INFESTATION_NUKE_NONE
+	/**
+	 * Assoc list showing how many xenos are needed by caste.
+	 * [caste datum] = [amount of xenos needed]
+	 */
+	var/list/evo_requirements = list(
+		/datum/xeno_caste/queen = 8,
+	)
 
 /datum/game_mode/infestation/post_setup()
 	. = ..()
@@ -23,7 +30,7 @@
 		weed_type = pickweight(GLOB.weed_prob_list)
 		new weed_type(T)
 	for(var/turf/T AS in GLOB.xeno_resin_wall_turfs)
-		T.ChangeTurf(/turf/closed/wall/resin, T.type)
+		T.ChangeTurf(/turf/closed/wall/resin/regenerating, T.type)
 	for(var/i in GLOB.xeno_resin_door_turfs)
 		new /obj/structure/mineral_door/resin(i)
 	for(var/i in GLOB.xeno_tunnel_spawn_turfs)
@@ -33,18 +40,22 @@
 	for(var/i in GLOB.xeno_jelly_pod_turfs)
 		new /obj/structure/xeno/resin_jelly_pod(i, XENO_HIVE_NORMAL)
 
+	// Apply Evolution Xeno Population Locks:
+	for(var/datum/xeno_caste/caste AS in evo_requirements)
+		GLOB.xeno_caste_datums[caste][XENO_UPGRADE_BASETYPE].evolve_min_xenos = evo_requirements[caste]
+
 /datum/game_mode/infestation/process()
 	if(round_finished)
 		return PROCESS_KILL
 
-	if(TIMER_COOLDOWN_CHECK(src, COOLDOWN_BIOSCAN) || bioscan_interval == 0)
+	if(TIMER_COOLDOWN_RUNNING(src, COOLDOWN_BIOSCAN) || bioscan_interval == 0)
 		return
 	announce_bioscans(GLOB.current_orbit)
 
 // make sure you don't turn 0 into a false positive
 #define BIOSCAN_DELTA(count, delta) count ? max(0, count + rand(-delta, delta)) : 0
 
-#define BIOSCAN_LOCATION(show_locations, location) (show_locations && location ? ", including one in [hostLocationP]":"")
+#define BIOSCAN_LOCATION(show_locations, location) ((show_locations && location) ? ", including one in [location]" : "")
 
 #define AI_SCAN_DELAY 15 SECONDS
 
@@ -52,9 +63,8 @@
 /datum/game_mode/infestation/announce_bioscans(show_locations = TRUE, delta = 2, ai_operator = FALSE, announce_humans = TRUE, announce_xenos = TRUE, send_fax = TRUE)
 
 	if(ai_operator)
-		var/mob/living/silicon/ai/bioscanning_ai = usr
 		#ifndef TESTING
-
+		var/mob/living/silicon/ai/bioscanning_ai = usr
 		if((bioscanning_ai.last_ai_bioscan + COOLDOWN_AI_BIOSCAN) > world.time)
 			to_chat(bioscanning_ai, "Bioscan instruments are still recalibrating from their last use.")
 			return
@@ -92,32 +102,49 @@
 	var/numXenosPlanet = counts[ZTRAIT_GROUND][FACTION_XENO]
 	var/numXenosShip = counts[ZTRAIT_MARINE_MAIN_SHIP][FACTION_XENO]
 	var/numXenosTransit = counts[ZTRAIT_RESERVED][FACTION_XENO]
-	var/hostLocationP = locations[ZTRAIT_GROUND][FACTION_TERRAGOV]
-	var/hostLocationS = locations[ZTRAIT_MARINE_MAIN_SHIP][FACTION_TERRAGOV]
-	var/xenoLocationP = locations[ZTRAIT_GROUND][FACTION_XENO]
-	var/xenoLocationS = locations[ZTRAIT_MARINE_MAIN_SHIP][FACTION_XENO]
+	var/host_location_planetside = locations[ZTRAIT_GROUND][FACTION_TERRAGOV]
+	var/host_location_shipside = locations[ZTRAIT_MARINE_MAIN_SHIP][FACTION_TERRAGOV]
+	var/xeno_location_planetside = locations[ZTRAIT_GROUND][FACTION_XENO]
+	var/xeno_location_shipside = locations[ZTRAIT_MARINE_MAIN_SHIP][FACTION_XENO]
 
 	//Adjust the randomness there so everyone gets the same thing
-	var/numHostsShipr = BIOSCAN_DELTA(numHostsShip, delta)
-	var/numXenosPlanetr = BIOSCAN_DELTA(numXenosPlanet, delta)
-	var/numHostsTransitr = BIOSCAN_DELTA(numHostsTransit, delta)
-	var/numXenosTransitr = BIOSCAN_DELTA(numXenosTransit, delta)
+	var/hosts_shipside = BIOSCAN_DELTA(numHostsShip, delta)
+	var/xenos_planetside = BIOSCAN_DELTA(numXenosPlanet, delta)
+	var/hosts_transit = BIOSCAN_DELTA(numHostsTransit, delta)
+	var/xenos_transit = BIOSCAN_DELTA(numXenosTransit, delta)
 
-	var/sound/S = sound(get_sfx("queen"), channel = CHANNEL_ANNOUNCEMENTS, volume = 50)
+	var/sound/sound = sound(get_sfx(SFX_QUEEN), channel = CHANNEL_ANNOUNCEMENTS, volume = 50)
 	if(announce_xenos)
-		for(var/i in GLOB.alive_xeno_list_hive[XENO_HIVE_NORMAL])
-			var/mob/M = i
-			SEND_SOUND(M, S)
-			to_chat(M, span_xenoannounce("The Queen Mother reaches into your mind from worlds away."))
-			to_chat(M, span_xenoannounce("To my children and their Queen. I sense [numHostsShipr ? "approximately [numHostsShipr]":"no"] host[numHostsShipr > 1 ? "s":""] in the metal hive[BIOSCAN_LOCATION(show_locations, hostLocationS)], [numHostsPlanet || "none"] scattered elsewhere[BIOSCAN_LOCATION(show_locations, hostLocationP)] and [numHostsTransitr ? "approximately [numHostsTransitr]":"no"] host[numHostsTransitr > 1 ? "s":""] on the metal bird in transit."))
+		for(var/mob/hearer in GLOB.alive_xeno_list_hive[XENO_HIVE_NORMAL])
+			SEND_SOUND(hearer, sound)
+			to_chat(hearer, assemble_alert(
+				title = "Queen Mother Report",
+				subtitle = "The Queen Mother reaches into your mind...",
+
+				message = "To my children and their Queen,<br>I sense [hosts_shipside ? "approximately [hosts_shipside]":"no"] \
+				host[hosts_shipside > 1 ? "s":""] in the metal hive[BIOSCAN_LOCATION(show_locations, host_location_shipside)], \
+				[numHostsPlanet || "none"] scattered elsewhere[BIOSCAN_LOCATION(show_locations, host_location_planetside)] and \
+				[hosts_transit ? "approximately [hosts_transit]":"no"] host[hosts_transit > 1 ? "s":""] on the metal bird in transit.",
+
+				color_override = "purple"
+			))
 
 	var/name = "[MAIN_AI_SYSTEM] Bioscan Status"
-	var/input = {"Bioscan complete. Sensors indicate [numXenosShip || "no"] unknown lifeform signature[numXenosShip > 1 ? "s":""] present on the ship[BIOSCAN_LOCATION(show_locations, xenoLocationS)], [numXenosPlanetr ? "approximately [numXenosPlanetr]":"no"] signature[numXenosPlanetr > 1 ? "s":""] located elsewhere[BIOSCAN_LOCATION(show_locations, xenoLocationP)] and [numXenosTransit || "no"] unknown lifeform signature[numXenosTransit > 1 ? "s":""] in transit."}
+
+	var/input = {"Bioscan complete. Sensors indicate [numXenosShip || "no"] unknown lifeform signature[numXenosShip > 1 ? "s":""] \
+	present on the ship[BIOSCAN_LOCATION(show_locations, xeno_location_shipside)], [xenos_planetside ? "approximately [xenos_planetside]":"no"] \
+	signature[xenos_planetside > 1 ? "s":""] located elsewhere[BIOSCAN_LOCATION(show_locations, xeno_location_planetside)] and [numXenosTransit || "no"] \
+	unknown lifeform signature[numXenosTransit > 1 ? "s":""] in transit."}
+
 	var/ai_name = "[usr] Bioscan Status"
 
 	if(ai_operator)
-		priority_announce(input, ai_name, sound = 'sound/AI/bioscan.ogg')
-		log_game("Bioscan. Humans: [numHostsPlanet] on the planet[hostLocationP ? " Location:[hostLocationP]":""] and [numHostsShip] on the ship.[hostLocationS ? " Location: [hostLocationS].":""] Xenos: [numXenosPlanetr] on the planet and [numXenosShip] on the ship[xenoLocationP ? " Location:[xenoLocationP]":""] and [numXenosTransit] in transit.")
+		priority_announce(input, ai_name, sound = 'sound/AI/bioscan.ogg', color_override = "grey", receivers = (GLOB.alive_human_list + GLOB.ai_list))
+		log_game("Bioscan. Humans: [numHostsPlanet] on the planet\
+		[host_location_planetside ? " Location:[host_location_planetside]":""] and [numHostsShip] on the ship.\
+		[host_location_shipside ? " Location: [host_location_shipside].":""] \
+		Xenos: [xenos_planetside] on the planet and [numXenosShip] on the ship\
+		[xeno_location_planetside ? " Location:[xeno_location_planetside]":""] and [numXenosTransit] in transit.")
 
 		switch(GLOB.current_orbit)
 			if(1)
@@ -131,26 +158,29 @@
 		return
 
 	if(announce_humans)
-		priority_announce(input, name, sound = 'sound/AI/bioscan.ogg')
+		priority_announce(input, name, sound = 'sound/AI/bioscan.ogg', color_override = "grey", receivers = (GLOB.alive_human_list + GLOB.ai_list)) // Hide this from observers, they have their own detailed alert.
 
 	if(send_fax)
 		var/fax_message = generate_templated_fax("Combat Information Center", "[MAIN_AI_SYSTEM] Bioscan Status", "", input, "", MAIN_AI_SYSTEM)
 		send_fax(null, null, "Combat Information Center", "[MAIN_AI_SYSTEM] Bioscan Status", fax_message, FALSE)
 
-	log_game("Bioscan. Humans: [numHostsPlanet] on the planet[hostLocationP ? " Location:[hostLocationP]":""] and [numHostsShip] on the ship.[hostLocationS ? " Location: [hostLocationS].":""] Xenos: [numXenosPlanetr] on the planet and [numXenosShip] on the ship[xenoLocationP ? " Location:[xenoLocationP]":""] and [numXenosTransit] in transit.")
+	log_game("Bioscan. Humans: [numHostsPlanet] on the planet[host_location_planetside ? " Location:[host_location_planetside]":""] and [numHostsShip] on the ship.[host_location_shipside ? " Location: [host_location_shipside].":""] Xenos: [xenos_planetside] on the planet and [numXenosShip] on the ship[xeno_location_planetside ? " Location:[xeno_location_planetside]":""] and [numXenosTransit] in transit.")
 
-	for(var/i in GLOB.observer_list)
-		var/mob/M = i
-		to_chat(M, "<span class='announce_header'>Detailed Information</span>")
-		to_chat(M, {"<span class='announce_body'>[numXenosPlanet] xeno\s on the planet.
+	for(var/mob/hearer in GLOB.observer_list)
+		to_chat(hearer, assemble_alert(
+			title = "Detailed Bioscan",
+			message = {"[numXenosPlanet] xeno\s on the planet.
 [numXenosShip] xeno\s on the ship.
+[numXenosTransit] xeno\s in transit.
+
 [numHostsPlanet] human\s on the planet.
 [numHostsShip] human\s on the ship.
-[numHostsTransit] human\s in transit.
-[numXenosTransit] xeno\s in transit.</span>"})
+[numHostsTransit] human\s in transit."},
+			color_override = "purple"
+		))
 
-	message_admins("Bioscan - Humans: [numHostsPlanet] on the planet[hostLocationP ? ". Location:[hostLocationP]":""]. [numHostsShipr] on the ship.[hostLocationS ? " Location: [hostLocationS].":""]. [numHostsTransitr] in transit.")
-	message_admins("Bioscan - Xenos: [numXenosPlanetr] on the planet[numXenosPlanetr > 0 && xenoLocationP ? ". Location:[xenoLocationP]":""]. [numXenosShip] on the ship.[xenoLocationS ? " Location: [xenoLocationS].":""] [numXenosTransitr] in transit.")
+	message_admins("Bioscan - Humans: [numHostsPlanet] on the planet[host_location_planetside ? ". Location:[host_location_planetside]":""]. [hosts_shipside] on the ship.[host_location_shipside ? " Location: [host_location_shipside].":""]. [hosts_transit] in transit.")
+	message_admins("Bioscan - Xenos: [xenos_planetside] on the planet[xenos_planetside > 0 && xeno_location_planetside ? ". Location:[xeno_location_planetside]":""]. [numXenosShip] on the ship.[xeno_location_shipside ? " Location: [xeno_location_shipside].":""] [xenos_transit] in transit.")
 
 #undef BIOSCAN_DELTA
 #undef BIOSCAN_LOCATION
@@ -207,7 +237,17 @@
 
 /datum/game_mode/infestation/declare_completion()
 	. = ..()
-	to_chat(world, span_round_header("|[round_finished]|"))
+	log_game("[round_finished]\nGame mode: [name]\nRound time: [duration2text()]\nEnd round player population: [length(GLOB.clients)]\nTotal xenos spawned: [GLOB.round_statistics.total_xenos_created]\nTotal humans spawned: [GLOB.round_statistics.total_humans_created]")
+
+/datum/game_mode/infestation/end_round_fluff()
+	send_ooc_announcement(
+		sender_override = "Round Concluded",
+		title = round_finished,
+		text = "Thus ends the story of the brave men and women of the TerraGov Marine Corps, and their struggle on [SSmapping.configs[GROUND_MAP].map_name]...",
+		play_sound = FALSE,
+		style = OOC_ALERT_GAME
+	)
+
 	var/sound/xeno_track
 	var/sound/human_track
 	var/sound/ghost_track
@@ -240,27 +280,28 @@
 	ghost_track = sound(ghost_track)
 	ghost_track.channel = CHANNEL_CINEMATIC
 
-	for(var/i in GLOB.xeno_mob_list)
-		var/mob/M = i
-		SEND_SOUND(M, xeno_track)
+	for(var/mob/hearer in GLOB.xeno_mob_list)
+		if(hearer.client?.prefs?.toggles_sound & SOUND_NOENDOFROUND)
+			continue
+		SEND_SOUND(hearer, xeno_track)
 
-	for(var/i in GLOB.human_mob_list)
-		var/mob/M = i
-		SEND_SOUND(M, human_track)
+	for(var/mob/hearer in GLOB.human_mob_list)
+		if(hearer.client?.prefs?.toggles_sound & SOUND_NOENDOFROUND)
+			continue
+		SEND_SOUND(hearer, human_track)
 
-	for(var/i in GLOB.observer_list)
-		var/mob/M = i
-		if(ishuman(M.mind.current))
-			SEND_SOUND(M, human_track)
+	for(var/mob/hearer in GLOB.observer_list)
+		if(hearer.client?.prefs?.toggles_sound & SOUND_NOENDOFROUND)
+			continue
+		if(ishuman(hearer.mind.current))
+			SEND_SOUND(hearer, human_track)
 			continue
 
-		if(isxeno(M.mind.current))
-			SEND_SOUND(M, xeno_track)
+		if(isxeno(hearer.mind.current))
+			SEND_SOUND(hearer, xeno_track)
 			continue
 
-		SEND_SOUND(M, ghost_track)
-
-	log_game("[round_finished]\nGame mode: [name]\nRound time: [duration2text()]\nEnd round player population: [length(GLOB.clients)]\nTotal xenos spawned: [GLOB.round_statistics.total_xenos_created]\nTotal humans spawned: [GLOB.round_statistics.total_humans_created]")
+		SEND_SOUND(hearer, ghost_track)
 
 /datum/game_mode/infestation/can_start(bypass_checks = FALSE)
 	. = ..()
@@ -289,7 +330,13 @@
 	if(!SSmapping.configs[GROUND_MAP].announce_text)
 		return
 
-	priority_announce(SSmapping.configs[GROUND_MAP].announce_text, SSmapping.configs[SHIP_MAP].map_name)
+	priority_announce(
+		title = "High Command Update",
+		subtitle = "Good morning, marines.",
+		message = "Cryosleep disengaged by TGMC High Command.<br><br>ATTN: [SSmapping.configs[SHIP_MAP].map_name].<br>[SSmapping.configs[GROUND_MAP].announce_text]",
+		sound = 'sound/AI/ares_online.ogg',
+		color_override = "red"
+	)
 
 
 /datum/game_mode/infestation/announce()
@@ -306,7 +353,7 @@
 
 /datum/game_mode/infestation/proc/on_nuclear_diffuse(obj/machinery/nuclearbomb/bomb, mob/living/carbon/xenomorph/X)
 	SIGNAL_HANDLER
-	priority_announce("WARNING. WARNING. Planetary Nuke deactivated. WARNING. WARNING. Self destruct failed. WARNING. WARNING.", "Priority Alert")
+	priority_announce("WARNING. WARNING. Planetary Nuke deactivated. WARNING. WARNING. Self destruct failed. WARNING. WARNING.", "Planetary Warhead Disengaged", type = ANNOUNCEMENT_PRIORITY)
 
 /datum/game_mode/infestation/proc/on_nuclear_explosion(datum/source, z_level)
 	SIGNAL_HANDLER
@@ -322,19 +369,18 @@
 
 /datum/game_mode/infestation/proc/play_cinematic(z_level)
 	GLOB.enter_allowed = FALSE
-	priority_announce("DANGER. DANGER. Planetary Nuke Activated. DANGER. DANGER. Self destruct in progress. DANGER. DANGER.", "Priority Alert")
+	priority_announce("DANGER. DANGER. Planetary Nuke Activated. DANGER. DANGER. Self destruct in progress. DANGER. DANGER.", "Planetary Warhead Detonation Confirmed", type = ANNOUNCEMENT_PRIORITY)
 	var/sound/S = sound(pick('sound/theme/nuclear_detonation1.ogg','sound/theme/nuclear_detonation2.ogg'), channel = CHANNEL_CINEMATIC)
 	SEND_SOUND(world, S)
 
-	for(var/x in GLOB.player_list)
-		var/mob/M = x
-		if(isobserver(M) || isnewplayer(M))
+	for(var/mob/seer in GLOB.player_list)
+		if(isobserver(seer) || isnewplayer(seer))
 			continue
-		if(M.z == z_level)
-			shake_camera(M, 110, 4)
+		if(seer.z == z_level)
+			shake_camera(seer, 110, 4)
 
-	var/datum/cinematic/crash_nuke/C = /datum/cinematic/crash_nuke
-	var/nuketime = initial(C.runtime) + initial(C.cleanup_time)
+	var/datum/cinematic/crash_nuke/nuke = /datum/cinematic/crash_nuke
+	var/nuketime = initial(nuke.runtime) + initial(nuke.cleanup_time)
 	addtimer(CALLBACK(src, PROC_REF(do_nuke_z_level), z_level), nuketime * 0.5)
 
 	Cinematic(CINEMATIC_CRASH_NUKE, world)
@@ -350,8 +396,7 @@
 	else
 		planet_nuked = INFESTATION_NUKE_COMPLETED_OTHER
 
-	for(var/i in GLOB.alive_living_list)
-		var/mob/living/victim = i
+	for(var/mob/living/victim in GLOB.alive_living_list)
 		var/turf/victim_turf = get_turf(victim) //Sneaky people on lockers.
 		if(QDELETED(victim_turf) || victim_turf.z != z_level)
 			continue

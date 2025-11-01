@@ -79,7 +79,7 @@
 		stack_trace("limb_embed called for QDELETED [embedding]")
 		embedding?.unembed_ourself()
 		return FALSE
-	if(HAS_TRAIT(embedding, TRAIT_NODROP) || (embedding.flags_item & DELONDROP))
+	if(HAS_TRAIT(embedding, TRAIT_NODROP) || (embedding.item_flags & DELONDROP))
 		stack_trace("limb_embed called for TRAIT_NODROP or DELONDROP [embedding]")
 		embedding.unembed_ourself()
 		return FALSE
@@ -103,12 +103,12 @@
 		return //People can safely move inside a vehicle or on a roller bed/chair.
 	var/embedded_thing = carrier.embedded_objects[src]
 	if(embedded_thing == carrier)
-		//carbon stuff
-	else if(istype(embedded_thing, /datum/limb))
-		var/datum/limb/limb_loc = embedded_thing
-		limb_loc.process_embedded(src)
-	else
+		return
+	if(!istype(embedded_thing, /datum/limb))
 		CRASH("[src] called embedded_on_carrier_move for [carrier] with mismatching embedded_object: [.]")
+	var/datum/limb/limb_loc = embedded_thing
+	limb_loc.process_embedded(src)
+
 
 
 /obj/item/proc/embedded_on_limb_destruction(datum/limb/source)
@@ -146,7 +146,7 @@
 
 
 /mob/living/proc/yank_out_object()
-	set category = "Object"
+	set category = "IC.Object"
 	set name = "Yank out object"
 	set desc = "Remove an embedded item at the cost of bleeding and pain."
 	set src in view(1)
@@ -162,11 +162,11 @@
 		return
 
 	if(user.stat != CONSCIOUS)
-		to_chat(user, "You are unconcious and cannot do that!")
+		to_chat(user, span_warning("You are unconscious and cannot do that!"))
 		return
 
 	if(user.restrained())
-		balloon_alert(user, "can't, restrained")
+		balloon_alert(user, "restrained!")
 		return
 
 	var/self
@@ -182,12 +182,12 @@
 		valid_objects += embedded_item
 
 	if(!length(valid_objects))
-		CRASH("yank_out_object called for empty valid_objects, lenght of embedded_objects is [length(embedded_objects)]")
+		CRASH("yank_out_object called for empty valid_objects, length of embedded_objects is [length(embedded_objects)]")
 
 	var/obj/item/selection = tgui_input_list(user, "What do you want to yank out?", "Embedded objects", valid_objects)
 
 	if(user.get_active_held_item())
-		balloon_alert(user, "cannot, no empty hands")
+		balloon_alert(user, "hands are full!")
 		return FALSE
 
 	balloon_alert(user, "attempts to grip [selection]")

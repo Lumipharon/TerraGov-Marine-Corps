@@ -1,15 +1,15 @@
 /obj/item/pinpointer
 	name = "Xeno structure pinpointer"
-	icon = 'icons/Marine/marine-navigation.dmi'
-	icon_state = "pinoff"
-	flags_atom = CONDUCT
-	flags_equip_slot = ITEM_SLOT_BELT
+	icon = 'icons/obj/items/pinpointer.dmi'
+	icon_state = "pinpointer_off"
+	atom_flags = CONDUCT
+	equip_slot_flags = ITEM_SLOT_BELT
 	w_class = WEIGHT_CLASS_TINY
-	item_icons = list(
+	worn_icon_list = list(
 		slot_l_hand_str = 'icons/mob/inhands/equipment/engineering_left.dmi',
 		slot_r_hand_str = 'icons/mob/inhands/equipment/engineering_right.dmi',
 	)
-	item_state = "electronic"
+	worn_icon_state = "electronic"
 	throw_speed = 4
 	throw_range = 20
 	///What we're currently tracking
@@ -49,17 +49,16 @@
 		tracked_list = GLOB.xeno_critical_structures_by_hive[tracked_hivenumber]
 
 	if(!length(tracked_list))
-		balloon_alert(user, "No signal")
+		balloon_alert(user, "no signal!")
 		return
 	target = tgui_input_list(user, "Select the structure you wish to track.", "Pinpointer", tracked_list)
 	if(QDELETED(target))
 		return
 	var/turf/pinpointer_loc = get_turf(src)
 	if(target.z != pinpointer_loc.z)
-		balloon_alert(user, "Signal too weak")
+		balloon_alert(user, "signal too weak!")
 		target = null
 		return
-
 
 /obj/item/pinpointer/attack_self(mob/living/user)
 	if(active)
@@ -67,38 +66,34 @@
 	else
 		activate(user)
 
-
 /obj/item/pinpointer/proc/activate(mob/living/user)
 	set_target(user)
 	if(QDELETED(target))
 		return
 	active = TRUE
 	START_PROCESSING(SSobj, src)
-	balloon_alert(user, "Pinpointer activated")
-
+	balloon_alert(user, "pinpointer activated")
 
 /obj/item/pinpointer/proc/deactivate(mob/living/user)
 	active = FALSE
 	target = null
 	STOP_PROCESSING(SSobj, src)
-	icon_state = "pinoff"
-	balloon_alert(user, "Pinpointer deactivated")
-
+	icon_state = "pinpointer_off"
+	balloon_alert(user, "pinpointer deactivated")
 
 /obj/item/pinpointer/process()
 	if(QDELETED(target))
 		active = FALSE
-		icon_state = "pinonnull"
+		icon_state = "pinpointer_null"
 		return PROCESS_KILL
 
 	setDir(get_dir(src, target))
 	switch(get_dist(src, target))
 		if(0)
-			icon_state = "pinondirect"
+			icon_state = "pinpointer_direct"
 		if(1 to 8)
-			icon_state = "pinonclose"
+			icon_state = "pinpointer_close"
 		if(9 to 16)
-			icon_state = "pinonmedium"
+			icon_state = "pinpointer_medium"
 		if(16 to INFINITY)
-			icon_state = "pinonfar"
-
+			icon_state = "pinpointer_far"

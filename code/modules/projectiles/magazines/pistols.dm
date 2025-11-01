@@ -22,8 +22,8 @@
 	max_rounds = 10
 	w_class = WEIGHT_CLASS_SMALL
 	default_ammo = /datum/ammo/energy/plasma_pistol
-	flags_magazine = NONE
-	icon_state_mini = "mag_tx7"
+	magazine_flags = NONE
+	icon_state_mini = "mag_plasma"
 
 //-------------------------------------------------------
 //RT-3 PISTOL
@@ -33,6 +33,7 @@
 	desc = "A pistol magazine."
 	caliber = CALIBER_9X19
 	icon_state = "m4a3"
+	icon = 'icons/obj/items/ammo/pistol.dmi'
 	max_rounds = 14
 	w_class = WEIGHT_CLASS_SMALL
 	default_ammo = /datum/ammo/bullet/pistol
@@ -197,6 +198,32 @@
 	max_rounds = 18
 
 //-------------------------------------------------------
+//MK90M5 standard PMC pistol
+
+/obj/item/ammo_magazine/pistol/mk90
+	name = "\improper MK90M4 AP magazine (9mm)"
+	default_ammo = /datum/ammo/bullet/pistol/ap
+	caliber = CALIBER_9X19
+	icon_state = "90m4"
+	icon_state_mini = "mag_pistol"
+	max_rounds = 20
+
+/obj/item/ammo_magazine/pistol/mk90/extended
+	name = "\improper MK90M4 extended AP magazine (9mm)"
+	icon_state = "90m4_extended"
+	max_rounds = 35
+//-------------------------------------------------------
+//MK100M5 PMC gyrojet pistol
+
+/obj/item/ammo_magazine/pistol/mk100_gyrojet
+	name = "\improper MK100M5 'Suppresor' magazine (15x50mm)"
+	desc = "A gyrojet handgun magazine."
+	default_ammo = /datum/ammo/bullet/pistol/gyrojet
+	caliber = CALIBER_15X50
+	icon_state = "100m5"
+	max_rounds = 10
+
+//-------------------------------------------------------
 //SOM pistol
 
 /obj/item/ammo_magazine/pistol/som
@@ -259,8 +286,8 @@
 	name = "\improper SP-13 magazine (9mm AP)"
 	caliber = CALIBER_9X19
 	icon_state = "tx13"
-	icon_state_mini = "mag_pistol_tube"
-	max_rounds = 30
+	icon_state_mini = "mag_pistol_orange"
+	max_rounds = 40
 	w_class = WEIGHT_CLASS_SMALL
 	default_ammo = /datum/ammo/bullet/pistol/ap
 
@@ -271,4 +298,25 @@
 	default_ammo = /datum/ammo/bullet/pistol
 	caliber = CALIBER_ALIEN
 	icon_state = "knife"
+	icon_state_mini = "knife"
 	max_rounds = 1
+
+//XM104 cylinder placed in pistols
+/obj/item/ammo_magazine/pistol/xmdivider
+	name = "\improper XM104 cylinder (.357)"
+	desc = "XM104 cylinder loaded with custom .357 incendiary rounds."
+	default_ammo = /datum/ammo/bullet/revolver/heavy/incen
+	max_rounds = 6
+	caliber = CALIBER_357
+	icon_state = "xm104"
+	icon_state_mini = "xm104"
+
+//c96
+
+/obj/item/ammo_magazine/pistol/vsd_pistol
+	name = "\improper C96 'riot' magazine"
+	default_ammo = /datum/ammo/bullet/pistol/ap
+	caliber = CALIBER_9X19
+	icon_state = "c96"
+	icon_state_mini = "mag_pistol_normal"
+	max_rounds = 15

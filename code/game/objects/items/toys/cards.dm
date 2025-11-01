@@ -32,6 +32,8 @@
 
 /obj/item/toy/deck/attackby(obj/item/I, mob/user, params)
 	. = ..()
+	if(.)
+		return
 
 	if(istype(I, /obj/item/toy/handcard))
 		var/obj/item/toy/handcard/H = I
@@ -53,7 +55,7 @@
 
 /obj/item/toy/deck/verb/draw_card()
 
-	set category = "Object"
+	set category = "IC.Object"
 	set name = "Draw"
 	set desc = "Draw a card from a deck."
 	set src in view(1)
@@ -95,7 +97,7 @@
 
 /obj/item/toy/deck/verb/deal_card()
 
-	set category = "Object"
+	set category = "IC.Object"
 	set name = "Deal"
 	set desc = "Deal a card from a deck."
 	set src in view(1)
@@ -137,14 +139,9 @@
 		user.visible_message("\The [user] deals a card to \the [target].")
 	H.throw_at(get_step(target,target.dir),10,1,H)
 
-/obj/item/toy/deck/attack_self(mob/user as mob)
-
-	var/list/newcards = list()
-	while(length(cards))
-		var/datum/playingcard/P = pick(cards)
-		newcards += P
-		cards -= P
-	cards = newcards
+/obj/item/toy/deck/attack_self(mob/user)
+	. = ..()
+	shuffle_inplace(cards)
 	user.visible_message("\The [user] shuffles [src].")
 
 /obj/item/toy/deck/MouseDrop(atom/over)
@@ -181,6 +178,8 @@
 
 /obj/item/toy/handcard/attackby(obj/item/I, mob/user, params)
 	. = ..()
+	if(.)
+		return
 
 	if(istype(I, /obj/item/toy/handcard))
 		var/obj/item/toy/handcard/H = I
@@ -195,7 +194,7 @@
 /// Takes a selected card, and puts it down, face-up, in front
 /obj/item/toy/handcard/verb/discard()
 
-	set category = "Object"
+	set category = "IC.Object"
 	set name = "Discard"
 	set desc = "Place a card from your hand in front of you."
 
@@ -234,7 +233,7 @@
 	H.update_icon()
 	update_icon()
 	user.visible_message("\The [user] plays \the [discarding].")
-	H.loc = get_step(user, user.dir)
+	H.forceMove(get_step(user, user.dir))
 
 	if(!length(cards))
 		qdel(src)
@@ -275,8 +274,8 @@
 	if(length(cards) == 1)
 		var/datum/playingcard/P = cards[1]
 		var/image/I = new(src.icon, (concealed ? "card_back" : "[P.card_icon]") )
-		I.pixel_x += (-5+rand(10))
-		I.pixel_y += (-5+rand(10))
+		I.pixel_w += (-5+rand(10))
+		I.pixel_z += (-5+rand(10))
 		. += I
 		return
 
@@ -301,13 +300,13 @@
 		//I.pixel_x = origin+(offset*i)
 		switch(last_direction)
 			if(SOUTH)
-				I.pixel_x = 8-(offset*i)
+				I.pixel_w = 8-(offset*i)
 			if(WEST)
-				I.pixel_y = -6+(offset*i)
+				I.pixel_z = -6+(offset*i)
 			if(EAST)
-				I.pixel_y = 8-(offset*i)
+				I.pixel_z = 8-(offset*i)
 			else
-				I.pixel_x = -7+(offset*i)
+				I.pixel_w = -7+(offset*i)
 		I.transform = M
 		. += I
 		i++
@@ -365,6 +364,7 @@
 		P.card_icon = "Wildcard"
 		cards += P
 	for(var/k in 0 to 3)
+		P = new()
 		P.name= "Draw 4"
 		P.card_icon = "Draw 4"
 		cards += P
@@ -385,7 +385,7 @@
 	desc = "An ancient copy of an Ace of Hearts from a deck of playing cards."
 	icon = 'icons/obj/items/items.dmi'
 	icon_state = "ace_of_hearts"
-	item_state = "ace_of_hearts"
+	worn_icon_state = "ace_of_hearts"
 	w_class = WEIGHT_CLASS_TINY
 
 /obj/item/toy/card/ace/spades
@@ -393,5 +393,5 @@
 	desc = "An ancient copy of an Ace of Spades from a deck of playing cards."
 	icon = 'icons/obj/items/items.dmi'
 	icon_state = "ace_of_spades"
-	item_state = "ace_of_spades"
+	worn_icon_state = "ace_of_spades"
 	w_class = WEIGHT_CLASS_TINY

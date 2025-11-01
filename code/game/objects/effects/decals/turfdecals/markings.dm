@@ -213,3 +213,107 @@
 /obj/effect/turf_decal/symbol/large_rune
 	icon = 'icons/effects/96x96.dmi'
 	icon_state = "rune_large_colored"
+
+/obj/effect/turf_decal/strata_decals
+
+/obj/effect/turf_decal/strata_decals/catwalk/prison //For finding and replacing prison catwalk objects since they nasty
+	icon_state = "catwalk"
+	name = "catwalk"
+	layer = CATWALK_LAYER
+	desc = "These things have no depth to them, are they just, painted on?"
+
+//////////////////OUTDOOR STUFF/////////////////
+
+/obj/effect/turf_decal/strata_decals/rocks
+	icon_state = ""
+	name = "some rocks"
+	desc = "A collection of sad little rocks."
+
+/obj/effect/turf_decal/strata_decals/rocks/ice
+	icon_state = ""
+	name = "some ice rocks"
+	desc = "A smattering of ice and rock littered about haphazardly."
+
+/obj/effect/turf_decal/strata_decals/rocks/ice/ice1
+	icon_state = "icerock"
+
+/obj/effect/turf_decal/strata_decals/grasses
+	icon_state = "tufts"
+	name = "some foliage"
+	desc = "A few brave tufts of snow grass."
+
+////////////////INDOORS STUFF////////////////////
+
+/obj/effect/turf_decal/strata_decals/grime
+	icon_state = ""
+	name = "a stain"
+	desc = "A nasty looking brown stain, could be coffee, soot, water damage. Who knows."
+
+/obj/effect/turf_decal/strata_decals/grime/grime1
+	icon_state = "grime1"
+
+/obj/effect/turf_decal/strata_decals/grime/grime2
+	icon_state = "grime2"
+
+/obj/effect/turf_decal/strata_decals/grime/grime3
+	icon_state = "grime3"
+
+/obj/effect/turf_decal/strata_decals/grime/grime4
+	icon_state = "grime4"
+
+/obj/effect/turf_decal/tape
+	name = "tape"
+	desc = "It's some tape cordoning off an area"
+	icon = 'icons/obj/policetape.dmi'
+	icon_state = "police_h"
+
+/obj/effect/turf_decal/tape/vertical
+	icon_state = "police_v"
+
+/obj/effect/turf_decal/tape/damaged
+	icon_state = "police_h_c"
+
+/obj/effect/turf_decal/tape/damaged/vertical
+	icon_state = "police_v_c"
+
+/obj/effect/turf_decal/tape/door
+	icon_state = "police_door"
+
+/obj/effect/turf_decal/tape/door/damaged
+	icon_state = "police_door_c"
+
+/obj/effect/turf_decal/tape/engineering
+	icon_state = "engineering_h"
+
+/obj/effect/turf_decal/tape/engineering/vertical
+	icon_state = "engineering_v"
+
+/obj/effect/turf_decal/tape/engineering/damaged
+	icon_state = "engineering_h_c"
+
+/obj/effect/turf_decal/tape/engineering/damaged/vertical
+	icon_state = "engineering_v_c"
+
+/obj/effect/turf_decal/tape/engineering/door
+	icon_state = "engineering_door"
+
+/obj/effect/turf_decal/tape/engineering/door/damaged
+	icon_state = "engineering_door_c"
+
+/obj/effect/turf_decal/tape/atmos
+	icon_state = "atmos_h"
+
+/obj/effect/turf_decal/tape/atmos/vertical
+	icon_state = "atmos_v"
+
+/obj/effect/turf_decal/tape/atmos/damaged
+	icon_state = "atmos_h_c"
+
+/obj/effect/turf_decal/tape/atmos/damaged/vertical
+	icon_state = "atmos_v_c"
+
+/obj/effect/turf_decal/tape/atmos/door
+	icon_state = "atmos_door"
+
+/obj/effect/turf_decal/tape/atmos/door/damaged
+	icon_state = "atmos_door_c"

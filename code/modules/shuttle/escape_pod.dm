@@ -101,8 +101,23 @@
 	name = "escape pod controller"
 	icon = 'icons/obj/airlock_machines.dmi'
 	icon_state = "airlock_control_standby"
+	screen_overlay = null
 	power_channel = ENVIRON
 	density = FALSE
+
+/obj/machinery/computer/shuttle/escape_pod/examine(mob/user)
+	. = ..()
+	var/obj/docking_port/mobile/escape_pod/M = SSshuttle.getShuttle(shuttleId)
+	if(!M || M.launch_status == EARLY_LAUNCHED || M.launch_status == EARLY_LAUNCHED)
+		return
+	if(SSevacuation.evac_status != EVACUATION_STATUS_INITIATING)
+		return
+	var/text = "Time until refueling completion:"
+	var/eta = (SSevacuation.evac_time + EVACUATION_MANUAL_DEPARTURE - world.time) * 0.1
+	if(eta <= 0)
+		text = "Time until automatic launch:"
+		eta = (SSevacuation.evac_time + EVACUATION_AUTOMATIC_DEPARTURE - world.time) * 0.1
+	. += span_notice("[text] [(eta / 60) % 60]:[add_leading(num2text(eta % 60), 2, "0")]")
 
 /obj/machinery/computer/shuttle/escape_pod/escape_shuttle
 	name = "escape shuttle controller"
@@ -134,8 +149,11 @@
 		if(!M.can_launch)
 			to_chat(usr, span_warning("Evacuation is not enabled!"))
 			return
+		if(SSevacuation.evac_time + EVACUATION_MANUAL_DEPARTURE - world.time > 0)
+			to_chat(usr, span_warning("The escape pod is not fully refueled yet!"))
+			return
 
-		to_chat(usr, span_highdanger("You slam your fist down on the launch button!"))
+		to_chat(usr, span_userdanger("You slam your fist down on the launch button!"))
 		M.launch(TRUE)
 
 //=========================================================================================
@@ -210,5 +228,5 @@
 /obj/machinery/door/airlock/evacuation/attack_hand(mob/living/user)
 	return TRUE
 
-/obj/machinery/door/airlock/evacuation/attack_alien(mob/living/carbon/xenomorph/X, damage_amount = X.xeno_caste.melee_damage, damage_type = BRUTE, damage_flag = "", effects = TRUE, armor_penetration = 0, isrightclick = FALSE)
+/obj/machinery/door/airlock/evacuation/attack_alien(mob/living/carbon/xenomorph/xeno_attacker, damage_amount = xeno_attacker.xeno_caste.melee_damage, damage_type = BRUTE, armor_type = MELEE, effects = TRUE, armor_penetration = xeno_attacker.xeno_caste.melee_ap, isrightclick = FALSE)
 	return FALSE //Probably a better idea that these cannot be forced open.

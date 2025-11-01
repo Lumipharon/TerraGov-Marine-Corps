@@ -10,9 +10,9 @@
 
 /obj/item/inflatable/attack_self(mob/user)
 	. = ..()
-	balloon_alert(user, "Inflating...")
+	balloon_alert(user, "inflating...")
 	if(!do_after(user, 3 SECONDS, NONE, src))
-		balloon_alert(user, "Interrupted!")
+		balloon_alert(user, "interrupted!")
 		return
 	playsound(loc, 'sound/items/zip.ogg', 25, 1)
 	to_chat(user, span_notice("You inflate [src]."))
@@ -51,7 +51,7 @@
 	var/popped_variant
 
 
-/obj/structure/inflatable/deconstruct(disassembled = TRUE)
+/obj/structure/inflatable/deconstruct(disassembled = TRUE, mob/living/blame_mob)
 	if(!deflated)
 		deflate(!disassembled)
 	return ..()
@@ -73,9 +73,19 @@
 
 /obj/structure/inflatable/attackby(obj/item/I, mob/user, params)
 	. = ..()
+	if(.)
+		return
 	if(can_puncture(I))
 		visible_message(span_danger("[user] pierces [src] with [I]!"))
 		deflate(TRUE)
+
+/obj/structure/inflatable/attack_alien(mob/living/carbon/xenomorph/xeno_attacker, damage_amount = xeno_attacker.xeno_caste.melee_damage, damage_type = BRUTE, armor_type = MELEE, effects = TRUE, armor_penetration = xeno_attacker.xeno_caste.melee_ap, isrightclick = FALSE)
+	if(!do_after(xeno_attacker, 2 SECONDS, NONE, src, BUSY_ICON_FRIENDLY))
+		return
+	xeno_attacker.do_attack_animation(src, ATTACK_EFFECT_CLAW)
+	xeno_attacker.visible_message(span_danger("\The [xeno_attacker] punctures [src] with their sharp claws and slices a giant hole in it!"), \
+	span_danger("You puncture the [src] and rip a giant hole in it!"), null, 5)
+	deflate(TRUE)
 
 ///Handles the structure deflating
 /obj/structure/inflatable/proc/deflate(violent = FALSE)
@@ -99,17 +109,17 @@
 
 /obj/structure/inflatable/verb/hand_deflate()
 	set name = "Deflate"
-	set category = "Object"
+	set category = "IC.Object"
 	set src in oview(1)
 
 	if(!ishuman(usr))
 		return
 
 	if(!deflated)
-		balloon_alert(usr, "Deflating...")
+		balloon_alert(usr, "deflating...")
 		deflate(FALSE)
 	else
-		balloon_alert(usr, "Already deflated.")
+		balloon_alert(usr, "already deflated!")
 
 
 /obj/structure/inflatable/wall
@@ -206,11 +216,11 @@
 	name = "inflatable barrier box"
 	desc = "Contains inflatable walls and doors."
 	icon_state = "inf_box"
-	item_state = "syringe_kit"
-	max_storage_space = 21
+	worn_icon_state = "syringe_kit"
 
 /obj/item/storage/briefcase/inflatable/Initialize(mapload, ...)
 	. = ..()
+	storage_datum.max_storage_space = 21
 	for(var/i in 1 to 3)
 		new /obj/item/inflatable/door(src)
 	for(var/i in 1 to 4)

@@ -1,7 +1,4 @@
-import { classes } from 'common/react';
 import { useState } from 'react';
-
-import { useBackend } from '../backend';
 import {
   Box,
   Button,
@@ -12,7 +9,10 @@ import {
   Section,
   Stack,
   Tabs,
-} from '../components';
+} from 'tgui-core/components';
+import { classes } from 'tgui-core/react';
+
+import { useBackend } from '../backend';
 import { Window } from '../layouts';
 
 type BlessingData = {
@@ -59,7 +59,7 @@ export const BlessingMenu = (props) => {
           title={
             'Strategic Psychic points: ' +
             (strategicpoints ? strategicpoints : 0) +
-            ' | Strategic Psychic points: ' +
+            ' | Tactical Psychic points: ' +
             (tacticalpoints ? tacticalpoints : 0)
           }
         >

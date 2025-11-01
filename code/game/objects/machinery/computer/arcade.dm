@@ -26,6 +26,9 @@
 		/obj/item/toy/plush/slime = 2,
 		/obj/item/toy/plush/moth = 2,
 		/obj/item/toy/plush/rouny = 1,
+		/obj/item/toy/plush/witch = 1,
+		/obj/item/toy/plush/fairy = 1,
+		/obj/item/toy/plush/royalqueen = 1,
 		)
 
 /obj/machinery/computer/arcade
@@ -145,7 +148,7 @@
 
 			else
 				var/atom/movable/prize = pick(contents)
-				prize.loc = src.loc
+				prize.forceMove(drop_location())
 
 	else if ((src.enemy_mp <= 5) && (prob(70)))
 		var/stealamt = rand(2,3)
@@ -178,17 +181,12 @@
 
 /obj/machinery/computer/arcade/emp_act(severity)
 	if(machine_stat & (NOPOWER|BROKEN|DISABLED))
-		..(severity)
-		return
+		return ..()
 	var/empprize = null
 	var/num_of_prizes = 0
-	switch(severity)
-		if(1)
-			num_of_prizes = rand(1,4)
-		if(2)
-			num_of_prizes = rand(0,2)
+	num_of_prizes = rand(1, 5 - severity)
 	for(num_of_prizes; num_of_prizes > 0; num_of_prizes--)
 		empprize = pickweight(prizes)
 		new empprize(src.loc)
 
-	..(severity)
+	return ..()

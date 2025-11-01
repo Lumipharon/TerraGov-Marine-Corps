@@ -6,7 +6,7 @@
 	anchored = TRUE
 	w_class = WEIGHT_CLASS_BULKY
 	canhear_range = 2
-	flags_atom = CONDUCT|NOBLOODY
+	atom_flags = CONDUCT|NOBLOODY
 	light_range = 1.5
 	light_power = 0.5
 	light_color = LIGHT_COLOR_EMISSIVE_YELLOW
@@ -54,7 +54,7 @@
 	. = ..()
 	if(!on)
 		return
-	. += emissive_appearance(icon, "[icon_state]_emissive")
+	. += emissive_appearance(icon, "[icon_state]_emissive", src)
 
 /obj/item/radio/intercom/attack_ai(mob/user as mob)
 	attack_self(user)

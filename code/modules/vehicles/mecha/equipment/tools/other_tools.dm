@@ -142,7 +142,7 @@
 /obj/item/mecha_parts/mecha_equipment/generator/proc/generator_init()
 	fuel = new /obj/item/stack/sheet/mineral/phoron(src, 0)
 
-/obj/item/mecha_parts/mecha_equipment/generator/detach()
+/obj/item/mecha_parts/mecha_equipment/generator/detach(atom/moveto)
 	STOP_PROCESSING(SSobj, src)
 	activated = FALSE
 	return ..()
@@ -168,6 +168,8 @@
 
 /obj/item/mecha_parts/mecha_equipment/generator/attackby(weapon, mob/user, params)
 	. = ..()
+	if(.)
+		return
 	load_fuel(weapon, user)
 
 /obj/item/mecha_parts/mecha_equipment/generator/proc/load_fuel(obj/item/stack/sheet/P, mob/user)

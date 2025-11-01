@@ -11,12 +11,11 @@
 	pipe_flags = PIPING_ONE_PER_TURF|PIPING_DEFAULT_LAYER_ONLY
 	interaction_flags = INTERACT_MACHINE_TGUI
 	can_see_pipes = FALSE
-	light_range = 2
-	light_power = 0.5
+	light_range = 3
+	light_power = 0.6
 	light_color = LIGHT_COLOR_EMISSIVE_GREEN
 
 	var/autoeject = FALSE
-	var/release_notice = FALSE
 
 	var/temperature = 100
 
@@ -45,7 +44,7 @@
 	initialize_directions = dir
 	beaker = new /obj/item/reagent_containers/glass/beaker/cryomix
 	radio = new(src)
-	update_icon()
+	update_appearance(UPDATE_ICON)
 
 /obj/machinery/atmospherics/components/unary/cryo_cell/proc/process_occupant()
 	if(!occupant)
@@ -132,7 +131,7 @@
 	. = ..()
 	if(!on)
 		return
-	. += emissive_appearance(icon, "cell_emissive", alpha = src.alpha)
+	. += emissive_appearance(icon, "cell_emissive", src, alpha = src.alpha)
 
 /obj/machinery/atmospherics/components/unary/cryo_cell/proc/run_anim(anim_up, image/occupant_overlay)
 	if(!on || !occupant || !is_operational())
@@ -153,7 +152,7 @@
 	if(!( occupant ))
 		return
 	if (occupant.client)
-		occupant.client.eye = occupant.client.mob
+		occupant.client.set_eye(occupant.client.mob)
 		occupant.client.perspective = MOB_PERSPECTIVE
 	if(occupant in contents)
 		occupant.forceMove(get_step(loc, dir))
@@ -161,12 +160,11 @@
 		occupant.bodytemperature = 261									  // Changed to 70 from 140 by Zuhayr due to reoccurance of bug.
 	if(auto_eject) //Turn off and announce if auto-ejected because patient is recovered or dead.
 		turn_off()
-		if(release_notice) //If auto-release notices are on as it should be, let the doctors know what's up
-			playsound(src.loc, 'sound/machines/ping.ogg', 100, 14)
-			var/reason = "Reason for release:</b> Patient recovery."
-			if(dead)
-				reason = "<b>Reason for release:</b> Patient death."
-			radio.talk_into(src, "Patient [occupant] has been automatically released from [src] at: [get_area(occupant)]. [reason]", RADIO_CHANNEL_MEDICAL)
+		playsound(loc, 'sound/machines/ping.ogg', 100, 14)
+		var/reason = "Reason for release:</b> Patient recovery."
+		if(dead)
+			reason = "<b>Reason for release:</b> Patient death."
+		radio.talk_into(src, "Patient [occupant] has been automatically released from [src] at: [get_area(occupant)]. [reason]", RADIO_CHANNEL_MEDICAL)
 	occupant.record_time_in_cryo()
 	occupant = null
 	update_icon()
@@ -209,7 +207,7 @@
 
 /obj/machinery/atmospherics/components/unary/cryo_cell/verb/move_eject()
 	set name = "Eject occupant"
-	set category = "Object"
+	set category = "IC.Object"
 	set src in oview(1)
 	if(usr == occupant) //If the user is inside the tube...
 		if (usr.stat == DEAD) //and he's not dead....
@@ -223,6 +221,8 @@
 
 /obj/machinery/atmospherics/components/unary/cryo_cell/attackby(obj/item/I, mob/user, params)
 	. = ..()
+	if(.)
+		return
 
 	if(istype(I, /obj/item/reagent_containers/glass))
 
@@ -256,9 +256,12 @@
 		var/obj/item/healthanalyzer/J = I
 		J.attack(occupant, user)
 
-	if(!istype(I, /obj/item/grab))
+/obj/machinery/atmospherics/components/unary/cryo_cell/grab_interact(obj/item/grab/grab, mob/user, base_damage = BASE_OBJ_SLAM_DAMAGE, is_sharp = FALSE)
+	. = ..()
+	if(.)
 		return
-
+	if(isxeno(user))
+		return
 	if(machine_stat & (NOPOWER|BROKEN))
 		to_chat(user, span_notice("\ [src] is non-functional!"))
 		return
@@ -267,33 +270,31 @@
 		to_chat(user, span_notice("\ [src] is already occupied!"))
 		return
 
-	var/obj/item/grab/G = I
-	var/mob/M
+	var/mob/grabbed_mob
 
-	if(ismob(G.grabbed_thing))
-		M = G.grabbed_thing
+	if(ismob(grab.grabbed_thing))
+		grabbed_mob = grab.grabbed_thing
 
-	else if(istype(G.grabbed_thing,/obj/structure/closet/bodybag/cryobag))
-		var/obj/structure/closet/bodybag/cryobag/C = G.grabbed_thing
-		if(!C.bodybag_occupant)
+	else if(istype(grab.grabbed_thing,/obj/structure/closet/bodybag/cryobag))
+		var/obj/structure/closet/bodybag/cryobag/cryobag = grab.grabbed_thing
+		if(!cryobag.bodybag_occupant)
 			to_chat(user, span_warning("The stasis bag is empty!"))
 			return
-		M = C.bodybag_occupant
-		C.open()
-		user.start_pulling(M)
+		grabbed_mob = cryobag.bodybag_occupant
+		cryobag.open()
+		user.start_pulling(grabbed_mob)
 
-	if(!M)
-		return
-
-	if(!ishuman(M))
+	if(!ishuman(grabbed_mob))
 		to_chat(user, span_notice("\ [src] is compatible with humanoid anatomies only!"))
 		return
 
-	if(M.abiotic())
+	if(grabbed_mob.abiotic())
 		to_chat(user, span_warning("Subject cannot have abiotic items on."))
 		return
 
-	put_mob(M, TRUE)
+	put_mob(grabbed_mob, TRUE)
+
+	return TRUE
 
 /obj/machinery/atmospherics/components/unary/cryo_cell/proc/put_mob(mob/living/carbon/M as mob, put_in = null)
 	if (machine_stat & (NOPOWER|BROKEN))
@@ -320,29 +321,6 @@
 	update_icon()
 	return TRUE
 
-/obj/machinery/atmospherics/components/unary/cryo_cell/Topic(href, href_list)
-	. = ..()
-	if(.)
-		return
-	if (!href_list["scanreport"])
-		return
-	if(!hasHUD(usr,"medical"))
-		return
-	if(get_dist(usr, src) > 7)
-		to_chat(usr, span_warning("[src] is too far away."))
-		return
-	if(!ishuman(occupant))
-		return
-	var/mob/living/carbon/human/H = occupant
-	for(var/datum/data/record/R in GLOB.datacore.medical)
-		if (!R.fields["name"] == H.real_name)
-			continue
-		if(R.fields["last_scan_time"] && R.fields["last_scan_result"])
-			var/datum/browser/popup = new(usr, "scanresults", "<div align='center'>Last Scan Result</div>", 430, 600)
-			popup.set_content(R.fields["last_scan_result"])
-			popup.open(FALSE)
-		break
-
 /obj/machinery/atmospherics/components/unary/cryo_cell/attack_hand(mob/living/user)
 	. = ..()
 	if(.)
@@ -359,9 +337,7 @@
 /obj/machinery/atmospherics/components/unary/cryo_cell/ui_data(mob/user)
 	var/list/data = list()
 	data["isOperating"] = on
-	data["hasOccupant"] = occupant ? TRUE : FALSE
 	data["autoEject"] = autoeject
-	data["notify"] = release_notice
 
 	data["occupant"] = list()
 	if(occupant)
@@ -426,9 +402,6 @@
 					usr.put_in_hands(beaker)
 				beaker = null
 				. = TRUE
-		if("notice")
-			release_notice = !release_notice
-			. = TRUE
 
 /obj/machinery/atmospherics/components/unary/cryo_cell/proc/turn_on()
 	if (machine_stat & (NOPOWER|BROKEN))
@@ -441,15 +414,15 @@
 /obj/machinery/atmospherics/components/unary/cryo_cell/can_crawl_through()
 	return // can't ventcrawl in or out of cryo.
 
-/obj/machinery/atmospherics/components/unary/cryo_cell/attack_alien(mob/living/carbon/xenomorph/X, damage_amount, damage_type, damage_flag, effects, armor_penetration, isrightclick)
+/obj/machinery/atmospherics/components/unary/cryo_cell/attack_alien(mob/living/carbon/xenomorph/xeno_attacker, damage_amount = xeno_attacker.xeno_caste.melee_damage, damage_type = BRUTE, armor_type = MELEE, effects = TRUE, armor_penetration = xeno_attacker.xeno_caste.melee_ap, isrightclick = FALSE)
 	if(!occupant)
-		to_chat(X, span_xenowarning("There is nothing of interest in there."))
+		to_chat(xeno_attacker, span_xenowarning("There is nothing of interest in there."))
 		return
-	if(X.status_flags & INCORPOREAL || X.do_actions)
+	if(xeno_attacker.status_flags & INCORPOREAL || xeno_attacker.do_actions)
 		return
-	visible_message(span_warning("[X] begins to pry the [src]'s cover!"), 3)
+	visible_message(span_warning("[xeno_attacker] begins to pry the [src]'s cover!"), 3)
 	playsound(src,'sound/effects/metal_creaking.ogg', 25, 1)
-	if(!do_after(X, 2 SECONDS))
+	if(!do_after(xeno_attacker, 2 SECONDS))
 		return
 	playsound(loc, 'sound/effects/metal_creaking.ogg', 25, 1)
 	go_out()

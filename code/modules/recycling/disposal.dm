@@ -8,7 +8,7 @@
 
 /obj/machinery/disposal
 	name = "disposal unit"
-	desc = "A pneumatic waste disposal unit."
+	desc = "A pneumatic waste disposal unit. Right click to eject."
 	icon = 'icons/obj/pipes/disposal.dmi'
 	icon_state = "disposal"
 	anchored = TRUE
@@ -67,6 +67,8 @@
 //Attack by item places it in to disposal
 /obj/machinery/disposal/attackby(obj/item/I, mob/user, params)
 	. = ..()
+	if(.)
+		return
 
 	if(machine_stat & BROKEN)
 		return
@@ -100,7 +102,7 @@
 
 			playsound(loc, 'sound/items/welder2.ogg', 25, 1)
 			to_chat(user, span_notice("You start slicing the floorweld off the disposal unit."))
-			if(!do_after(user, 20, NONE, src, BUSY_ICON_BUILD, extra_checks = CALLBACK(W, /obj/item/tool/weldingtool/proc/isOn)))
+			if(!do_after(user, 20, NONE, src, BUSY_ICON_BUILD, extra_checks = CALLBACK(W, TYPE_PROC_REF(/obj/item/tool/weldingtool, isOn))))
 				return
 
 			to_chat(user, span_notice("You sliced the floorweld off the disposal unit."))
@@ -115,7 +117,7 @@
 		var/obj/item/storage/bag/trash/T = I
 		to_chat(user, span_notice("You empty the bag into [src]."))
 		for(var/obj/item/O in T.contents)
-			T.remove_from_storage(O, src, user)
+			T.storage_datum.remove_from_storage(O, src, user)
 		T.update_icon()
 		update()
 
@@ -178,6 +180,14 @@
 	flush()
 	update()
 
+/obj/machinery/disposal/attack_hand_alternate(mob/living/user)
+	. = ..()
+	if(!can_interact(user))
+		return
+	user.visible_message(span_notice("[user] presses the eject button on [src]."),
+	span_notice("You press the eject button on [src]."))
+	eject()
+
 //Attempt to move while inside
 /obj/machinery/disposal/relaymove(mob/user)
 	if(!isliving(user))
@@ -192,7 +202,7 @@
 /obj/machinery/disposal/proc/go_out(mob/user)
 
 	if(user.client)
-		user.client.eye = user.client.mob
+		user.client.set_eye(user.client.mob)
 		user.client.perspective = MOB_PERSPECTIVE
 	user.forceMove(loc)
 	if(isliving(user))
@@ -223,11 +233,11 @@
 
 	if(!isAI(user))  //AI can't pull flush handle
 		if(flush)
-			dat += "Disposal handle: <A href='?src=[text_ref(src)];handle=0'>Disengage</A> <B>Engaged</B>"
+			dat += "Disposal handle: <A href='byond://?src=[text_ref(src)];handle=0'>Disengage</A> <B>Engaged</B>"
 		else
-			dat += "Disposal handle: <B>Disengaged</B> <A href='?src=[text_ref(src)];handle=1'>Engage</A>"
+			dat += "Disposal handle: <B>Disengaged</B> <A href='byond://?src=[text_ref(src)];handle=1'>Engage</A>"
 
-		dat += "<BR><HR><A href='?src=[text_ref(src)];eject=1'>Eject contents</A><HR>"
+		dat += "<BR><HR><A href='byond://?src=[text_ref(src)];eject=1'>Eject contents</A><HR>"
 
 	if(mode <= 0)
 		dat += "Pump: <B>Off</B> On</A><BR>"
@@ -526,7 +536,7 @@
 		if(ismob(AM))
 			var/mob/M = AM
 			if(M.client) //If a client mob, update eye to follow this holder
-				M.client.eye = src
+				M.client.set_eye(src)
 
 	qdel(other)
 
@@ -549,7 +559,7 @@
 
 	var/mob/living/living_user = user
 
-	if(living_user.stat || TIMER_COOLDOWN_CHECK(living_user, COOLDOWN_DISPOSAL))
+	if(living_user.stat || TIMER_COOLDOWN_RUNNING(living_user, COOLDOWN_DISPOSAL))
 		return
 
 	TIMER_COOLDOWN_START(living_user, COOLDOWN_DISPOSAL, 10 SECONDS)
@@ -702,6 +712,8 @@
 //Attack by item. Weldingtool: unfasten and convert to obj/disposalconstruct
 /obj/structure/disposalpipe/attackby(obj/item/I, mob/user, params)
 	. = ..()
+	if(.)
+		return
 
 	var/turf/T = loc
 	if(T.intact_tile)
@@ -1011,6 +1023,8 @@
 
 /obj/structure/disposalpipe/tagger/attackby(obj/item/I, mob/user, params)
 	. = ..()
+	if(.)
+		return
 
 	if(istype(I, /obj/item/destTagger))
 		var/obj/item/destTagger/O = I
@@ -1082,6 +1096,8 @@
 
 /obj/structure/disposalpipe/sortjunction/attackby(obj/item/I, mob/user, params)
 	. = ..()
+	if(.)
+		return
 
 	if(istype(I, /obj/item/destTagger))
 		var/obj/item/destTagger/O = I
@@ -1304,6 +1320,8 @@
 
 /obj/structure/disposaloutlet/attackby(obj/item/I, mob/user, params)
 	. = ..()
+	if(.)
+		return
 
 	if(isscrewdriver(I))
 		mode = !mode
@@ -1323,7 +1341,7 @@
 		playsound(loc, 'sound/items/welder2.ogg', 25, 1)
 		to_chat(user, span_notice("You start slicing the floorweld off the disposal outlet."))
 
-		if(!do_after(user, 20, NONE, src, BUSY_ICON_BUILD, extra_checks = CALLBACK(W, /obj/item/tool/weldingtool/proc/isOn)))
+		if(!do_after(user, 20, NONE, src, BUSY_ICON_BUILD, extra_checks = CALLBACK(W, TYPE_PROC_REF(/obj/item/tool/weldingtool, isOn))))
 			return
 
 		to_chat(user, span_notice("You sliced the floorweld off the disposal outlet."))
@@ -1349,20 +1367,12 @@
 
 //Check if mob has client, if so restore client view on eject
 /mob/pipe_eject(direction)
-	if(client)
-		client.perspective = MOB_PERSPECTIVE
-		client.eye = src
+	if(!client)
+		return
+	client.perspective = MOB_PERSPECTIVE
+	client.set_eye(src)
 
 /obj/effect/decal/cleanable/blood/gibs/pipe_eject(direction)
-	var/list/dirs
-	if(direction)
-		dirs = list( direction, turn(direction, -45), turn(direction, 45))
-	else
-		dirs = GLOB.alldirs.Copy()
-
-	streak(dirs)
-
-/obj/effect/decal/cleanable/blood/gibs/robot/pipe_eject(direction)
 	var/list/dirs
 	if(direction)
 		dirs = list( direction, turn(direction, -45), turn(direction, 45))

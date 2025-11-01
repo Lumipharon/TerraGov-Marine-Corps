@@ -28,7 +28,7 @@
 
 /obj/machinery/deployable/teleporter/Initialize(mapload)
 	. = ..()
-	SSminimaps.add_marker(src, MINIMAP_FLAG_MARINE, image('icons/UI_icons/map_blips.dmi', null, "teleporter"))
+	SSminimaps.add_marker(src, MINIMAP_FLAG_MARINE, image('icons/UI_icons/map_blips.dmi', null, "teleporter", MINIMAP_BLIPS_LAYER))
 
 
 /obj/machinery/deployable/teleporter/attack_hand(mob/living/user)
@@ -42,7 +42,7 @@
 		playsound(loc,'sound/machines/buzz-two.ogg', 25, FALSE)
 		return
 
-	if(!COOLDOWN_CHECK(kit, teleport_cooldown))
+	if(!COOLDOWN_FINISHED(kit, teleport_cooldown))
 		to_chat(user, span_warning("\The [src] is still recharging! It will be ready in [round(COOLDOWN_TIMELEFT(kit, teleport_cooldown) / 10)] seconds."))
 		return
 
@@ -147,14 +147,14 @@
 /obj/item/teleporter_kit
 	name = "\improper ASRS Bluespace teleporter"
 	desc = "A bluespace telepad for moving personnel and equipment across small distances to another prelinked teleporter. Ctrl+Click on a tile to deploy, use a wrench to undeploy, use a crowbar to remove the power cell."
-	icon = 'icons/Marine/teleporter.dmi'
+	icon = 'icons/obj/structures/teleporter.dmi'
 	icon_state = "teleporter"
 
 	max_integrity = 200
-	flags_item = IS_DEPLOYABLE|DEPLOYED_WRENCH_DISASSEMBLE
+	item_flags = IS_DEPLOYABLE|DEPLOYED_WRENCH_DISASSEMBLE
 
 	w_class = WEIGHT_CLASS_BULKY
-	flags_equip_slot = ITEM_SLOT_BACK
+	equip_slot_flags = ITEM_SLOT_BACK
 	///The linked teleporter
 	var/obj/item/teleporter_kit/linked_teleporter
 	///The optional cell to power the teleporter if off the grid
@@ -168,7 +168,7 @@
 
 /obj/item/teleporter_kit/Initialize(mapload)
 	. = ..()
-	AddComponent(/datum/component/deployable_item, /obj/machinery/deployable/teleporter, 2 SECONDS)
+	AddComponent(/datum/component/deployable_item, /obj/machinery/deployable/teleporter, 2 SECONDS, 2 SECONDS)
 	cell = new /obj/item/cell/high(src)
 	tele_tag++
 	self_tele_tag = tele_tag
@@ -198,13 +198,13 @@
 
 	var/obj/item/teleporter_kit/gadget = I
 	if(linked_teleporter)
-		balloon_alert(user, "The teleporter is already linked with another!")
+		balloon_alert(user, "already linked!")
 		return
 	if(linked_teleporter == src)
-		balloon_alert(user, "You can't link the teleporter with itself!")
+		balloon_alert(user, "can't link this to itself!")
 		return
 	linked_teleporter = linked_teleporter
-	balloon_alert(user, "You link both teleporters to each others.")
+	balloon_alert(user, "linked")
 
 	set_linked_teleporter(gadget)
 	gadget.set_linked_teleporter(src)

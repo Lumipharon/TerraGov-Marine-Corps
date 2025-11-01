@@ -18,7 +18,7 @@
 	. = ..()
 	set_cockpit_overlay("cockpit_closed")
 	RegisterSignal(SSdcs, COMSIG_GLOB_CAS_LASER_CREATED, PROC_REF(receive_laser_cas))
-	RegisterSignals(SSdcs, list(COMSIG_GLOB_OPEN_TIMED_SHUTTERS_LATE, COMSIG_GLOB_OPEN_TIMED_SHUTTERS_XENO_HIVEMIND, COMSIG_GLOB_OPEN_SHUTTERS_EARLY, COMSIG_GLOB_TADPOLE_LAUNCHED), PROC_REF(cas_usable))
+	RegisterSignals(SSdcs, list(COMSIG_GLOB_OPEN_TIMED_SHUTTERS_LATE, COMSIG_GLOB_OPEN_SHUTTERS_EARLY, COMSIG_GLOB_TADPOLE_LAUNCHED), PROC_REF(cas_usable))
 
 /obj/structure/caspart/caschair/Destroy()
 	owner?.chair = null
@@ -37,7 +37,7 @@
 
 /obj/structure/caspart/caschair/proc/cas_usable(datum/source)
 	SIGNAL_HANDLER
-	UnregisterSignal(SSdcs, list(COMSIG_GLOB_OPEN_TIMED_SHUTTERS_LATE, COMSIG_GLOB_OPEN_TIMED_SHUTTERS_XENO_HIVEMIND, COMSIG_GLOB_OPEN_SHUTTERS_EARLY, COMSIG_GLOB_TADPOLE_LAUNCHED))
+	UnregisterSignal(SSdcs, list(COMSIG_GLOB_OPEN_TIMED_SHUTTERS_LATE, COMSIG_GLOB_OPEN_SHUTTERS_EARLY, COMSIG_GLOB_TADPOLE_LAUNCHED))
 	cas_usable = TRUE
 	if(occupant)
 		to_chat(occupant, span_notice("Combat initiated, CAS now available."))
@@ -45,15 +45,15 @@
 ///Handles updating the cockpit overlay
 /obj/structure/caspart/caschair/proc/set_cockpit_overlay(new_state)
 	cut_overlays()
-	cockpit = image('icons/Marine/cas_plane_cockpit.dmi', src, new_state)
+	cockpit = image('icons/obj/structures/cas_cockpit.dmi', src, new_state)
 	cockpit.pixel_x = -16
 	cockpit.pixel_y = -32
 	cockpit.layer = ABOVE_ALL_MOB_LAYER
 	add_overlay(cockpit)
-	var/image/side = image('icons/Marine/casship.dmi', src, "3")
+	var/image/side = image('icons/turf/cas.dmi', src, "3")
 	side.pixel_x = 32
 	add_overlay(side)
-	side = image('icons/Marine/casship.dmi', src, "6")
+	side = image('icons/turf/cas.dmi', src, "6")
 	side.pixel_x = -32
 	add_overlay(side)
 
@@ -144,15 +144,15 @@
 	occupant.forceMove(get_step(loc, WEST))
 	occupant = null
 
-/obj/structure/caspart/caschair/attack_alien(mob/living/carbon/xenomorph/X, damage_amount, damage_type, damage_flag, effects, armor_penetration, isrightclick)
+/obj/structure/caspart/caschair/attack_alien(mob/living/carbon/xenomorph/xeno_attacker, damage_amount = xeno_attacker.xeno_caste.melee_damage, damage_type = BRUTE, armor_type = MELEE, effects = TRUE, armor_penetration = xeno_attacker.xeno_caste.melee_ap, isrightclick = FALSE)
 	if(!occupant)
-		to_chat(X, span_xenowarning("There is nothing of interest in there."))
+		to_chat(xeno_attacker, span_xenowarning("There is nothing of interest in there."))
 		return
-	if(X.status_flags & INCORPOREAL || X.do_actions)
+	if(xeno_attacker.status_flags & INCORPOREAL || xeno_attacker.do_actions)
 		return
-	visible_message(span_warning("[X] begins to pry the [src]'s cover!"), 3)
+	visible_message(span_warning("[xeno_attacker] begins to pry the [src]'s cover!"), 3)
 	playsound(src,'sound/effects/metal_creaking.ogg', 25, 1)
-	if(!do_after(X, 2 SECONDS))
+	if(!do_after(xeno_attacker, 2 SECONDS))
 		return
 	playsound(loc, 'sound/effects/metal_creaking.ogg', 25, 1)
 	eject_user(TRUE)
@@ -226,6 +226,7 @@
 		if("change_weapon")
 			var/selection = text2num(params["selection"])
 			owner.active_weapon = owner.equipments[selection]
+			occupant.client.mouse_pointer_icon = owner.active_weapon.ammo_equipped.crosshair
 		if("cycle_attackdir")
 			if(params["newdir"] == null)
 				owner.attackdir = turn(owner.attackdir, 90)
@@ -236,3 +237,4 @@
 /obj/structure/caspart/caschair/on_unset_interaction(mob/M)
 	if(M == occupant)
 		owner.end_cas_mission(M)
+		M.client.mouse_pointer_icon = initial(M.client.mouse_pointer_icon)

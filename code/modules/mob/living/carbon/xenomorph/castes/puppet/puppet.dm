@@ -1,5 +1,5 @@
 /mob/living/carbon/xenomorph/puppet
-	caste_base_type = /mob/living/carbon/xenomorph/puppet
+	caste_base_type = /datum/xeno_caste/puppet
 	name = "Puppet"
 	desc = "A reanimated body, crudely pieced together and held in place by an ominous energy tethered to some unknown force."
 	icon = 'icons/Xeno/castes/puppet.dmi'
@@ -8,7 +8,6 @@
 	maxHealth = 250
 	plasma_stored = 0
 	pixel_x = 0
-	old_x = 0
 	tier = XENO_TIER_MINION
 	upgrade = XENO_UPGRADE_BASETYPE
 	pull_speed = -1
@@ -27,6 +26,7 @@
 	if(puppeteer)
 		weak_master = WEAKREF(puppeteer)
 		transfer_to_hive(puppeteer.hivenumber)
+		RegisterSignal(puppeteer, COMSIG_MOB_DEATH, PROC_REF(on_puppeteer_death))
 	AddComponent(/datum/component/ai_controller, /datum/ai_behavior/puppet, puppeteer)
 
 /mob/living/carbon/xenomorph/puppet/on_death()
@@ -34,7 +34,7 @@
 	if(!QDELETED(src))
 		gib()
 
-/mob/living/carbon/xenomorph/puppet/Life()
+/mob/living/carbon/xenomorph/puppet/Life(seconds_per_tick, times_fired)
 	. = ..()
 	var/atom/movable/master = weak_master?.resolve()
 	if(!master)
@@ -44,17 +44,16 @@
 	else
 		adjustBruteLoss(-5)
 
-/mob/living/carbon/xenomorph/puppet/can_receive_aura(aura_type, atom/source, datum/aura_bearer/bearer)
-	. = ..()
-	var/atom/movable/master = weak_master?.resolve()
-	if(!master)
-		return
-	if(source != master) //puppeteer phero only
-		return FALSE
-
 /mob/living/carbon/xenomorph/puppet/med_hud_set_status()
 	. = ..()
 	hud_set_blessings()
+
+///Gibs on puppeteer death
+/mob/living/carbon/xenomorph/puppet/proc/on_puppeteer_death(datum/source)
+	SIGNAL_HANDLER
+	if(QDELETED(src))
+		return
+	INVOKE_ASYNC(src, PROC_REF(gib))
 
 /mob/living/carbon/xenomorph/puppet/proc/hud_set_blessings()
 	var/image/holder = hud_list[XENO_BLESSING_HUD]
@@ -62,4 +61,4 @@
 		return
 	for(var/datum/status_effect/effect AS in status_effects)
 		if(istype(effect, /datum/status_effect/blessing))
-			holder.overlays += image('icons/mob/hud.dmi', icon_state = initial(effect.id))
+			holder.overlays += image('icons/mob/hud/xeno.dmi', icon_state = initial(effect.id))

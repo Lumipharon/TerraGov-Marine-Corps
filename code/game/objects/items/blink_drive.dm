@@ -6,13 +6,13 @@
 	name = "blink drive"
 	desc = "A portable Bluespace Displacement Drive, otherwise known as a blink drive. Can teleport the user across short distances with a degree of unreliability, with potentially fatal results. Teleporting past 5 tiles, to tiles out of sight or rapid use of the drive add variance to the teleportation destination. <b>Alt right click or middleclick to teleport to a destination when the blink drive is equipped.</b>"
 	icon = 'icons/obj/items/jetpack.dmi'
-	item_icons = list(
+	worn_icon_list = list(
 		slot_l_hand_str = 'icons/mob/inhands/equipment/backpacks_left.dmi',
 		slot_r_hand_str = 'icons/mob/inhands/equipment/backpacks_right.dmi',
 	)
 	icon_state = "bluespace_pack"
 	w_class = WEIGHT_CLASS_BULKY
-	flags_equip_slot = ITEM_SLOT_BACK
+	equip_slot_flags = ITEM_SLOT_BACK
 	obj_flags = CAN_BE_HIT
 	light_range = 0.1
 	light_power = 0.1
@@ -31,7 +31,7 @@
 	. = ..()
 	blink_action = new(src)
 
-/obj/item/blink_drive/update_icon()
+/obj/item/blink_drive/update_icon(updates=ALL)
 	. = ..()
 	equipped_user?.update_inv_back()
 	if(charges)
@@ -66,16 +66,24 @@
 
 /obj/item/blink_drive/apply_custom(mutable_appearance/standing, inhands, icon_used, state_used)
 	. = ..()
-	var/mutable_appearance/emissive_overlay = emissive_appearance(icon_used, "[state_used]_emissive")
+	var/mutable_appearance/emissive_overlay = emissive_appearance(icon_used, "[state_used]_emissive", src)
 	standing.overlays.Add(emissive_overlay)
 
 /obj/item/blink_drive/ui_action_click(mob/user, datum/action/item_action/action, target)
-	teleport(target, user)
+	return teleport(target, user)
+
+/obj/item/blink_drive/emp_act(severity)
+	. = ..()
+	playsound(src, 'sound/magic/lightningshock.ogg', 50, FALSE)
+	charges = 0
+	deltimer(charge_timer)
+	charge_timer = addtimer(CALLBACK(src, PROC_REF(recharge)), BLINK_DRIVE_CHARGE_TIME * (6 - severity), TIMER_STOPPABLE)
+	update_appearance(UPDATE_ICON)
 
 ///Handles the actual teleportation
 /obj/item/blink_drive/proc/teleport(atom/A, mob/user)
 	if(charges <= 0)
-		user.balloon_alert(user, "no charge")
+		user.balloon_alert(user, "no charge!")
 		playsound(src, 'sound/items/blink_empty.ogg', 25, 1)
 		return
 	var/turf/target_turf = get_turf(A)
@@ -86,7 +94,7 @@
 	var/target_distance = get_dist(user, target_turf)
 
 	if(target_distance > BLINK_DRIVE_RANGE)
-		user.balloon_alert(user, "too far")
+		user.balloon_alert(user, "too far!")
 		return
 
 	user.face_atom(target_turf)
@@ -94,7 +102,7 @@
 	var/instability = 0 //certain factors can make the teleport unreliable
 	if(target_distance > BLINK_DRIVE_RANGE - 2)
 		instability ++
-	if(!COOLDOWN_CHECK(src, blink_stability_cooldown))
+	if(!COOLDOWN_FINISHED(src, blink_stability_cooldown))
 		instability ++
 	if(!line_of_sight(user, target_turf, 9))
 		instability ++
@@ -128,7 +136,8 @@
 	charges --
 	deltimer(charge_timer)
 	charge_timer = addtimer(CALLBACK(src, PROC_REF(recharge)), BLINK_DRIVE_CHARGE_TIME * 2, TIMER_STOPPABLE)
-	update_icon()
+	update_appearance(UPDATE_ICON)
+	return TRUE
 
 ///Recharges the drive, and sets another timer if not maxed out
 /obj/item/blink_drive/proc/recharge()
@@ -138,7 +147,7 @@
 		charge_timer = addtimer(CALLBACK(src, PROC_REF(recharge)), BLINK_DRIVE_CHARGE_TIME, TIMER_STOPPABLE)
 	else
 		charge_timer = null
-	update_icon()
+	update_appearance(UPDATE_ICON)
 
 ///The effects applied on teleporting from or to a location
 /obj/item/blink_drive/proc/teleport_debuff_aoe(atom/movable/teleporter)
@@ -188,14 +197,41 @@
 	name = "Use Blink Drive"
 	action_icon_state = "axe_sweep"
 	desc = "Teleport a short distance instantly."
-	keybind_flags = ABILITY_USE_STAGGERED|ABILITY_USE_BUSY
+	use_state_flags = ABILITY_USE_STAGGERED|ABILITY_USE_BUSY
 	keybinding_signals = list(KEYBINDING_NORMAL = COMSIG_ITEM_TOGGLE_BLINKDRIVE)
 
-/datum/action/ability/activable/item_toggle/blink_drive/can_use_ability(silent, override_flags, selecting)
+/datum/action/ability/activable/item_toggle/blink_drive/can_use_ability(atom/A, silent = FALSE, override_flags)
 	var/mob/living/carbon/carbon_owner = owner
 	if(carbon_owner.incapacitated() || carbon_owner.lying_angle)
 		return FALSE
 	if(is_mainship_level(carbon_owner.z))
-		carbon_owner.balloon_alert(carbon_owner, "can't use here")
+		carbon_owner.balloon_alert(carbon_owner, "can't use that here!")
 		return FALSE
 	return ..()
+
+/datum/action/ability/activable/item_toggle/blink_drive/ai_should_start_consider()
+	return TRUE
+
+/datum/action/ability/activable/item_toggle/blink_drive/ai_should_use(atom/target)
+	var/obj/item/blink_drive/blink_parent = src.target
+	if(isainode(target))
+		if(blink_parent.charges < 2) //keep one for combat
+			return FALSE
+		if(get_dist(owner, target) > 5)
+			return FALSE
+		if(!can_use_ability(target, override_flags = ABILITY_IGNORE_SELECTED_ABILITY))
+			return FALSE
+		return TRUE
+
+	if(!(isliving(target) || ismecha(target) || isarmoredvehicle(target)))
+		return FALSE
+	var/atom/movable/movable_target = target
+	if(movable_target.faction == owner.faction)
+		return FALSE
+	if(!can_use_ability(movable_target, override_flags = ABILITY_IGNORE_SELECTED_ABILITY))
+		return FALSE
+	if(!blink_parent.charges)
+		return FALSE
+	if(get_dist(owner, movable_target) > 7)
+		return FALSE
+	return TRUE

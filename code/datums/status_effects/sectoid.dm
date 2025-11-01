@@ -47,11 +47,18 @@
 /datum/status_effect/mindmeld/on_remove()
 	link_target.balloon_alert(link_target, "mindmeld inactive")
 	REMOVE_TRAIT(link_target, TRAIT_MINDMELDED, TRAIT_STATUS_EFFECT(id))
-	UnregisterSignal(link_target, COMSIG_MOB_DEATH)
+	link_target.UnregisterSignal(link_target, list(
+		COMSIG_LIVING_STATUS_STUN,
+		COMSIG_LIVING_STATUS_KNOCKDOWN,
+		COMSIG_LIVING_STATUS_PARALYZE,
+		COMSIG_LIVING_STATUS_UNCONSCIOUS,
+		COMSIG_LIVING_STATUS_CONFUSED,
+		COMSIG_LIVING_STATUS_STAGGER,
+	))
 	check_range()
 	return ..()
 
-/datum/status_effect/mindmeld/tick()
+/datum/status_effect/mindmeld/tick(delta_time)
 	check_range()
 
 ///Checks if mob is in buff range and toggles as required
@@ -107,7 +114,7 @@
 	. = ..()
 	owner.remove_filter("[id]")
 
-/datum/status_effect/reknit_form/tick()
+/datum/status_effect/reknit_form/tick(delta_time)
 	if(ishuman(owner))
 		var/mob/living/carbon/human/human_owner = owner
 		human_owner.reagent_shock_modifier -= PAIN_REDUCTION_VERY_HEAVY //oof ow ouch

@@ -1,5 +1,5 @@
 /obj/item/restraints
-	item_icons = list(
+	worn_icon_list = list(
 		slot_l_hand_str = 'icons/mob/inhands/equipment/security_left.dmi',
 		slot_r_hand_str = 'icons/mob/inhands/equipment/security_right.dmi',
 	)
@@ -8,7 +8,7 @@
 
 /obj/item/restraints/resisted_against(datum/source)
 	var/mob/living/carbon/perp = source
-	if(TIMER_COOLDOWN_CHECK(perp, COOLDOWN_RESIST))
+	if(TIMER_COOLDOWN_RUNNING(perp, COOLDOWN_RESIST))
 		return FALSE
 
 	perp.changeNext_move(CLICK_CD_RESIST)
@@ -20,7 +20,7 @@
 
 /mob/living/carbon/proc/resist_restraints(obj/item/restraints/cuffs)
 	if(do_actions)
-		balloon_alert(src, "busy")
+		balloon_alert(src, "busy!")
 		return
 
 	visible_message(span_warning("[src] attempts to remove [cuffs]!"),

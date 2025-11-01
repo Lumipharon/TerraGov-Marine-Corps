@@ -1,7 +1,7 @@
 /obj/machinery/fuelcell_recycler
 	name = "fuel cell recycler"
 	desc = "A large machine with whirring fans and two cylindrical holes in the top. Used to regenerate fuel cells."
-	icon = 'icons/Marine/fusion_eng.dmi'
+	icon = 'icons/obj/machines/fusion_engine.dmi'
 	icon_state = "recycler"
 	anchored = TRUE
 	density = TRUE
@@ -15,6 +15,8 @@
 
 /obj/machinery/fuelcell_recycler/attackby(obj/item/I, mob/user, params)
 	. = ..()
+	if(.)
+		return
 	if(istype(I, /obj/item/fuel_cell))
 		if(!cell_left)
 			if(user.transferItemToLoc(I, src))
@@ -97,9 +99,9 @@
 
 	if(machine_stat & (BROKEN|NOPOWER))
 		if(cell_left != null)
-			src.overlays += "recycler-left-cell"
+			. += "recycler-left-cell"
 		if(cell_right != null)
-			src.overlays += "recycler-right-cell"
+			. += "recycler-right-cell"
 		return
 
 	var/overlay_builder = "recycler-"

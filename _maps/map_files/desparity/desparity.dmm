@@ -16,6 +16,10 @@
 	dir = 4
 	},
 /area/lv624/lazarus/hydroponics)
+"ae" = (
+/obj/effect/landmark/xeno_resin_door,
+/turf/open/floor/plating/ground/dirt,
+/area/lv624/ground/caves/west1/garbledradio)
 "af" = (
 /obj/structure/cable,
 /obj/machinery/atmospherics/pipe/simple/green/hidden{
@@ -40,6 +44,15 @@
 /obj/effect/spawner/random/machinery/random_broken_computer,
 /turf/open/floor/tile/bar,
 /area/lv624/lazarus/fitness)
+"ar" = (
+/obj/structure/cable,
+/obj/machinery/atmospherics/pipe/simple/green/hidden,
+/obj/structure/barricade/solid/deployable{
+	dir = 1
+	},
+/obj/item/stack/rods,
+/turf/open/floor/plating/dmg1,
+/area/lv624/ground/jungle9)
 "as" = (
 /obj/structure/filingcabinet/medical,
 /turf/open/floor/tile/dark/purple2{
@@ -66,6 +79,14 @@
 /obj/effect/ai_node,
 /turf/open/floor/plating/mainship,
 /area/lv624/lazarus/crashed_ship/desparity)
+"az" = (
+/obj/structure/cable,
+/obj/machinery/atmospherics/pipe/simple/green/hidden,
+/obj/structure/barricade/solid/deployable{
+	dir = 1
+	},
+/turf/open/floor/plating/ground/dirt,
+/area/lv624/ground/jungle5)
 "aA" = (
 /obj/structure/table,
 /obj/effect/spawner/random/medical/beaker,
@@ -85,6 +106,10 @@
 /obj/effect/decal/cleanable/dirt,
 /turf/open/floor,
 /area/lv624/lazarus/spaceport)
+"aJ" = (
+/obj/effect/landmark/xeno_resin_wall,
+/turf/open/floor/plating/ground/dirt,
+/area/lv624/ground/caves/central1/garbledradio)
 "aL" = (
 /obj/effect/landmark/corpsespawner/colonist/regular,
 /turf/open/floor/tile/blue/taupeblue,
@@ -227,6 +252,12 @@
 	},
 /turf/open/floor/plating/ground/dirtgrassborder/autosmooth/buildable,
 /area/lv624/ground/jungle5)
+"bA" = (
+/obj/structure/barricade/solid{
+	dir = 1
+	},
+/turf/open/floor/plating/ground/dirt,
+/area/lv624/ground/jungle5)
 "bB" = (
 /obj/item/stack/rods,
 /turf/open/floor/plating/ground/dirtgrassborder/autosmooth/buildable,
@@ -284,7 +315,7 @@
 	dir = 4
 	},
 /obj/structure/stairs{
-	dir = 4
+	dir = 8
 	},
 /turf/open/floor/tile/barber,
 /area/lv624/lazarus/canteen)
@@ -328,13 +359,13 @@
 /obj/machinery/light/small{
 	dir = 4
 	},
-/obj/structure/table/woodentable,
+/obj/structure/table/wood,
 /obj/item/taperecorder,
 /obj/machinery/chem_dispenser/beer{
 	dir = 8;
 	pixel_x = 15
 	},
-/obj/item/reagent_containers/food/drinks/drinkingglass{
+/obj/item/reagent_containers/cup/glass/drinkingglass{
 	pixel_x = -7;
 	pixel_y = -1
 	},
@@ -410,6 +441,10 @@
 	},
 /turf/open/ground/grass/weedable,
 /area/lv624/ground/jungle5)
+"cv" = (
+/obj/effect/landmark/xeno_resin_door,
+/turf/open/floor/plating/ground/dirt,
+/area/lv624/ground/caves/east1/garbledradio)
 "cw" = (
 /obj/machinery/door/airlock/mainship/medical/glass/free_access,
 /obj/machinery/atmospherics/pipe/simple/green/hidden{
@@ -449,6 +484,11 @@
 /obj/structure/flora/ausbushes/grassybush,
 /turf/open/ground/grass/weedable,
 /area/lv624/lazarus/spaceport)
+"cK" = (
+/obj/effect/landmark/weed_node,
+/obj/effect/landmark/xeno_resin_door,
+/turf/open/floor/plating/ground/dirt,
+/area/lv624/ground/caves/west1/garbledradio)
 "cM" = (
 /obj/structure/flora/jungle/vines,
 /obj/machinery/door/poddoor/timed_late/containment/landing_zone,
@@ -479,7 +519,7 @@
 /turf/open/floor/plating,
 /area/lv624/lazarus/hydroponics)
 "cX" = (
-/obj/structure/table/woodentable,
+/obj/structure/table/wood,
 /turf/open/floor/wood,
 /area/lv624/lazarus/captain)
 "cY" = (
@@ -799,7 +839,7 @@
 /obj/effect/landmark/weed_node,
 /obj/effect/ai_node,
 /turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/caves/west1)
+/area/lv624/ground/caves/west1/garbledradio)
 "eF" = (
 /turf/open/floor/plating,
 /area/lv624/lazarus/crashed_ship/desparity)
@@ -1134,6 +1174,12 @@
 /obj/effect/decal/cleanable/dirt,
 /turf/open/floor,
 /area/lv624/lazarus/spaceport)
+"gh" = (
+/obj/structure/barricade/solid/deployable{
+	dir = 4
+	},
+/turf/open/floor/plating/ground/dirt,
+/area/lv624/ground/jungle9)
 "gj" = (
 /turf/closed/wall,
 /area/lv624/lazarus/fitness)
@@ -1331,10 +1377,6 @@
 /obj/structure/cable,
 /turf/open/shuttle/dropship/floor,
 /area/lv624/ground/jungle9)
-"hk" = (
-/obj/effect/landmark/patrol_point/som/som_22,
-/turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/caves/east1)
 "hm" = (
 /obj/structure/closet/crate/explosives,
 /turf/open/floor/rcircuit/off,
@@ -1500,7 +1542,7 @@
 	dir = 8
 	},
 /turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/caves/east1)
+/area/lv624/ground/caves/east1/garbledradio)
 "hY" = (
 /obj/structure/fence,
 /turf/open/floor/marking/warning{
@@ -1557,10 +1599,6 @@
 	},
 /turf/open/ground/grass/weedable,
 /area/lv624/lazarus/spaceport)
-"io" = (
-/obj/effect/landmark/patrol_point/som/som_24,
-/turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/caves/east1)
 "ip" = (
 /obj/structure/window/framed/colony/reinforced,
 /turf/open/floor/tile/red/redtaupe{
@@ -1624,6 +1662,10 @@
 	},
 /turf/open/floor/tile/barber,
 /area/lv624/lazarus/canteen)
+"iE" = (
+/obj/effect/landmark/lv624/fog_blocker/xeno_spawn,
+/turf/open/floor/plating/ground/dirt,
+/area/lv624/ground/caves/west1/garbledradio)
 "iF" = (
 /obj/machinery/light{
 	dir = 8
@@ -1688,11 +1730,6 @@
 "iQ" = (
 /turf/open/floor/plating/dmg1,
 /area/lv624/ground/jungle9)
-"iT" = (
-/obj/structure/cable,
-/obj/machinery/atmospherics/components/unary/vent_pump,
-/turf/open/floor/tile/dark,
-/area/lv624/lazarus/engineering)
 "iV" = (
 /turf/closed/wall/wood,
 /area/lv624/lazarus/chapel)
@@ -1734,11 +1771,6 @@
 /obj/item/toy/plush/rouny,
 /turf/open/floor/plating/ground/dirt,
 /area/lv624/ground/caves/rock)
-"jh" = (
-/obj/machinery/power/geothermal,
-/obj/structure/cable,
-/turf/open/floor/tile/dark,
-/area/lv624/lazarus/engineering)
 "jj" = (
 /turf/open/floor,
 /area/lv624/lazarus/spaceport)
@@ -1746,7 +1778,7 @@
 /obj/effect/landmark/weed_node,
 /obj/effect/landmark/xeno_resin_wall,
 /turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/caves/east1)
+/area/lv624/ground/caves/east1/garbledradio)
 "jl" = (
 /turf/closed/wall,
 /area/lv624/ground/jungle5)
@@ -1834,7 +1866,7 @@
 /area/lv624/lazarus/medbay)
 "jC" = (
 /obj/structure/cable,
-/obj/structure/table/gamblingtable,
+/obj/structure/table/wood/gambling,
 /obj/item/toy/deck/kotahi,
 /turf/open/floor/wood/broken,
 /area/lv624/lazarus/bar)
@@ -1863,6 +1895,11 @@
 /obj/structure/cable,
 /turf/open/ground/grass/weedable,
 /area/lv624/lazarus/spaceport2)
+"jK" = (
+/turf/open/floor/plating/icefloor/warnplate{
+	dir = 10
+	},
+/area/lv624/lazarus/spaceport2)
 "jL" = (
 /obj/machinery/light{
 	dir = 8
@@ -1884,7 +1921,7 @@
 /turf/open/floor/tile/dark,
 /area/lv624/lazarus/research/caves)
 "jU" = (
-/obj/structure/table/gamblingtable,
+/obj/structure/table/wood/gambling,
 /obj/item/toy/dice/d20,
 /turf/open/floor/wood,
 /area/lv624/lazarus/bar)
@@ -1937,6 +1974,12 @@
 	},
 /turf/open/floor/plating/ground/dirt,
 /area/lv624/ground/jungle5)
+"kl" = (
+/obj/structure/barricade/solid/deployable{
+	dir = 8
+	},
+/turf/open/floor/plating/dmg1,
+/area/lv624/ground/jungle9)
 "km" = (
 /turf/closed/wall,
 /area/lv624/lazarus/medbay)
@@ -1996,6 +2039,12 @@
 /obj/machinery/atmospherics/pipe/simple/green/hidden,
 /turf/open/floor/tile/bar,
 /area/lv624/lazarus/fitness)
+"kE" = (
+/obj/structure/cable,
+/obj/effect/ai_node,
+/obj/machinery/atmospherics/components/unary/vent_pump,
+/turf/open/floor/tile/dark,
+/area/lv624/lazarus/engineering)
 "kF" = (
 /obj/structure/table,
 /obj/effect/spawner/random/misc/paperbin{
@@ -2177,6 +2226,18 @@
 /obj/effect/landmark/weed_node,
 /turf/open/floor/plating/ground/dirt,
 /area/lv624/ground/caves/west1)
+"lE" = (
+/obj/structure/cable,
+/obj/machinery/atmospherics/pipe/simple/green/hidden{
+	dir = 4
+	},
+/obj/structure/barricade/solid/deployable{
+	dir = 1
+	},
+/turf/open/floor/podhatch{
+	dir = 5
+	},
+/area/lv624/ground/jungle9)
 "lF" = (
 /obj/effect/ai_node,
 /turf/open/floor/tile/dark,
@@ -2203,14 +2264,6 @@
 	},
 /turf/open/floor/tile/dark,
 /area/lv624/lazarus/engineering)
-"lO" = (
-/obj/machinery/power/geothermal,
-/obj/machinery/light{
-	dir = 4
-	},
-/obj/structure/cable,
-/turf/open/floor/tile/dark,
-/area/lv624/lazarus/engineering)
 "lP" = (
 /obj/machinery/light{
 	dir = 8
@@ -2228,6 +2281,10 @@
 	dir = 8
 	},
 /area/lv624/ground/river3)
+"lS" = (
+/obj/effect/landmark/xeno_resin_wall,
+/turf/open/floor/plating/ground/dirt,
+/area/lv624/ground/caves/east1/garbledradio)
 "lT" = (
 /obj/structure/lattice,
 /turf/open/floor/plating/ground/dirt,
@@ -2259,7 +2316,7 @@
 "md" = (
 /obj/effect/landmark/excavation_site_spawner,
 /turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/caves/west1)
+/area/lv624/ground/caves/west1/garbledradio)
 "me" = (
 /obj/effect/ai_node,
 /obj/machinery/atmospherics/pipe/simple/green/hidden{
@@ -2463,7 +2520,7 @@
 "ne" = (
 /obj/structure/razorwire,
 /turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/caves/east1)
+/area/lv624/ground/caves/east1/garbledradio)
 "ng" = (
 /obj/machinery/atmospherics/pipe/simple/green/hidden,
 /obj/machinery/power/apc/drained{
@@ -2566,7 +2623,7 @@
 /obj/effect/landmark/weed_node,
 /obj/effect/landmark/xeno_resin_door,
 /turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/caves/central1)
+/area/lv624/ground/caves/central1/garbledradio)
 "nJ" = (
 /obj/structure/cable,
 /obj/machinery/atmospherics/pipe/manifold4w/green/hidden,
@@ -2645,7 +2702,7 @@
 /obj/effect/landmark/xeno_resin_door,
 /obj/effect/ai_node,
 /turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/caves/central1)
+/area/lv624/ground/caves/central1/garbledradio)
 "od" = (
 /obj/structure/cable,
 /obj/effect/ai_node,
@@ -2784,6 +2841,10 @@
 "oM" = (
 /turf/open/ground/coast/corner,
 /area/lv624/ground/jungle9)
+"oN" = (
+/obj/effect/landmark/xeno_resin_wall,
+/turf/open/floor/plating/ground/dirt,
+/area/lv624/ground/caves/west1/garbledradio)
 "oO" = (
 /obj/item/clothing/suit/armor/vest/warden,
 /obj/item/clothing/head/helmet/warden,
@@ -2843,6 +2904,10 @@
 	dir = 8
 	},
 /area/lv624/lazarus/research/caves)
+"pb" = (
+/obj/effect/ai_node,
+/turf/open/floor/plating/ground/dirt,
+/area/lv624/ground/caves/west1/garbledradio)
 "pd" = (
 /obj/machinery/light/small{
 	dir = 1
@@ -2988,6 +3053,10 @@
 /obj/effect/spawner/random/engineering/tool,
 /turf/open/floor/plating/ground/dirtgrassborder/autosmooth/buildable,
 /area/lv624/ground/jungle5)
+"pT" = (
+/obj/effect/landmark/weed_node,
+/turf/open/floor/plating/ground/dirt,
+/area/lv624/ground/caves/central1/garbledradio)
 "pX" = (
 /obj/effect/landmark/corpsespawner/security/regular,
 /turf/open/floor/tile/dark,
@@ -3039,6 +3108,10 @@
 "qf" = (
 /turf/open/floor/tile/dark,
 /area/lv624/lazarus/engineering)
+"qg" = (
+/obj/effect/landmark/patrol_point/tgmc_11,
+/turf/open/floor/plating,
+/area/shuttle/drop1/lz1)
 "qi" = (
 /obj/structure/rack,
 /obj/effect/spawner/random/engineering/tool,
@@ -3143,7 +3216,7 @@
 /obj/structure/cable,
 /obj/machinery/atmospherics/pipe/simple/green/hidden,
 /turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/caves/east1)
+/area/lv624/ground/caves/east1/garbledradio)
 "qI" = (
 /obj/effect/landmark/weed_node,
 /turf/open/floor/plating/ground/dirt,
@@ -3173,7 +3246,7 @@
 	dir = 8
 	},
 /obj/structure/cable,
-/obj/structure/table/gamblingtable,
+/obj/structure/table/wood/gambling,
 /obj/item/toy/deck,
 /turf/open/floor/wood,
 /area/lv624/lazarus/bar)
@@ -3211,7 +3284,7 @@
 /area/lv624/lazarus/medbay)
 "qX" = (
 /obj/effect/decal/cleanable/dirt,
-/obj/structure/table/woodentable,
+/obj/structure/table/wood,
 /obj/machinery/chem_dispenser/soda{
 	dir = 4
 	},
@@ -3243,7 +3316,7 @@
 	},
 /area/lv624/lazarus/medbay)
 "rb" = (
-/obj/structure/table/woodentable,
+/obj/structure/table/wood,
 /obj/item/reagent_containers/food/snacks/syndicake,
 /obj/structure/cable,
 /turf/open/floor/wood,
@@ -3262,12 +3335,6 @@
 /obj/machinery/vending/engivend,
 /turf/open/floor/plating,
 /area/lv624/lazarus/engineering)
-"ri" = (
-/obj/structure/barricade/metal{
-	dir = 4
-	},
-/turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/jungle5)
 "rj" = (
 /turf/open/floor/plating/icefloor/warnplate,
 /area/lv624/lazarus/spaceport)
@@ -3381,6 +3448,10 @@
 /obj/effect/spawner/random/engineering/tool,
 /turf/open/floor/plating,
 /area/lv624/lazarus/engineering)
+"rU" = (
+/obj/effect/ai_node,
+/turf/open/floor/plating/ground/dirt,
+/area/lv624/ground/caves/central1/garbledradio)
 "rV" = (
 /obj/structure/bed/chair/dropship/passenger,
 /obj/effect/landmark/corpsespawner/pmc,
@@ -3406,7 +3477,7 @@
 /turf/open/floor/tile/bar,
 /area/lv624/lazarus/canteen)
 "sb" = (
-/obj/structure/prop/vehicle/truck/destructible{
+/obj/structure/prop/vehicle/truck{
 	dir = 4
 	},
 /turf/open/floor/plating/ground/dirt,
@@ -3472,7 +3543,7 @@
 /turf/open/floor/engine/cult{
 	dir = 2
 	},
-/area/lv624/ground/caves/west1)
+/area/lv624/ground/caves/west1/garbledradio)
 "st" = (
 /obj/machinery/atmospherics/pipe/simple/green/hidden,
 /obj/effect/landmark/weed_node,
@@ -3566,10 +3637,6 @@
 	dir = 8
 	},
 /area/lv624/lazarus/hydroponics)
-"sL" = (
-/obj/effect/landmark/patrol_point/tgmc_23,
-/turf/open/floor/plating/mainship,
-/area/lv624/lazarus/crashed_ship/desparity)
 "sM" = (
 /obj/effect/landmark/corpsespawner/doctor,
 /turf/open/floor/tile/dark,
@@ -3595,7 +3662,7 @@
 /area/lv624/ground/jungle9)
 "sR" = (
 /turf/closed/wall/cult,
-/area/lv624/ground/caves/west1)
+/area/lv624/ground/caves/west1/garbledradio)
 "sT" = (
 /obj/structure/flora/ausbushes/grassybush{
 	pixel_x = -22;
@@ -3604,12 +3671,6 @@
 /obj/machinery/door/poddoor/timed_late/containment/landing_zone/lz2,
 /turf/open/ground/grass/weedable,
 /area/lv624/ground/jungle10)
-"sX" = (
-/obj/structure/barricade/metal/deployable{
-	dir = 8
-	},
-/turf/open/floor/plating/dmg1,
-/area/lv624/ground/jungle9)
 "sY" = (
 /obj/structure/flora/ausbushes/fernybush{
 	pixel_y = 17
@@ -3732,6 +3793,10 @@
 	},
 /turf/open/floor/tile/dark,
 /area/lv624/lazarus/research/caves)
+"tD" = (
+/obj/machinery/miner/damaged/platinum,
+/turf/open/floor/plating/ground/dirt,
+/area/lv624/ground/caves/east1/garbledradio)
 "tE" = (
 /obj/effect/landmark/weed_node,
 /turf/open/floor/plating/ground/dirt,
@@ -3745,7 +3810,7 @@
 	dir = 1
 	},
 /turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/caves/east1)
+/area/lv624/ground/caves/east1/garbledradio)
 "tH" = (
 /obj/effect/ai_node,
 /turf/open/floor/plating/ground/dirt,
@@ -3765,12 +3830,12 @@
 "tM" = (
 /obj/effect/landmark/excavation_site_spawner,
 /turf/open/floor/engine/cult,
-/area/lv624/ground/caves/west1)
+/area/lv624/ground/caves/west1/garbledradio)
 "tN" = (
 /obj/effect/turf_decal/siding{
 	dir = 1
 	},
-/obj/structure/table/woodentable,
+/obj/structure/table/wood,
 /obj/item/storage/fancy/candle_box,
 /turf/open/floor/wood,
 /area/lv624/lazarus/chapel)
@@ -3852,10 +3917,6 @@
 /area/lv624/ground/jungle5)
 "uj" = (
 /obj/structure/flora/tree/jungle,
-/turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/jungle9)
-"uk" = (
-/obj/structure/prop/vehicle/truck/destructible,
 /turf/open/floor/plating/ground/dirt,
 /area/lv624/ground/jungle9)
 "um" = (
@@ -4006,18 +4067,6 @@
 /obj/machinery/atmospherics/pipe/simple/green/hidden,
 /turf/open/floor/plating,
 /area/lv624/lazarus/sleep_male)
-"uX" = (
-/obj/structure/cable,
-/obj/machinery/atmospherics/pipe/simple/green/hidden{
-	dir = 4
-	},
-/obj/structure/barricade/metal/deployable{
-	dir = 1
-	},
-/turf/open/floor/podhatch{
-	dir = 5
-	},
-/area/lv624/ground/jungle9)
 "uY" = (
 /obj/structure/cable,
 /obj/machinery/atmospherics/pipe/simple/green/hidden{
@@ -4130,10 +4179,6 @@
 /obj/structure/cable,
 /turf/open/floor/plating/ground/dirt,
 /area/lv624/ground/jungle7)
-"vD" = (
-/obj/effect/landmark/patrol_point/tgmc_21,
-/turf/open/floor/plating/mainship,
-/area/lv624/lazarus/crashed_ship/desparity)
 "vE" = (
 /obj/machinery/light{
 	dir = 1
@@ -4148,14 +4193,6 @@
 /obj/item/cell/apc,
 /turf/open/floor/tile/dark,
 /area/lv624/lazarus/engineering)
-"vF" = (
-/obj/structure/cable,
-/obj/machinery/atmospherics/pipe/simple/green/hidden,
-/obj/structure/barricade/metal/deployable{
-	dir = 1
-	},
-/turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/jungle5)
 "vG" = (
 /obj/structure/closet/secure_closet/engineering_electrical,
 /turf/open/floor/tile/dark,
@@ -4306,7 +4343,7 @@
 /obj/effect/turf_decal/siding{
 	dir = 1
 	},
-/obj/structure/table/woodentable,
+/obj/structure/table/wood,
 /obj/item/reagent_containers/food/drinks/bottle/holywater,
 /turf/open/floor/wood,
 /area/lv624/lazarus/chapel)
@@ -4391,10 +4428,6 @@
 /obj/effect/spawner/random/medical/medhud,
 /turf/open/floor/tile/dark/blue2/corner,
 /area/lv624/lazarus/research/caves)
-"wZ" = (
-/obj/effect/landmark/patrol_point/tgmc_24,
-/turf/open/floor/plating/dmg3,
-/area/lv624/lazarus/crashed_ship/desparity)
 "xc" = (
 /obj/structure/flora/ausbushes/grassybush{
 	pixel_x = 18;
@@ -4543,12 +4576,6 @@
 /obj/item/trash/plate,
 /turf/open/floor/tile/bar,
 /area/lv624/lazarus/canteen)
-"xT" = (
-/obj/effect/landmark/patrol_point/som/som_14,
-/turf/open/floor/plating/icefloor/warnplate{
-	dir = 10
-	},
-/area/lv624/lazarus/spaceport2)
 "xU" = (
 /obj/structure/cable,
 /obj/effect/ai_node,
@@ -4619,6 +4646,14 @@
 /obj/structure/girder,
 /turf/open/floor/plating/ground/dirt,
 /area/lv624/ground/jungle5)
+"yj" = (
+/obj/machinery/light{
+	dir = 4
+	},
+/obj/machinery/power/geothermal,
+/obj/structure/cable,
+/turf/open/floor/tile/dark,
+/area/lv624/lazarus/engineering)
 "yk" = (
 /obj/structure/xenoautopsy/tank/broken,
 /turf/open/floor/tile/dark/red2/corner{
@@ -4674,16 +4709,16 @@
 /turf/open/floor/tile/dark/blue2/corner,
 /area/lv624/lazarus/research/caves)
 "yA" = (
-/obj/structure/table/woodentable,
-/obj/item/reagent_containers/food/drinks/drinkingglass{
+/obj/structure/table/wood,
+/obj/item/reagent_containers/cup/glass/drinkingglass{
 	pixel_x = 3;
 	pixel_y = 3
 	},
-/obj/item/reagent_containers/food/drinks/drinkingglass{
+/obj/item/reagent_containers/cup/glass/drinkingglass{
 	pixel_x = -2;
 	pixel_y = 4
 	},
-/obj/item/reagent_containers/food/drinks/drinkingglass{
+/obj/item/reagent_containers/cup/glass/drinkingglass{
 	pixel_x = -7;
 	pixel_y = -1
 	},
@@ -4826,7 +4861,7 @@
 /turf/open/floor/engine/cult{
 	dir = 2
 	},
-/area/lv624/ground/caves/west1)
+/area/lv624/ground/caves/west1/garbledradio)
 "zi" = (
 /obj/structure/window_frame/wood,
 /obj/item/shard,
@@ -4877,10 +4912,6 @@
 /obj/structure/flora/ausbushes/genericbush,
 /turf/open/ground/grass/weedable,
 /area/lv624/ground/jungle7)
-"zu" = (
-/obj/effect/landmark/patrol_point/som/som_23,
-/turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/caves/east1)
 "zv" = (
 /obj/machinery/light{
 	dir = 1
@@ -4917,7 +4948,7 @@
 "zA" = (
 /obj/effect/landmark/xeno_silo_spawn,
 /turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/caves/east1)
+/area/lv624/ground/caves/east1/garbledradio)
 "zB" = (
 /obj/machinery/door/poddoor/timed_late/containment/landing_zone/lz2,
 /turf/closed/gm/dense,
@@ -4942,7 +4973,7 @@
 "zF" = (
 /obj/effect/landmark/corpsespawner/colonist,
 /turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/caves/central1)
+/area/lv624/ground/caves/central1/garbledradio)
 "zG" = (
 /obj/effect/turf_decal/siding{
 	dir = 9
@@ -5019,12 +5050,6 @@
 	},
 /turf/open/floor/plating/ground/dirtgrassborder/autosmooth/buildable,
 /area/lv624/ground/jungle10)
-"zX" = (
-/obj/structure/barricade/metal/deployable{
-	dir = 4
-	},
-/turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/jungle9)
 "zZ" = (
 /obj/structure/cable,
 /obj/effect/ai_node,
@@ -5046,7 +5071,7 @@
 /obj/effect/turf_decal/siding{
 	dir = 1
 	},
-/obj/structure/table/woodentable,
+/obj/structure/table/wood,
 /obj/item/weapon/nullrod,
 /obj/effect/spawner/random/weaponry/gun,
 /turf/open/floor/wood,
@@ -5238,7 +5263,7 @@
 "Be" = (
 /obj/machinery/miner/damaged/platinum,
 /turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/caves/west1)
+/area/lv624/ground/caves/west1/garbledradio)
 "Bf" = (
 /obj/machinery/atmospherics/pipe/simple/green/hidden{
 	dir = 4
@@ -5364,15 +5389,6 @@
 /obj/structure/closet/firecloset,
 /turf/open/floor/plating,
 /area/lv624/lazarus/research/caves)
-"BJ" = (
-/obj/structure/cable,
-/obj/machinery/atmospherics/pipe/simple/green/hidden,
-/obj/structure/barricade/metal/deployable{
-	dir = 1
-	},
-/obj/item/stack/rods,
-/turf/open/floor/plating/dmg1,
-/area/lv624/ground/jungle9)
 "BK" = (
 /obj/structure/flora/ausbushes/brflowers,
 /turf/open/floor/plating/ground/dirtgrassborder/autosmooth/buildable,
@@ -5394,7 +5410,7 @@
 "BN" = (
 /obj/effect/landmark/xeno_silo_spawn,
 /turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/caves/west1)
+/area/lv624/ground/caves/west1/garbledradio)
 "BO" = (
 /obj/effect/landmark/weed_node,
 /turf/open/floor/marking/bot,
@@ -5412,6 +5428,11 @@
 	dir = 8
 	},
 /area/lv624/ground/river3)
+"BR" = (
+/obj/machinery/power/geothermal,
+/obj/structure/cable,
+/turf/open/floor/tile/dark,
+/area/lv624/lazarus/engineering)
 "BU" = (
 /obj/structure/table,
 /obj/item/storage/bag/plants,
@@ -5663,12 +5684,6 @@
 	},
 /turf/open/floor/plating/ground/dirtgrassborder/autosmooth/buildable,
 /area/lv624/ground/jungle5)
-"Dp" = (
-/obj/structure/flora/jungle/vines,
-/obj/structure/cable,
-/obj/effect/landmark/patrol_point/som/som_13,
-/turf/open/ground/grass/weedable,
-/area/lv624/lazarus/spaceport2)
 "Dq" = (
 /obj/structure/flora/grass/tallgrass/tallgrasscorner{
 	color = "#798963"
@@ -5788,7 +5803,7 @@
 "DU" = (
 /obj/effect/landmark/corpsespawner/colonist/regular,
 /turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/caves/east1)
+/area/lv624/ground/caves/east1/garbledradio)
 "DV" = (
 /obj/structure/cable,
 /obj/effect/ai_node,
@@ -5845,6 +5860,10 @@
 /obj/structure/flora/ausbushes/grassybush,
 /turf/open/floor/plating/ground/dirtgrassborder/autosmooth/buildable,
 /area/lv624/ground/jungle10)
+"Ek" = (
+/obj/effect/ai_node,
+/turf/open/floor/plating/ground/dirt,
+/area/lv624/ground/caves/east1/garbledradio)
 "En" = (
 /obj/machinery/atmospherics/components/unary/vent_pump{
 	dir = 4;
@@ -5911,7 +5930,7 @@
 	dir = 1
 	},
 /turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/caves/east1)
+/area/lv624/ground/caves/east1/garbledradio)
 "ED" = (
 /obj/structure/cable,
 /obj/machinery/atmospherics/pipe/simple/green/hidden{
@@ -5938,7 +5957,12 @@
 /obj/effect/ai_node,
 /obj/effect/landmark/lv624/fog_blocker/xeno_spawn,
 /turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/caves/east1)
+/area/lv624/ground/caves/east1/garbledradio)
+"EM" = (
+/obj/effect/landmark/corpsespawner/colonist/regular,
+/obj/effect/landmark/xeno_spawner_spawn,
+/turf/open/floor/plating/ground/dirt,
+/area/lv624/ground/caves/central1)
 "EN" = (
 /obj/structure/cable,
 /obj/machinery/atmospherics/pipe/simple/green/hidden{
@@ -5952,22 +5976,20 @@
 "EP" = (
 /turf/closed/wall/wood,
 /area/lv624/lazarus/bar)
-"EQ" = (
-/obj/effect/landmark/patrol_point/tgmc_12,
-/obj/machinery/landinglight/lz1{
-	dir = 8
-	},
-/turf/open/floor/plating,
-/area/lv624/lazarus/spaceport)
 "ER" = (
 /obj/effect/landmark/start/job/survivor,
 /turf/open/floor/plating/ground/dirt,
 /area/lv624/ground/jungle7)
+"EU" = (
+/obj/effect/landmark/weed_node,
+/obj/effect/landmark/xeno_resin_wall,
+/turf/open/floor/plating/ground/dirt,
+/area/lv624/ground/caves/west1/garbledradio)
 "EW" = (
 /obj/effect/landmark/weed_node,
 /obj/effect/landmark/xeno_resin_door,
 /turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/caves/east1)
+/area/lv624/ground/caves/east1/garbledradio)
 "EY" = (
 /obj/effect/ai_node,
 /obj/machinery/atmospherics/pipe/simple/green/hidden,
@@ -5975,13 +5997,9 @@
 /obj/structure/cable,
 /turf/open/floor/podhatch/floor,
 /area/lv624/ground/jungle9)
-"Fc" = (
-/obj/effect/landmark/patrol_point/tgmc_22,
-/turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/caves/west1)
 "Fe" = (
 /obj/structure/table,
-/obj/item/trash/barcardine,
+/obj/item/trash/barcaridine,
 /obj/item/clothing/suit/armor/vest/security{
 	pixel_x = 5;
 	pixel_y = 5
@@ -6092,7 +6110,7 @@
 /obj/machinery/light{
 	dir = 4
 	},
-/obj/structure/table/woodentable,
+/obj/structure/table/wood,
 /obj/item/reagent_containers/food/drinks/flask/vacuumflask,
 /turf/open/floor/wood,
 /area/lv624/lazarus/bar)
@@ -6208,6 +6226,10 @@
 	},
 /turf/open/floor/plating/ground/dirt,
 /area/lv624/ground/jungle7)
+"Gm" = (
+/obj/effect/landmark/xeno_resin_door,
+/turf/open/floor/plating/ground/dirt,
+/area/lv624/ground/caves/central1/garbledradio)
 "Gn" = (
 /obj/structure/flora/ausbushes/grassybush{
 	pixel_x = 8;
@@ -6243,9 +6265,7 @@
 	},
 /area/lv624/lazarus/fitness)
 "Gu" = (
-/obj/structure/stairs{
-	dir = 1
-	},
+/obj/structure/stairs,
 /turf/open/floor/wood,
 /area/lv624/lazarus/chapel)
 "Gx" = (
@@ -6261,10 +6281,6 @@
 /obj/item/stack/sheet/metal/small_stack,
 /turf/open/floor/plating/ground/dirt,
 /area/lv624/ground/jungle7)
-"GA" = (
-/obj/effect/landmark/patrol_point/tgmc_11,
-/turf/open/floor/wood,
-/area/lv624/lazarus/spaceport)
 "GC" = (
 /obj/effect/landmark/corpsespawner/colonist,
 /turf/open/ground/grass/weedable,
@@ -6283,7 +6299,7 @@
 	dir = 5
 	},
 /turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/caves/east1)
+/area/lv624/ground/caves/east1/garbledradio)
 "GH" = (
 /obj/structure/closet,
 /obj/effect/spawner/random/misc/plushie,
@@ -6328,7 +6344,7 @@
 	dir = 10
 	},
 /turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/caves/east1)
+/area/lv624/ground/caves/east1/garbledradio)
 "GQ" = (
 /obj/structure/cable,
 /obj/machinery/atmospherics/pipe/simple/green/hidden{
@@ -6338,7 +6354,9 @@
 /area/lv624/ground/jungle9)
 "GR" = (
 /obj/structure/window/framed/wood,
-/obj/structure/curtain/temple,
+/obj/structure/curtain/temple{
+	dir = 4
+	},
 /turf/open/floor/plating,
 /area/lv624/lazarus/chapel)
 "GS" = (
@@ -6397,15 +6415,17 @@
 /obj/effect/landmark/weed_node,
 /obj/effect/ai_node,
 /turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/caves/east1)
+/area/lv624/ground/caves/east1/garbledradio)
 "Hc" = (
 /obj/effect/decal/cleanable/dirt,
 /turf/open/floor/plating,
 /area/lv624/lazarus/captain)
-"He" = (
-/obj/effect/landmark/patrol_point/tgmc_13,
-/turf/open/ground/grass/weedable,
-/area/lv624/lazarus/spaceport)
+"Hd" = (
+/obj/structure/barricade/solid{
+	dir = 4
+	},
+/turf/open/floor/plating/ground/dirt,
+/area/lv624/ground/jungle5)
 "Hg" = (
 /obj/structure/flora/jungle/vines,
 /turf/open/ground/grass/weedable,
@@ -6416,6 +6436,12 @@
 /area/lv624/lazarus/spaceport2)
 "Hi" = (
 /turf/closed/shuttle/dropship_regular/interior_corner,
+/area/lv624/ground/jungle9)
+"Hj" = (
+/obj/structure/prop/vehicle/truck{
+	dir = 8
+	},
+/turf/open/floor/plating/ground/dirt,
 /area/lv624/ground/jungle9)
 "Hk" = (
 /obj/structure/table,
@@ -6453,7 +6479,7 @@
 /obj/effect/ai_node,
 /obj/machinery/atmospherics/pipe/simple/green/hidden,
 /turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/caves/east1)
+/area/lv624/ground/caves/east1/garbledradio)
 "Hu" = (
 /obj/effect/decal/cleanable/blood/oil,
 /turf/open/floor/plating/icefloor,
@@ -6472,7 +6498,7 @@
 /area/lv624/ground/jungle10)
 "HB" = (
 /obj/machinery/computer/secure_data,
-/obj/structure/table/woodentable,
+/obj/structure/table/wood,
 /obj/machinery/light{
 	dir = 1
 	},
@@ -6507,7 +6533,7 @@
 /turf/open/floor/engine/cult{
 	dir = 2
 	},
-/area/lv624/ground/caves/west1)
+/area/lv624/ground/caves/west1/garbledradio)
 "HL" = (
 /obj/machinery/door/airlock/mainship/secure/free_access,
 /turf/open/floor/plating,
@@ -6529,7 +6555,7 @@
 /obj/effect/landmark/xeno_resin_door,
 /obj/machinery/atmospherics/pipe/simple/green/hidden,
 /turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/caves/east1)
+/area/lv624/ground/caves/east1/garbledradio)
 "HV" = (
 /turf/closed/wall,
 /area/lv624/lazarus/sleep_male)
@@ -6801,7 +6827,7 @@
 	},
 /obj/effect/landmark/corpsespawner/colonist,
 /turf/open/floor/cult,
-/area/lv624/ground/caves/west1)
+/area/lv624/ground/caves/west1/garbledradio)
 "Jd" = (
 /obj/machinery/door/airlock/mainship/engineering/free_access,
 /turf/open/floor/tile/dark,
@@ -6982,12 +7008,6 @@
 /obj/structure/flora/ausbushes/lavendergrass,
 /turf/open/ground/grass/weedable,
 /area/lv624/ground/jungle9)
-"JU" = (
-/obj/structure/barricade/metal{
-	dir = 1
-	},
-/turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/jungle5)
 "JV" = (
 /obj/effect/landmark/lv624/fog_blocker/xeno_spawn,
 /turf/closed/wall/wood,
@@ -7115,6 +7135,10 @@
 /obj/effect/landmark/corpsespawner/security/regular,
 /turf/open/floor,
 /area/lv624/lazarus/security)
+"KM" = (
+/obj/effect/landmark/weed_node,
+/turf/open/floor/plating/ground/dirt,
+/area/lv624/ground/caves/east1/garbledradio)
 "KN" = (
 /obj/structure/flora/pottedplant/one,
 /turf/open/floor/tile/blue/taupeblue{
@@ -7460,7 +7484,7 @@
 /obj/effect/landmark/xeno_resin_wall,
 /obj/effect/landmark/lv624/fog_blocker/xeno_spawn,
 /turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/caves/east1)
+/area/lv624/ground/caves/east1/garbledradio)
 "Ms" = (
 /obj/structure/closet/secure_closet/medical2,
 /turf/open/floor/tile/blue/taupebluecorner,
@@ -7632,11 +7656,6 @@
 	},
 /turf/open/floor/plating/ground/dirt,
 /area/lv624/ground/jungle9)
-"Na" = (
-/obj/effect/landmark/patrol_point/tgmc_14,
-/obj/effect/turf_decal/riverdecal,
-/turf/open/floor/plating/ground/dirt,
-/area/lv624/lazarus/spaceport)
 "Nb" = (
 /obj/structure/flora/ausbushes/brflowers,
 /turf/open/ground/grass/weedable,
@@ -7668,7 +7687,9 @@
 /area/lv624/lazarus/engineering)
 "Ng" = (
 /obj/structure/window/framed/wood,
-/obj/structure/curtain/open/temple,
+/obj/structure/curtain/open/temple{
+	dir = 4
+	},
 /turf/open/floor/plating,
 /area/lv624/lazarus/chapel)
 "Nh" = (
@@ -7699,6 +7720,11 @@
 	},
 /turf/open/floor/tile/blue/whitebluefull,
 /area/lv624/lazarus/medbay)
+"Nm" = (
+/obj/effect/landmark/weed_node,
+/obj/effect/ai_node,
+/turf/open/floor/plating/ground/dirt,
+/area/lv624/ground/caves/central1/garbledradio)
 "Nn" = (
 /obj/machinery/atmospherics/pipe/simple/green/hidden{
 	dir = 10
@@ -7818,18 +7844,23 @@
 /turf/open/floor/engine/cult{
 	dir = 2
 	},
-/area/lv624/ground/caves/west1)
+/area/lv624/ground/caves/west1/garbledradio)
 "NW" = (
 /obj/effect/turf_decal/siding{
 	dir = 1
 	},
-/obj/structure/table/woodentable,
+/obj/structure/table/wood,
 /obj/item/clothing/suit/chaplain_hoodie,
 /obj/item/clothing/head/chaplain_hood{
 	pixel_y = 9
 	},
 /turf/open/floor/wood,
 /area/lv624/lazarus/chapel)
+"NX" = (
+/obj/structure/cable,
+/obj/effect/landmark/corpsespawner/colonist,
+/turf/open/floor/tile/dark,
+/area/lv624/lazarus/engineering)
 "NZ" = (
 /obj/machinery/door/airlock/mainship/research/glass/free_access,
 /obj/machinery/atmospherics/pipe/simple/green/hidden{
@@ -7924,7 +7955,7 @@
 /turf/open/floor/engine/cult{
 	dir = 2
 	},
-/area/lv624/ground/caves/west1)
+/area/lv624/ground/caves/west1/garbledradio)
 "Oz" = (
 /obj/structure/bed/chair{
 	dir = 1
@@ -8158,6 +8189,15 @@
 /obj/machinery/atmospherics/pipe/simple/green/hidden,
 /turf/open/floor/wood,
 /area/lv624/lazarus/captain)
+"PE" = (
+/obj/effect/landmark/weed_node,
+/obj/effect/landmark/xeno_resin_wall,
+/turf/open/floor/plating/ground/dirt,
+/area/lv624/ground/caves/central1/garbledradio)
+"PF" = (
+/obj/effect/landmark/weed_node,
+/turf/open/floor/plating/ground/dirt,
+/area/lv624/ground/caves/west1/garbledradio)
 "PG" = (
 /obj/structure/largecrate/random/case/small,
 /turf/open/floor,
@@ -8352,7 +8392,7 @@
 "QO" = (
 /obj/item/paper/brassnote,
 /turf/closed/wall/cult,
-/area/lv624/ground/caves/west1)
+/area/lv624/ground/caves/west1/garbledradio)
 "QP" = (
 /obj/structure/sign/safety/hazard,
 /turf/closed/wall/r_wall,
@@ -8404,12 +8444,6 @@
 /obj/effect/decal/cleanable/blood,
 /turf/open/floor/tile/dark/red2/corner,
 /area/lv624/lazarus/research/caves)
-"Rb" = (
-/obj/structure/cable,
-/obj/machinery/atmospherics/pipe/simple/green/hidden,
-/obj/effect/landmark/corpsespawner/colonist,
-/turf/open/floor/tile/dark,
-/area/lv624/lazarus/engineering)
 "Rc" = (
 /obj/structure/cable,
 /turf/open/floor/plating/ground/dirt,
@@ -8444,7 +8478,7 @@
 "Rj" = (
 /obj/effect/landmark/lv624/fog_blocker/xeno_spawn,
 /turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/caves/east1)
+/area/lv624/ground/caves/east1/garbledradio)
 "Rk" = (
 /obj/structure/cable,
 /obj/machinery/atmospherics/pipe/simple/green/hidden{
@@ -8465,7 +8499,7 @@
 /obj/effect/landmark/weed_node,
 /obj/effect/landmark/lv624/fog_blocker/xeno_spawn,
 /turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/caves/east1)
+/area/lv624/ground/caves/east1/garbledradio)
 "Ro" = (
 /obj/machinery/atmospherics/pipe/simple/green/hidden,
 /turf/open/floor/tile,
@@ -8491,7 +8525,7 @@
 "Ru" = (
 /obj/structure/table,
 /obj/item/clothing/head/chefhat,
-/obj/item/clothing/suit/chef/classic,
+/obj/item/clothing/suit/storage/chef/classic,
 /obj/item/tool/kitchen/rollingpin,
 /obj/effect/decal/cleanable/dirt,
 /turf/open/floor/tile/barber,
@@ -8526,6 +8560,10 @@
 /obj/effect/decal/cleanable/dirt,
 /turf/open/floor,
 /area/lv624/lazarus/spaceport)
+"RE" = (
+/obj/effect/landmark/patrol_point/som/som_11,
+/turf/open/floor/plating,
+/area/shuttle/drop2/lz2)
 "RF" = (
 /obj/machinery/sleeper,
 /turf/open/floor/tile/blue/taupeblue{
@@ -8647,7 +8685,7 @@
 /area/lv624/lazarus/captain)
 "Sh" = (
 /turf/open/floor/engine/cult,
-/area/lv624/ground/caves/west1)
+/area/lv624/ground/caves/west1/garbledradio)
 "Si" = (
 /obj/structure/bed/stool,
 /turf/open/floor/wood,
@@ -8679,10 +8717,6 @@
 /obj/machinery/sleeper,
 /turf/open/floor/tile/blue/taupebluecorner,
 /area/lv624/lazarus/medbay)
-"Sr" = (
-/obj/effect/landmark/patrol_point/som/som_12,
-/turf/open/floor,
-/area/lv624/lazarus/spaceport2)
 "Ss" = (
 /obj/structure/flora/grass/tallgrass/tallgrasscorner{
 	color = "#798963";
@@ -8735,11 +8769,6 @@
 /obj/item/tool/surgery/bonesetter,
 /turf/open/floor/tile/blue/whitebluefull,
 /area/lv624/lazarus/research/caves)
-"SE" = (
-/obj/structure/cable,
-/obj/effect/landmark/patrol_point/som/som_11,
-/turf/open/floor/plating,
-/area/lv624/lazarus/spaceport2)
 "SF" = (
 /obj/effect/landmark/start/job/xenomorph,
 /turf/open/floor/plating/dmg3,
@@ -8768,6 +8797,11 @@
 /obj/structure/flora/ausbushes/grassybush,
 /turf/open/ground/grass/weedable,
 /area/lv624/ground/jungle9)
+"SL" = (
+/obj/effect/landmark/xeno_resin_wall,
+/obj/effect/landmark/lv624/fog_blocker/xeno_spawn,
+/turf/open/floor/plating/ground/dirt,
+/area/lv624/ground/caves/west1/garbledradio)
 "SM" = (
 /turf/closed/wall/wood/reinforced,
 /area/lv624/lazarus/spaceport)
@@ -8816,7 +8850,7 @@
 "Ta" = (
 /obj/effect/landmark/corpsespawner/colonist,
 /turf/open/floor/plating/ground/dirt,
-/area/lv624/ground/caves/east1)
+/area/lv624/ground/caves/east1/garbledradio)
 "Tb" = (
 /obj/machinery/atmospherics/components/unary/vent_pump{
 	on = 1
@@ -8895,6 +8929,9 @@
 /obj/machinery/computer/intel_computer,
 /turf/open/floor/tile/bar,
 /area/lv624/lazarus/fitness)
+"Tq" = (
+/turf/open/floor/plating/ground/dirt,
+/area/lv624/ground/caves/west1/garbledradio)
 "Tr" = (
 /obj/machinery/door/airlock/mainship/medical/glass/free_access{
 	dir = 2
@@ -9155,6 +9192,9 @@
 	},
 /turf/open/floor/plating/ground/dirt,
 /area/lv624/ground/jungle9)
+"UK" = (
+/turf/open/floor/plating/ground/dirt,
+/area/lv624/ground/caves/central1/garbledradio)
 "UL" = (
 /obj/structure/flora/grass/tallgrass/tallgrasscorner{
 	color = "#798963";
@@ -9275,7 +9315,7 @@
 /area/lv624/ground/jungle9)
 "Vl" = (
 /obj/machinery/computer/med_data/laptop,
-/obj/structure/table/woodentable,
+/obj/structure/table/wood,
 /obj/effect/decal/cleanable/dirt,
 /turf/open/floor/grimy,
 /area/lv624/lazarus/captain)
@@ -9404,7 +9444,7 @@
 /turf/open/floor/plating,
 /area/lv624/lazarus/spaceport2)
 "VQ" = (
-/obj/structure/table/woodentable,
+/obj/structure/table/wood,
 /obj/machinery/atmospherics/pipe/simple/green/hidden,
 /turf/open/floor/wood,
 /area/lv624/lazarus/captain)
@@ -9645,6 +9685,10 @@
 /obj/effect/ai_node,
 /turf/open/liquid/water/river,
 /area/lv624/lazarus/fitness)
+"Xc" = (
+/obj/effect/landmark/patrol_point/tgmc_21,
+/turf/open/floor/plating/ground/dirt,
+/area/lv624/ground/caves/west1)
 "Xd" = (
 /obj/structure/table,
 /obj/item/reagent_containers/food/snacks/pizzapasta/meatballspaghetti,
@@ -9787,7 +9831,7 @@
 /turf/open/floor/engine/cult{
 	dir = 2
 	},
-/area/lv624/ground/caves/west1)
+/area/lv624/ground/caves/west1/garbledradio)
 "XO" = (
 /turf/closed/wall,
 /area/lv624/lazarus/research/caves)
@@ -9877,7 +9921,7 @@
 /turf/open/floor/tile/blue/whitebluefull,
 /area/lv624/lazarus/medbay)
 "Yf" = (
-/obj/structure/table/woodentable,
+/obj/structure/table/wood,
 /obj/item/trash/cigbutt/cigarbutt,
 /obj/machinery/cell_charger,
 /obj/effect/spawner/random/misc/cigarettes,
@@ -10158,6 +10202,9 @@
 	dir = 8
 	},
 /area/lv624/lazarus/sleep_male)
+"ZK" = (
+/turf/open/floor/plating/ground/dirt,
+/area/lv624/ground/caves/east1/garbledradio)
 "ZL" = (
 /obj/machinery/door/airlock/mainship/engineering/free_access,
 /obj/structure/cable,
@@ -10357,13 +10404,13 @@ wh
 wh
 ah
 ah
-LE
-LE
-LE
-LE
-vt
-vt
-vt
+iE
+iE
+iE
+iE
+Tq
+Tq
+Tq
 wh
 wh
 wh
@@ -10454,21 +10501,21 @@ dw
 dw
 dw
 Ib
-Ib
+SL
 ah
 ah
 wh
 ah
 ah
-vt
-vt
-vt
-vt
-LE
-vt
-vt
-vt
-vt
+Tq
+Tq
+Tq
+Tq
+iE
+Tq
+Tq
+Tq
+Tq
 FC
 FC
 FC
@@ -10558,22 +10605,22 @@ rg
 vt
 vt
 LE
-lD
-vt
+PF
+Tq
 ah
 ah
 ah
-lD
-vt
-vX
-vt
-lD
-LE
-vt
-vX
-lD
-vt
-dw
+PF
+Tq
+pb
+Tq
+PF
+iE
+Tq
+pb
+PF
+Tq
+oN
 FC
 FC
 FC
@@ -10662,25 +10709,25 @@ Lt
 vt
 vX
 LE
-vX
-vt
-vt
-vt
-vt
+pb
+Tq
+Tq
+Tq
+Tq
 BN
-vt
-vX
-vt
-vt
-LE
-vt
-vt
-vX
-vt
-Lt
-vt
-vt
-vt
+Tq
+pb
+Tq
+Tq
+iE
+Tq
+Tq
+pb
+Tq
+ae
+Tq
+Tq
+Tq
 wM
 tH
 wM
@@ -10727,7 +10774,7 @@ fn
 Yn
 fn
 fn
-Sr
+fn
 fn
 hw
 wl
@@ -10748,7 +10795,7 @@ FC
 FC
 FC
 FC
-Fc
+vt
 vt
 vt
 lD
@@ -10766,25 +10813,25 @@ dw
 vt
 vt
 LE
-vt
-vX
-vt
-vt
-vt
-vt
-vX
-vt
+Tq
+pb
+Tq
+Tq
+Tq
+Tq
+pb
+Tq
 Ew
 Ew
 Ew
-vt
-vt
+Tq
+Tq
 FC
-vt
-Lt
-vt
-lD
-vt
+Tq
+ae
+Tq
+PF
+Tq
 wM
 wM
 JY
@@ -10834,7 +10881,7 @@ Yn
 Yn
 Yn
 Yn
-SE
+SQ
 TA
 TA
 TA
@@ -10854,7 +10901,7 @@ FC
 vt
 Br
 vX
-vt
+Xc
 vX
 vt
 vt
@@ -10870,22 +10917,22 @@ Lt
 vt
 vt
 LE
-vt
-lD
-vX
-vt
-vt
+Tq
+PF
+pb
+Tq
+Tq
 eD
-vt
-vt
+Tq
+Tq
 Ew
 FC
 FC
-vt
-lD
+Tq
+PF
 FC
-vt
-dw
+Tq
+oN
 FC
 FC
 FC
@@ -10974,23 +11021,23 @@ Lt
 vt
 vt
 LE
-vt
-vt
-vt
-vt
+Tq
+Tq
+Tq
+Tq
 Be
-vt
-vt
+Tq
+Tq
 Ew
 Ew
 FC
 FC
-vt
-vt
+Tq
+Tq
 FC
-vt
-lD
-dw
+Tq
+PF
+oN
 FC
 FC
 wM
@@ -11044,7 +11091,7 @@ ek
 ek
 yp
 yp
-xT
+jK
 Um
 vA
 xz
@@ -11058,7 +11105,7 @@ bT
 Oh
 bX
 GW
-vD
+mU
 bT
 Br
 vt
@@ -11078,23 +11125,23 @@ dw
 vt
 vt
 LE
-vt
-vt
-vt
-vt
-vt
-vt
+Tq
+Tq
+Tq
+Tq
+Tq
+Tq
 Ew
 Ew
 FC
 FC
 FC
-vt
-vt
+Tq
+Tq
 FC
 FC
-vt
-dw
+Tq
+oN
 FC
 FC
 LX
@@ -11182,10 +11229,10 @@ wh
 wh
 wh
 LE
-vt
-vt
-vt
-vt
+Tq
+Tq
+Tq
+Tq
 ah
 ah
 Ew
@@ -11193,12 +11240,12 @@ FC
 FC
 FC
 FC
-vt
-vt
-dw
-vt
+Tq
+Tq
+oN
+Tq
 md
-dw
+oN
 FC
 FC
 wM
@@ -11249,7 +11296,7 @@ Ux
 Ux
 Ux
 Ux
-Ux
+RE
 Ux
 GF
 YP
@@ -11296,13 +11343,13 @@ FC
 FC
 FC
 FC
-lD
-vt
-vX
-rg
-vt
-vt
-dw
+PF
+Tq
+pb
+cK
+Tq
+Tq
+oN
 FC
 FC
 wM
@@ -11358,7 +11405,7 @@ Ux
 Ux
 YP
 Um
-Dp
+jJ
 Uw
 wh
 "}
@@ -11398,12 +11445,12 @@ wh
 FC
 FC
 FC
-vt
-vt
-vt
-vX
-vt
-dw
+Tq
+Tq
+Tq
+pb
+Tq
+oN
 FC
 FC
 FC
@@ -11500,14 +11547,14 @@ FC
 FC
 FC
 FC
-vt
-vt
-vt
-vt
-vX
-vt
-vt
-dw
+Tq
+Tq
+Tq
+Tq
+pb
+Tq
+Tq
+oN
 FC
 FC
 FC
@@ -11598,20 +11645,20 @@ FC
 FC
 FC
 FC
-dw
-dw
-dw
-dw
-dw
-dw
-vt
-vt
-vt
-vt
-vt
-vt
-vt
-dw
+oN
+oN
+oN
+oN
+oN
+oN
+Tq
+Tq
+Tq
+Tq
+Tq
+Tq
+Tq
+oN
 FC
 FC
 FC
@@ -11700,22 +11747,22 @@ FC
 wh
 FC
 FC
-dw
-dw
-dw
-vt
-vt
-vt
-vt
-vt
-lD
-vt
-vt
-vt
-lD
-vt
-dw
-dw
+oN
+oN
+oN
+Tq
+Tq
+Tq
+Tq
+Tq
+PF
+Tq
+Tq
+Tq
+PF
+Tq
+oN
+oN
 FC
 FC
 FC
@@ -11785,7 +11832,7 @@ bT
 xJ
 tK
 tK
-sL
+mU
 Oh
 vt
 lD
@@ -11803,22 +11850,22 @@ wh
 FC
 wh
 FC
-dw
-dw
-vt
-lD
-vX
-vt
-vt
-vt
-vt
-vX
-vt
-vt
-vt
-vX
-dw
-dw
+oN
+oN
+Tq
+PF
+pb
+Tq
+Tq
+Tq
+Tq
+pb
+Tq
+Tq
+Tq
+pb
+oN
+oN
 FC
 FC
 FC
@@ -11907,26 +11954,26 @@ wh
 FC
 wh
 FC
-dw
-vt
-vt
-vX
+oN
+Tq
+Tq
+pb
 sR
 Sh
 Sh
 sR
-vt
-vt
-vt
-vt
-vt
-dw
-dw
+Tq
+Tq
+Tq
+Tq
+Tq
+oN
+oN
 FC
 FC
 FC
 FC
-lD
+PF
 mu
 Me
 Nh
@@ -12010,27 +12057,27 @@ FC
 FC
 FC
 wh
-dw
-dw
-vt
-vX
+oN
+oN
+Tq
+pb
 sR
 sR
 zg
 zg
 sR
 sR
-vt
-vt
-dw
-dw
-dw
+Tq
+Tq
+oN
+oN
+oN
 FC
 FC
 FC
 FC
 FC
-vt
+Tq
 mu
 Mb
 Nk
@@ -12114,19 +12161,19 @@ vt
 FC
 FC
 dw
-dw
-vt
-vt
-vt
+oN
+Tq
+Tq
+Tq
 sR
 XM
 zg
 zg
 zg
 sR
-lD
-vt
-dw
+PF
+Tq
+oN
 FC
 FC
 FC
@@ -12134,7 +12181,7 @@ FC
 FC
 FC
 FC
-vt
+Tq
 mu
 km
 kY
@@ -12218,27 +12265,27 @@ vt
 zO
 zO
 Fi
-Lt
-vt
-lD
-vt
+ae
+Tq
+PF
+Tq
 zg
 zg
 ss
 tM
 zg
 zg
-vt
-vt
-dw
+Tq
+Tq
+oN
 FC
 FC
 FC
 FC
 FC
 FC
-vt
-vt
+Tq
+Tq
 mu
 zm
 NA
@@ -12306,7 +12353,7 @@ aD
 jM
 mU
 mU
-wZ
+tK
 bT
 Oh
 vX
@@ -12322,18 +12369,18 @@ vt
 vX
 vt
 vt
-Lt
-vX
-vt
-vt
+ae
+pb
+Tq
+Tq
 zg
 zg
 zg
 Jc
 zg
 zg
-vt
-vt
+Tq
+Tq
 FC
 FC
 FC
@@ -12341,8 +12388,8 @@ FC
 FC
 FC
 FC
-lD
-vt
+PF
+Tq
 mu
 XU
 NE
@@ -12427,17 +12474,17 @@ vt
 vt
 vt
 FC
-vt
-vt
-vt
+Tq
+Tq
+Tq
 sR
 NV
 zg
 Oy
 XM
 sR
-vt
-vt
+Tq
+Tq
 FC
 FC
 FC
@@ -12445,8 +12492,8 @@ FC
 FC
 FC
 FC
-vt
-vt
+Tq
+Tq
 mu
 XU
 Sb
@@ -12531,26 +12578,26 @@ vt
 vt
 FC
 FC
-vt
-vt
-vt
+Tq
+Tq
+Tq
 sR
 QO
 zg
 HK
 sR
 sR
-lD
-vt
-vt
-vt
+PF
+Tq
+Tq
+Tq
 FC
 FC
 FC
 FC
-vt
-vt
-vt
+Tq
+Tq
+Tq
 mu
 Mp
 NR
@@ -12635,26 +12682,26 @@ FC
 FC
 FC
 FC
-vt
-lD
-vt
-vt
+Tq
+PF
+Tq
+Tq
 sR
 Sh
 Sh
 sR
-vt
-vt
-vt
-vt
-vt
-vt
-vt
-Lt
-vt
-vt
-vt
-vt
+Tq
+Tq
+Tq
+Tq
+Tq
+Tq
+Tq
+ae
+Tq
+Tq
+Tq
+Tq
 mu
 km
 NZ
@@ -12739,26 +12786,26 @@ FC
 FC
 FC
 FC
-vX
-vt
-vX
-vt
-vt
-vt
-vt
-vt
-vt
-vX
-vt
-vt
-vX
-vt
-vt
-Lt
-vt
-lD
-vX
-vt
+pb
+Tq
+pb
+Tq
+Tq
+Tq
+Tq
+Tq
+Tq
+pb
+Tq
+Tq
+pb
+Tq
+Tq
+ae
+Tq
+PF
+pb
+Tq
 mu
 Cp
 Vz
@@ -12840,29 +12887,29 @@ FC
 FC
 FC
 FC
-dw
-dw
-dw
-vt
-vt
-vt
-vt
-vt
-vt
-vt
-vt
-vt
-vt
-vt
-vt
-vt
-vt
-vt
-dw
+oN
+oN
+oN
+Tq
+Tq
+Tq
+Tq
+Tq
+Tq
+Tq
+Tq
+Tq
+Tq
+Tq
+Tq
+Tq
+Tq
+Tq
+oN
 FC
 FC
-vt
-vt
+Tq
+Tq
 mu
 Ms
 XU
@@ -12942,31 +12989,31 @@ FC
 FC
 FC
 FC
-On
-On
-On
-ua
-ua
-ua
-vt
-dw
-dw
-vt
-lD
-vt
-vt
-vt
-lD
-vt
-vt
-vt
-QB
-dw
-dw
+aJ
+aJ
+aJ
+UK
+UK
+UK
+Tq
+oN
+oN
+Tq
+PF
+Tq
+Tq
+Tq
+PF
+Tq
+Tq
+Tq
+EU
+oN
+oN
 FC
 FC
-vt
-vt
+Tq
+Tq
 mu
 MD
 Ua
@@ -13046,31 +13093,31 @@ On
 On
 dk
 On
-On
-ua
+aJ
+UK
 nI
-ua
-ua
-ua
-lD
+UK
+UK
+UK
+PF
 FC
-dw
-dw
-vt
-vt
-vt
-vt
-vt
-vt
-vt
-vt
-dw
-FC
-FC
+oN
+oN
+Tq
+Tq
+Tq
+Tq
+Tq
+Tq
+Tq
+Tq
+oN
 FC
 FC
-vt
-vt
+FC
+FC
+Tq
+Tq
 mu
 ML
 Oa
@@ -13150,31 +13197,31 @@ ua
 ua
 ua
 ua
-kd
-ua
-nK
-ua
-ua
-kd
+rU
+UK
+Gm
+UK
+UK
+rU
 FC
 FC
 FC
-dw
-dw
-vt
-vt
-vt
-vt
-vt
-dw
-dw
-dw
+oN
+oN
+Tq
+Tq
+Tq
+Tq
+Tq
+oN
+oN
+oN
 FC
 FC
 FC
-vt
-vt
-vt
+Tq
+Tq
+Tq
 mu
 mu
 mu
@@ -13254,30 +13301,30 @@ ua
 ua
 ua
 kd
-ua
-ua
-nK
-ua
-ua
-ua
-ua
+UK
+UK
+Gm
+UK
+UK
+UK
+UK
 FC
 FC
 FC
-dw
-dw
-dw
-QB
-dw
-dw
-dw
+oN
+oN
+oN
+EU
+oN
+oN
+oN
 FC
 FC
 FC
 FC
 FC
-lD
-vt
+PF
+Tq
 JY
 Kc
 Zj
@@ -13358,17 +13405,14 @@ ua
 ua
 kd
 ua
-ua
-ua
+UK
+UK
 FC
 FC
-ua
-ua
-ua
-On
-FC
-FC
-FC
+UK
+UK
+UK
+aJ
 FC
 FC
 FC
@@ -13379,9 +13423,12 @@ FC
 FC
 FC
 FC
-vt
-vt
-vX
+FC
+FC
+FC
+Tq
+Tq
+pb
 JY
 Zj
 Zj
@@ -13467,9 +13514,9 @@ FC
 FC
 FC
 FC
-nK
-nK
-On
+Gm
+Gm
+aJ
 FC
 FC
 FC
@@ -13478,13 +13525,13 @@ FC
 FC
 FC
 FC
-vt
-vt
-lD
-vt
-vt
-vt
-vX
+Tq
+Tq
+PF
+Tq
+Tq
+Tq
+pb
 OM
 JY
 nZ
@@ -13568,27 +13615,27 @@ ua
 FC
 FC
 FC
-ua
-ua
-ua
-ua
-qI
-nK
-ua
-ua
+UK
+UK
+UK
+UK
+pT
+Gm
+UK
+UK
 FC
 FC
 FC
 FC
 FC
 FC
-vt
-vt
-vt
-vt
-vt
-vX
-vt
+Tq
+Tq
+Tq
+Tq
+Tq
+pb
+Tq
 OM
 JF
 ja
@@ -13671,27 +13718,27 @@ FC
 FC
 FC
 FC
-kd
-qI
-ua
-ua
-kd
-ua
-nK
-kd
-ua
-ua
-ua
+rU
+pT
+UK
+UK
+rU
+UK
+Gm
+rU
+UK
+UK
+UK
 FC
 FC
-lD
-vt
-vX
-vt
-vt
-vt
-vX
-vt
+PF
+Tq
+pb
+Tq
+Tq
+Tq
+pb
+Tq
 OM
 OM
 Zj
@@ -13774,24 +13821,24 @@ FC
 FC
 FC
 FC
-kd
-ua
-ua
-ua
-ua
-ua
-ua
+rU
+UK
+UK
+UK
+UK
+UK
+UK
 FC
-ua
-kd
-qI
-ua
-ua
-vt
-vt
-vX
-vt
-vt
+UK
+rU
+pT
+UK
+UK
+Tq
+Tq
+pb
+Tq
+Tq
 OM
 OM
 DF
@@ -13877,20 +13924,20 @@ FC
 FC
 FC
 FC
-ua
-ua
-ua
-ua
+UK
+UK
+UK
+UK
 FC
 FC
 FC
 FC
 FC
 FC
-ua
-ua
-ua
-ua
+UK
+UK
+UK
+UK
 OM
 OM
 OM
@@ -13975,15 +14022,15 @@ ua
 ua
 kd
 ua
-ua
+UK
 FC
 FC
 FC
 FC
-ua
-qI
-ua
-ua
+UK
+pT
+UK
+UK
 FC
 zj
 zj
@@ -14079,14 +14126,14 @@ ua
 ua
 ua
 ua
-ua
+UK
 FC
 FC
 FC
 FC
-ua
-ua
-kd
+UK
+UK
+rU
 FC
 FC
 zj
@@ -14183,8 +14230,8 @@ ua
 ua
 ua
 ua
-ua
-ua
+UK
+UK
 FC
 FC
 zj
@@ -14287,9 +14334,9 @@ ua
 qI
 ua
 ua
-qI
-ua
-ua
+pT
+UK
+UK
 FC
 zj
 QD
@@ -14391,9 +14438,9 @@ ua
 ua
 ua
 ua
-ua
-kd
-ua
+UK
+rU
+UK
 zF
 XJ
 iJ
@@ -14495,10 +14542,10 @@ ua
 ua
 ua
 ua
-ua
-ua
-ua
-ua
+UK
+UK
+UK
+UK
 XJ
 oY
 FT
@@ -14599,9 +14646,9 @@ FC
 ua
 ua
 ua
-ua
-qI
-ua
+UK
+pT
+UK
 zj
 zj
 GM
@@ -14703,9 +14750,9 @@ FC
 FC
 FC
 FC
-ua
-ua
-ua
+UK
+UK
+UK
 zj
 vO
 oY
@@ -14807,9 +14854,9 @@ FC
 FC
 FC
 FC
-ua
-kd
-ua
+UK
+rU
+UK
 gO
 iv
 Iw
@@ -14849,7 +14896,7 @@ Zp
 Zp
 Ui
 Du
-uk
+Hj
 yn
 ft
 ft
@@ -14904,7 +14951,7 @@ ah
 ua
 ua
 bE
-nR
+EM
 ah
 wh
 wh
@@ -14912,8 +14959,8 @@ wh
 wh
 FC
 FC
-ua
-ua
+UK
+UK
 zj
 iG
 iK
@@ -15015,9 +15062,9 @@ FC
 FC
 FC
 FC
-ua
-qI
-ua
+UK
+pT
+UK
 zj
 zj
 zj
@@ -15049,7 +15096,7 @@ Ww
 EH
 gU
 Wq
-sX
+kl
 uJ
 kr
 EH
@@ -15118,16 +15165,16 @@ wh
 FC
 FC
 FC
-ua
-ua
-kd
-ua
-ua
+UK
+UK
+rU
+UK
+UK
 XJ
-jh
-jh
-jh
-jh
+qf
+BR
+BR
+BR
 XJ
 ox
 hG
@@ -15222,15 +15269,15 @@ wh
 FC
 ua
 ua
-ua
-kd
-ua
-ua
-ua
+UK
+rU
+UK
+UK
+UK
 XJ
-iT
-Rb
-Zl
+qf
+NX
+kE
 Sy
 Wc
 Zl
@@ -15326,16 +15373,16 @@ FC
 FC
 ua
 ua
-bW
-ua
-ua
-ua
-qI
+Nm
+UK
+UK
+UK
+pT
 zj
-jh
-jh
-lO
-jh
+qf
+BR
+yj
+BR
 XJ
 qi
 rS
@@ -15358,7 +15405,7 @@ IC
 Co
 EN
 Aq
-BJ
+ar
 mf
 MW
 EY
@@ -15430,8 +15477,8 @@ FC
 FC
 ua
 ua
-ua
-ua
+UK
+UK
 FC
 FC
 FC
@@ -15464,7 +15511,7 @@ OM
 ju
 iQ
 rV
-uX
+lE
 Ea
 hv
 JI
@@ -15534,15 +15581,15 @@ ua
 ua
 ua
 ua
-ua
-ua
+UK
+UK
 FC
 FC
 FC
 FC
 FC
-ua
-ua
+UK
+UK
 FC
 FC
 Rw
@@ -15638,15 +15685,15 @@ ua
 kd
 ua
 ua
-kd
-ua
-ua
-ua
-kd
-ua
-ua
-ua
-ua
+rU
+UK
+UK
+UK
+rU
+UK
+UK
+UK
+UK
 FC
 FC
 Rw
@@ -15742,16 +15789,16 @@ qI
 ua
 ua
 ua
-qI
-ua
-ua
-ua
-qI
-kd
-ua
-ua
-qI
-kd
+pT
+UK
+UK
+UK
+pT
+rU
+UK
+UK
+pT
+rU
 FC
 Rw
 Rw
@@ -15846,16 +15893,16 @@ ua
 ua
 ua
 ua
-ua
-ua
-ua
-ua
-ua
-ua
+UK
+UK
+UK
+UK
+UK
+UK
 FC
-ua
-ua
-ua
+UK
+UK
+UK
 oa
 Yp
 Rw
@@ -15950,17 +15997,17 @@ ua
 Ih
 ua
 ua
-ua
-On
-On
-ua
-ua
-ua
+UK
+aJ
+aJ
+UK
+UK
+UK
 FC
 FC
-ua
-ua
-nK
+UK
+UK
+Gm
 Rw
 OM
 OM
@@ -16054,17 +16101,17 @@ ua
 ua
 ua
 ua
-On
-On
+aJ
+aJ
 FC
-ua
-ua
-ua
+UK
+UK
+UK
 FC
 FC
-On
-On
-On
+aJ
+aJ
+aJ
 Rw
 OM
 OM
@@ -16089,7 +16136,7 @@ hJ
 EH
 sb
 GQ
-zX
+gh
 EH
 EH
 Om
@@ -16158,17 +16205,17 @@ qI
 ua
 ua
 On
-dk
+PE
 FC
 FC
-ua
-qI
-ua
+UK
+pT
+UK
 FC
 FC
 FC
-ua
-dk
+UK
+PE
 Rw
 Rw
 Ln
@@ -16265,14 +16312,14 @@ On
 FC
 wh
 FC
-ua
-ua
-ua
-ua
+UK
+UK
+UK
+UK
 FC
 FC
-ua
-On
+UK
+aJ
 Rw
 Rw
 Yp
@@ -16370,9 +16417,9 @@ FC
 wh
 FC
 FC
-ua
-ua
-ua
+UK
+UK
+UK
 FC
 FC
 FC
@@ -16474,10 +16521,10 @@ FC
 wh
 FC
 FC
-ua
-kd
-ua
-ua
+UK
+rU
+UK
+UK
 FC
 FC
 FC
@@ -16578,11 +16625,11 @@ FC
 wh
 wh
 FC
-ua
-ua
-bW
-ua
-ua
+UK
+UK
+Nm
+UK
+UK
 FC
 FC
 FC
@@ -16684,12 +16731,12 @@ wh
 wh
 FC
 FC
-Uq
-YM
-Uq
-Uq
-Uq
-YM
+ZK
+Ek
+ZK
+ZK
+ZK
+Ek
 FC
 FC
 FC
@@ -16789,16 +16836,16 @@ wh
 wh
 FC
 FC
-Oc
-Oc
+lS
+lS
 jk
-eb
-eb
-Oc
-Oc
+cv
+cv
+lS
+lS
 jk
-Oc
-Oc
+lS
+lS
 FC
 FC
 FC
@@ -16806,8 +16853,8 @@ FC
 FC
 FC
 FC
-Uq
-Uq
+ZK
+ZK
 FC
 FC
 FC
@@ -16894,24 +16941,24 @@ FC
 FC
 FC
 FC
-Oc
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Oc
-Oc
-Oc
-Oc
+lS
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+lS
+lS
+lS
+lS
 FC
 FC
 FC
-Uq
+ZK
 Ta
-Uq
+ZK
 wh
 wh
 wh
@@ -16997,24 +17044,24 @@ Oc
 Oc
 Oc
 FC
-Oc
-Oc
-Uq
-Uq
-Uq
-Uq
-Uq
-fH
-Uq
-Uq
-Uq
-Uq
-Oc
-Oc
+lS
+lS
+ZK
+ZK
+ZK
+ZK
+ZK
+tD
+ZK
+ZK
+ZK
+ZK
+lS
+lS
 FC
 FC
-Uq
-Uq
+ZK
+ZK
 FC
 FC
 FC
@@ -17101,26 +17148,26 @@ Uq
 Uq
 Oc
 jk
-Oc
-Uq
-Uq
-ex
-Uq
-Uq
-Uq
-ex
-Uq
-Uq
-Uq
-ex
-Uq
-Oc
-Oc
-Oc
+lS
+ZK
+ZK
+KM
+ZK
+ZK
+ZK
+KM
+ZK
+ZK
+ZK
+KM
+ZK
+lS
+lS
+lS
 EW
-eb
-eb
-Oc
+cv
+cv
+lS
 FC
 FC
 wh
@@ -17204,27 +17251,27 @@ Uq
 ex
 Uq
 Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-YM
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-YM
-Uq
-Oc
+ZK
+ZK
+ZK
+ZK
+ZK
+Ek
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+Ek
+ZK
+lS
 Oc
 FC
 wh
@@ -17308,29 +17355,29 @@ Uq
 Uq
 Uq
 Uq
-Uq
-Uq
-Uq
-Uq
-Uq
+ZK
+ZK
+ZK
+ZK
+ZK
 FC
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-YM
-Uq
-Uq
-Uq
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+Ek
+ZK
+ZK
+ZK
 wh
 FC
 UI
@@ -17412,9 +17459,9 @@ Uq
 Uq
 Uq
 Uq
-Uq
-ex
-Uq
+ZK
+KM
+ZK
 FC
 FC
 rq
@@ -17423,18 +17470,18 @@ rq
 rq
 rq
 rq
-Uq
-ex
-Uq
-Uq
-Uq
-ex
-Uq
-Uq
-Uq
+ZK
+KM
+ZK
+ZK
+ZK
+KM
+ZK
+ZK
+ZK
 Hb
-Uq
-Uq
+ZK
+ZK
 wh
 WX
 WX
@@ -17516,10 +17563,10 @@ RB
 RB
 RB
 rq
-Uq
-Uq
-Uq
-Uq
+ZK
+ZK
+ZK
+ZK
 FC
 rq
 rY
@@ -17536,9 +17583,9 @@ rq
 rq
 FC
 FC
-Uq
-Uq
-Uq
+ZK
+ZK
+ZK
 wh
 IV
 WX
@@ -17640,9 +17687,9 @@ PK
 rq
 rq
 FC
-Uq
-Uq
-Uq
+ZK
+ZK
+ZK
 wh
 WX
 WX
@@ -17743,10 +17790,10 @@ CF
 KO
 yV
 rq
-Uq
+ZK
 Ta
-Uq
-Uq
+ZK
+ZK
 wh
 FC
 FC
@@ -17847,10 +17894,10 @@ Lu
 DN
 Dh
 rq
-Uq
-ex
-Uq
-Uq
+ZK
+KM
+ZK
+ZK
 wh
 FC
 FC
@@ -17952,9 +17999,9 @@ XO
 XO
 rq
 tG
-Uq
-Uq
-Uq
+ZK
+ZK
+ZK
 wh
 FC
 FC
@@ -18055,10 +18102,10 @@ Je
 DV
 Fp
 Gp
-Uq
-YM
-Uq
-Uq
+ZK
+Ek
+ZK
+ZK
 wh
 FC
 IV
@@ -18160,8 +18207,8 @@ AU
 IX
 Gq
 GG
-Uq
-Uq
+ZK
+ZK
 FC
 wh
 FC
@@ -18264,8 +18311,8 @@ Yz
 Yz
 rq
 EC
-ex
-Uq
+KM
+ZK
 FC
 wh
 FC
@@ -18368,8 +18415,8 @@ pa
 au
 rq
 hX
-Uq
-Uq
+ZK
+ZK
 FC
 wh
 WX
@@ -18472,8 +18519,8 @@ ST
 Ge
 RB
 hX
-Uq
-Uq
+ZK
+ZK
 FC
 wh
 WX
@@ -18576,8 +18623,8 @@ Fh
 jm
 RB
 hX
-Uq
-Uq
+ZK
+ZK
 FC
 wh
 WX
@@ -18680,8 +18727,8 @@ Ed
 AW
 rq
 hX
-ex
-Oc
+KM
+lS
 FC
 wh
 FC
@@ -18784,12 +18831,12 @@ MC
 XO
 rq
 hX
-Uq
-Oc
+ZK
+lS
 FC
 wh
 FC
-ri
+Hd
 WX
 lB
 WX
@@ -18894,7 +18941,7 @@ qH
 qH
 Ht
 JB
-vF
+az
 zy
 zy
 gF
@@ -18991,12 +19038,12 @@ Dr
 XD
 Ra
 rq
-Uq
-Uq
-eb
-Uq
-Uq
-Uq
+ZK
+ZK
+cv
+ZK
+ZK
+ZK
 WX
 WX
 WX
@@ -19095,14 +19142,14 @@ if
 Eg
 rq
 rq
-Uq
-ex
-eb
+ZK
+KM
+cv
 FC
 wh
-Uq
+ZK
 WX
-JU
+bA
 Lb
 UI
 UI
@@ -19198,10 +19245,10 @@ rq
 rq
 rq
 rq
-Uq
-Uq
-Uq
-Oc
+ZK
+ZK
+ZK
+lS
 FC
 wh
 FC
@@ -19304,9 +19351,9 @@ FC
 FC
 FC
 FC
-Uq
-Oc
-Oc
+ZK
+lS
+lS
 wh
 FC
 FC
@@ -19408,8 +19455,8 @@ FC
 FC
 FC
 FC
-Uq
-Uq
+ZK
+ZK
 FC
 wh
 FC
@@ -19476,44 +19523,44 @@ wh
 "}
 (90,1,1) = {"
 wh
-fm
 Uq
 Uq
-Uq
-Uq
-FC
-FC
-FC
-FC
 Uq
 Uq
 Uq
 FC
 FC
+FC
+FC
 Uq
 Uq
 Uq
+FC
+FC
 Uq
+Uq
+ZK
+ZK
 ne
-Uq
+ZK
 ne
-Uq
+ZK
 ne
-Uq
+ZK
 FC
 FC
-Uq
-Uq
+ZK
+ZK
 FC
 FC
 FC
 FC
-Uq
-Uq
-Uq
-Uq
-ex
-Uq
+ZK
+ZK
+ZK
+ZK
+KM
+ZK
 FC
 wh
 FC
@@ -19569,7 +19616,7 @@ OP
 OP
 OP
 OP
-OP
+qg
 tI
 KE
 fw
@@ -19596,28 +19643,28 @@ FC
 Uq
 Uq
 Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
 FC
 FC
-ex
-Uq
+KM
+ZK
 FC
 FC
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
 FC
 wh
 FC
@@ -19700,28 +19747,28 @@ ex
 Uq
 Uq
 Uq
-ex
-Uq
-Uq
-ex
-Uq
-Uq
-ex
-Uq
+KM
+ZK
+ZK
+KM
+ZK
+ZK
+KM
+ZK
 FC
 FC
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-ex
-Uq
-Uq
-Uq
-Uq
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+KM
+ZK
+ZK
+ZK
+ZK
 FC
 wh
 FC
@@ -19791,7 +19838,7 @@ wh
 Uq
 Uq
 Uq
-Uq
+fm
 Uq
 Uq
 FC
@@ -19804,29 +19851,29 @@ Uq
 Uq
 YM
 Uq
-Uq
-Uq
-Uq
-YM
-Uq
-Uq
-Uq
-Uq
-Uq
+ZK
+ZK
+ZK
+Ek
+ZK
+ZK
+ZK
+ZK
+ZK
 FC
 FC
-Uq
-Uq
-ex
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Oc
+ZK
+ZK
+KM
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+lS
 wh
 FC
 WX
@@ -19876,7 +19923,7 @@ so
 dW
 so
 so
-EQ
+so
 so
 dZ
 so
@@ -19892,7 +19939,7 @@ wh
 "}
 (94,1,1) = {"
 wh
-hk
+Uq
 Uq
 Uq
 Uq
@@ -19908,31 +19955,31 @@ Uq
 YM
 Uq
 Uq
-Uq
+ZK
 FC
 FC
 FC
-YM
-Uq
-Uq
-Uq
-Uq
-YM
-Uq
-Uq
-Uq
-Uq
+Ek
+ZK
+ZK
+ZK
+ZK
+Ek
+ZK
+ZK
+ZK
+ZK
 EL
 Rj
 Rj
 Rj
-Uq
-Uq
-YM
-ex
-eb
-Uq
-Uq
+ZK
+ZK
+Ek
+KM
+cv
+ZK
+ZK
 WX
 WX
 WX
@@ -20015,28 +20062,28 @@ Uq
 FC
 FC
 FC
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
 Rj
 Rj
 FC
 FC
 Ew
 Rj
-Uq
-Uq
-Uq
-eb
-Uq
-ex
+ZK
+ZK
+ZK
+cv
+ZK
+KM
 WX
 WX
 WX
@@ -20081,7 +20128,7 @@ eJ
 vw
 vw
 vw
-He
+ZV
 QT
 uv
 WK
@@ -20119,28 +20166,28 @@ FC
 FC
 FC
 FC
-Uq
+ZK
 DU
-Uq
-Uq
-Uq
-ex
-Uq
-Uq
+ZK
+ZK
+ZK
+KM
+ZK
+ZK
 Rj
 Rj
 Rj
 FC
 FC
 FC
-Uq
+ZK
 Rj
 Rj
 Rj
 Mr
-Oc
+lS
 wh
-Uq
+ZK
 WX
 UU
 WX
@@ -20190,7 +20237,7 @@ vw
 hM
 Th
 tI
-GA
+ud
 gT
 ud
 xY
@@ -20222,25 +20269,25 @@ Uq
 Uq
 FC
 FC
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
 Rn
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-ex
-Uq
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+KM
+ZK
 Mr
 FC
 wh
@@ -20325,25 +20372,25 @@ Uq
 Uq
 Uq
 FC
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
 Rj
-Uq
-Uq
-ex
-Uq
-Uq
+ZK
+ZK
+KM
+ZK
+ZK
 zA
-Uq
-Uq
+ZK
+ZK
 DU
 Ew
 FC
@@ -20391,7 +20438,7 @@ ce
 nX
 xK
 nX
-Na
+nX
 hQ
 hQ
 eJ
@@ -20416,7 +20463,6 @@ wh
 FC
 FC
 FC
-io
 Uq
 Uq
 Uq
@@ -20429,26 +20475,27 @@ Uq
 Uq
 Uq
 Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
 FC
 FC
 FC
 Rj
-Uq
+ZK
 DU
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
 Ew
 FC
 wh
@@ -20523,7 +20570,6 @@ FC
 FC
 Uq
 Uq
-zu
 Uq
 Uq
 Uq
@@ -20533,26 +20579,27 @@ Uq
 Uq
 Uq
 Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
 FC
 FC
 FC
 FC
 Ew
-Uq
-Uq
-ex
-Uq
-Uq
-Uq
-Uq
-ex
-Uq
+ZK
+ZK
+KM
+ZK
+ZK
+ZK
+ZK
+KM
+ZK
 Ew
 FC
 wh
@@ -20637,9 +20684,9 @@ wh
 wh
 wh
 wh
-Uq
-Uq
-Uq
+ZK
+ZK
+ZK
 wh
 wh
 wh
@@ -20649,13 +20696,13 @@ wh
 wh
 ah
 wh
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
-Uq
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
+ZK
 wh
 ah
 wh

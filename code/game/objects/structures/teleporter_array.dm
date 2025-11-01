@@ -1,18 +1,17 @@
 /obj/structure/teleporter_array
-	name = "TELEPORTER"
-	desc = "PLACEHOLDER."
-	icon = 'icons/Marine/teleporter.dmi'
+	name = "Teleporter Array"
+	desc = "A large scale teleporter array, capable of transporting an entire squad directly to the battlefield."
+	icon = 'icons/obj/structures/teleporter.dmi'
 	icon_state = "teleporter"
 	obj_flags = NONE
 	density = FALSE
 	layer = BELOW_OBJ_LAYER
 	resistance_flags = RESIST_ALL
-
+	faction = FACTION_SOM
+	///Current state of teleporter
 	var/teleporter_status = TELEPORTER_ARRAY_READY
-	///The faction this belongs to
-	var/faction = FACTION_SOM
 	///How many times this can be used
-	var/charges = 1
+	var/charges = 2
 	///The target turf for teleportation
 	var/turf/target_turf
 	///The Z-level that the teleporter can teleport to
@@ -53,6 +52,21 @@
 	for(var/datum/action/innate/action AS in interaction_actions)
 		action.give_action(controller)
 
+///Provides number of charges remaining to the examine message.
+/obj/structure/teleporter_array/examine()
+	. = ..()
+	if(controller)
+		. += "The teleporter is currently being aimed by [controller]."
+	. += "The teleporter array has [charges] charges remaining."
+
+///Enables the teleporter for us
+/obj/structure/teleporter_array/proc/enable_teleporter(forced = FALSE)
+	if(!forced && (teleporter_status == TELEPORTER_ARRAY_INOPERABLE))
+		return FALSE
+	SEND_GLOBAL_SIGNAL(COMSIG_GLOB_TELEPORTER_ARRAY_ENABLED, src)
+	teleporter_status = TELEPORTER_ARRAY_READY
+	return TRUE
+
 ///Removes the current controlling mob
 /obj/structure/teleporter_array/proc/remove_user()
 	if(!controller)
@@ -79,8 +93,11 @@
 	if(teleporter_status == TELEPORTER_ARRAY_IN_USE)
 		to_chat(controller, span_warning("The Teleporter Array is already running!"))
 		return
-	if(!charges || teleporter_status == TELEPORTER_ARRAY_INACTIVE)
+	if(teleporter_status == TELEPORTER_ARRAY_INACTIVE)
 		to_chat(controller, span_warning("The Teleporter Array is not currently available for our use."))
+		return
+	if(!charges)
+		to_chat(controller, span_warning("The Teleporter Array has no charges remaining. Buy and activate more using attrition."))
 		return
 	if(!target_turf)
 		to_chat(controller, span_warning("The Teleporter Array Has no destination set."))
@@ -147,7 +164,7 @@
 
 /datum/action/innate/activate_teleporter
 	name = "Activate teleporter array"
-	action_icon = 'icons/mecha/actions_mecha.dmi'
+	action_icon = 'icons/mob/actions/actions_mecha.dmi'
 	action_icon_state = "land"
 
 /datum/action/innate/activate_teleporter/Activate()
@@ -157,12 +174,12 @@
 
 /datum/action/innate/set_teleport_target
 	name = "Set teleportation target"
-	action_icon = 'icons/mecha/actions_mecha.dmi'
+	action_icon = 'icons/mob/actions/actions_mecha.dmi'
 	action_icon_state = "mech_zoom_on"
 	///Locks activating this action again while choosing to prevent signal shenanigan runtimes.
 	var/choosing = FALSE
 
-/datum/action/innate/set_teleport_target/can_use_action()
+/datum/action/innate/set_teleport_target/can_use_action(silent, override_flags, selecting)
 	if(choosing)
 		return FALSE
 	return ..()
@@ -178,7 +195,7 @@
 	choosing = TRUE
 	var/list/polled_coords = map.get_coords_from_click(owner)
 	if(!polled_coords)
-		owner.client?.screen -= map
+		owner?.client?.screen -= map
 		choosing = FALSE
 		return
 	var/turf/chosen_turf = locate(polled_coords[1], polled_coords[2], teleporter.targetted_zlevel)
@@ -194,7 +211,7 @@
 	if(choosing)
 		var/obj/structure/teleporter_array/teleporter = target
 		var/atom/movable/screen/minimap/map = SSminimaps.fetch_minimap_object(teleporter.targetted_zlevel, GLOB.faction_to_minimap_flag[owner.faction])
-		owner.client?.screen -= map
+		owner?.client?.screen -= map
 		map.UnregisterSignal(owner, COMSIG_MOB_CLICKON)
 		choosing = FALSE
 	return ..()

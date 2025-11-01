@@ -4,7 +4,7 @@
 	icon = 'icons/obj/watercloset.dmi'
 	icon_state = "mirror"
 	hit_sound = 'sound/effects/Glasshit.ogg'
-	destroy_sound = "shatter"
+	destroy_sound = SFX_SHATTER
 	density = FALSE
 	anchored = TRUE
 	resistance_flags = XENO_DAMAGEABLE
@@ -41,7 +41,7 @@
 		//this is largely copypasted from there.
 
 		//handle facial hair (if necessary)
-		if(H.gender == MALE)
+		if(H.physique == MALE)
 			var/list/species_facial_hair = list()
 			if(H.species)
 				for(var/i in GLOB.facial_hair_styles_list)

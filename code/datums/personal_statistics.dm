@@ -38,8 +38,13 @@ GLOBAL_LIST_EMPTY(personal_statistics_list)
 	var/projectile_damage = 0
 	var/melee_damage = 0
 
+	var/mechs_destroyed = 0
+	var/tanks_destroyed = 0
+	var/flags_destroyed = 0
+	var/flags_captured = 0
 	//We are watching
 	var/friendly_fire_damage = 0
+	var/friendly_fire_recieved = 0
 
 	var/projectiles_caught = 0
 	var/projectiles_reflected = 0
@@ -53,6 +58,8 @@ GLOBAL_LIST_EMPTY(personal_statistics_list)
 	var/internal_injuries = 0
 	var/internal_injuries_inflicted = 0
 
+	var/grenade_hand_delimbs = 0
+
 	//Medical
 	var/self_heals = 0
 	var/heals = 0
@@ -62,6 +69,7 @@ GLOBAL_LIST_EMPTY(personal_statistics_list)
 
 	var/times_revived = 0
 	var/deaths = 0
+	var/shrapnel_removed = 0
 
 	//Downtime
 	var/time_resting = 0
@@ -77,6 +85,7 @@ GLOBAL_LIST_EMPTY(personal_statistics_list)
 	var/generator_repairs_performed = 0
 	var/miner_repairs_performed = 0
 	var/apcs_repaired = 0
+	var/acid_applied = 0
 
 	var/generator_sabotages_performed = 0
 	var/miner_sabotages_performed = 0
@@ -91,6 +100,9 @@ GLOBAL_LIST_EMPTY(personal_statistics_list)
 	var/recycle_points_denied = 0
 	var/huggers_created = 0
 	var/impregnations = 0
+	var/items_snatched = 0
+	var/acid_maw_uses = 0
+	var/acid_jaw_uses = 0
 
 	//Close air support
 	var/cas_cannon_shots = 0
@@ -104,6 +116,31 @@ GLOBAL_LIST_EMPTY(personal_statistics_list)
 	var/sippies = 0
 	var/war_crimes = 0
 	var/tactical_unalives = 0	//Someone should add a way to determine if you died to a grenade in your hand and add it to this
+
+	//campaign specific vars
+	var/mission_projectile_damage = 0
+	var/mission_friendly_fire_damage = 0
+	var/mission_melee_damage = 0
+	var/mission_revives = 0
+	var/mission_times_revived = 0
+	var/mission_structures_built = 0
+	var/mission_objective_destroyed = 0
+	var/mission_blocker_destroyed = 0
+	var/mission_objective_captured = 0
+	var/mission_objective_decaptured = 0
+	var/mission_mechs_destroyed = 0
+	var/mission_tanks_destroyed = 0
+	var/mission_shrapnel_removed = 0
+	var/mission_traps_created = 0
+	var/mission_grenades_primed = 0
+	var/mission_heals = 0
+	var/mission_integrity_repaired = 0
+	var/mission_flags_destroyed = 0
+	var/mission_flags_captured = 0
+
+/datum/personal_statistics/New()
+	. = ..()
+	RegisterSignal(SSdcs, COMSIG_GLOB_CAMPAIGN_MISSION_STARTED, PROC_REF(reset_mission_stats))
 
 ///Calculated from the chemicals_ingested list, returns a string: "[chemical name], [amount] units"
 /datum/personal_statistics/proc/get_most_ingested_chemical()
@@ -131,6 +168,7 @@ GLOBAL_LIST_EMPTY(personal_statistics_list)
 		stats += melee_damage ? "[melee_damage] melee damage dealt!" : "You dealt no melee damage."
 		stats += ""
 	stats += friendly_fire_damage ? "You caused [friendly_fire_damage] damage to allies...<br>" : "You avoided committing acts of friendly fire!<br>"
+	stats += friendly_fire_recieved ? "You recieved [friendly_fire_recieved] damage from allies...<br>" : "You avoided receiving friendly fire!<br>"
 
 	if(projectiles_caught)
 		stats += "[projectiles_caught] projectile\s caught by psychic shield."
@@ -141,6 +179,8 @@ GLOBAL_LIST_EMPTY(personal_statistics_list)
 
 	if(grenades_primed)
 		stats += "[grenades_primed] grenade\s thrown."
+	if(grenade_hand_delimbs)
+		stats += "You blew off [grenade_hand_delimbs] hand[grenade_hand_delimbs != 1 ? "s" : ""] while holding grenades like an idiot."
 	if(traps_created)
 		stats += "[traps_created] trap\s/mine\s/hazard\s placed."
 	if(grenades_primed || traps_created)
@@ -152,6 +192,9 @@ GLOBAL_LIST_EMPTY(personal_statistics_list)
 	stats += internal_injuries ? "You suffered [internal_injuries] internal injur[internal_injuries != 1 ? "ies" : "y"]." : "You avoided any internal injuries."
 	if(internal_injuries_inflicted)
 		stats += "Inflicted [internal_injuries_inflicted] internal injur[internal_injuries_inflicted > 1 ? "ies" : "y"] on [internal_injuries_inflicted > 1 ? "others" : "somebody"]."
+
+	if(mechs_destroyed)
+		stats += "[mechs_destroyed] hostile mechs destroyed."
 
 	//Medical
 	stats += "<hr>"
@@ -166,6 +209,8 @@ GLOBAL_LIST_EMPTY(personal_statistics_list)
 	if(times_revived)
 		stats += "You were revived [times_revived] time\s."
 	stats += deaths ? "You died [deaths] time\s." : "You survived the whole round."
+	if(shrapnel_removed)
+		stats += "Removed [shrapnel_removed] piece\s of shrapnel."
 
 	//Downtime
 	var/list/downtime_stats = list()
@@ -198,6 +243,12 @@ GLOBAL_LIST_EMPTY(personal_statistics_list)
 		support_stats += "Performed [miner_repairs_performed] miner repair\s."
 	if(apcs_repaired)
 		support_stats += "Repaired [apcs_repaired] APC\s."
+	if(items_snatched)
+		support_stats += "Snatched [items_snatched] item\s."
+	if(acid_maw_uses)
+		support_stats += "Fired the Acid Maw [acid_maw_uses] time\s"
+	if(acid_jaw_uses)
+		support_stats += "Fired the Acid Jaw [acid_jaw_uses] time\s"
 
 	if(generator_sabotages_performed)
 		support_stats += "Sabotaged [generator_sabotages_performed] generator\s."
@@ -222,6 +273,8 @@ GLOBAL_LIST_EMPTY(personal_statistics_list)
 		support_stats += "Gave birth to [huggers_created] hugger\s."
 	if(impregnations)
 		support_stats += "Impregnated [impregnations] host\s."
+	if(acid_applied)
+		support_stats += "Applied acid to [acid_applied] object\s."
 
 	if(LAZYLEN(support_stats))
 		stats += "<hr>"
@@ -264,7 +317,56 @@ GLOBAL_LIST_EMPTY(personal_statistics_list)
 	//Replace any instances of line breaks after horizontal rules to prevent unneeded empty spaces
 	return replacetext(jointext(stats, "<br>"), "<hr><br>", "<hr>")
 
+/**
+ * Resets stats recorded for the current mission
+ * Used for Campaign
+ */
+/datum/personal_statistics/proc/reset_mission_stats()
+	SIGNAL_HANDLER
+	mission_projectile_damage = 0
+	mission_friendly_fire_damage = 0
+	mission_revives = 0
+	mission_times_revived = 0
+	mission_structures_built = 0
+	mission_melee_damage = 0
+	mission_objective_destroyed = 0
+	mission_blocker_destroyed = 0
+	mission_objective_captured = 0
+	mission_objective_decaptured = 0
+	mission_mechs_destroyed = 0
+	mission_tanks_destroyed = 0
+	mission_flags_destroyed = 0
+	mission_flags_captured = 0
+	mission_shrapnel_removed = 0
+	mission_traps_created = 0
+	mission_grenades_primed = 0
+	mission_heals = 0
+	mission_integrity_repaired = 0
 
+///Returns the credit bonus based on stats from the current mission
+/datum/personal_statistics/proc/get_mission_reward()
+	var/credit_bonus = 0
+	credit_bonus += mission_projectile_damage * 0.1
+	credit_bonus -= mission_friendly_fire_damage * 0.2
+	credit_bonus += mission_melee_damage * 0.2
+	credit_bonus += mission_revives * 15
+	credit_bonus += mission_times_revived * 5 //purple heart
+	credit_bonus += mission_structures_built * 6
+	credit_bonus += mission_objective_destroyed * 50
+	credit_bonus += mission_blocker_destroyed * 30
+	credit_bonus += mission_objective_captured * 20
+	credit_bonus += mission_objective_decaptured * 20
+	credit_bonus += mission_mechs_destroyed * 20
+	credit_bonus += mission_tanks_destroyed * 50
+	credit_bonus += mission_flags_destroyed * 250
+	credit_bonus += mission_flags_captured * 500
+	credit_bonus += mission_shrapnel_removed * 3
+	credit_bonus += mission_traps_created * 4
+	credit_bonus += mission_grenades_primed * 2
+	credit_bonus += mission_heals * 1
+	credit_bonus += mission_integrity_repaired * 0.1
+
+	return max(floor(credit_bonus), 0)
 
 /* Not sure what folder to put a file of just record keeping procs, so just leaving them here
 The alternative is scattering them everywhere under their respective objects which is a bit messy */
@@ -276,6 +378,9 @@ The alternative is scattering them everywhere under their respective objects whi
 	var/datum/personal_statistics/personal_statistics = GLOB.personal_statistics_list[user.ckey]
 	personal_statistics.melee_hits++
 	personal_statistics.melee_damage += damage
+	personal_statistics.mission_melee_damage += damage
+	if(faction == user.faction)
+		personal_statistics.mission_friendly_fire_damage += damage
 	return TRUE
 
 /mob/living/carbon/human/record_melee_damage(mob/living/user, damage, delimbed)
@@ -292,7 +397,7 @@ The alternative is scattering them everywhere under their respective objects whi
 	return TRUE
 
 ///Record whenever a player shoots things, taking into account bonus projectiles without running these checks multiple times
-/obj/projectile/proc/record_projectile_fire(mob/shooter)
+/atom/movable/projectile/proc/record_projectile_fire(mob/shooter)
 	//Part of code where this is called already checks if the shooter is a mob
 	if(!shooter.ckey)
 		return FALSE
@@ -303,24 +408,27 @@ The alternative is scattering them everywhere under their respective objects whi
 	return TRUE
 
 //Lasers have their own fire_at()
-/obj/projectile/hitscan/record_projectile_fire(shooter)
+/atom/movable/projectile/hitscan/record_projectile_fire(shooter)
 	//It does not check if the shooter is a mob
 	if(!ismob(shooter))
 		return FALSE
 	return ..()
 
 ///Tally to personal_statistics that a successful shot was made and record the damage dealt
-/mob/living/proc/record_projectile_damage(mob/shooter, damage)
-	//Check if a ckey exists; the check for victim aliveness is handled before the proc call
-	if(!shooter.ckey)
+/mob/living/proc/record_projectile_damage(damage, mob/living/victim)
+	if(!ckey)
 		return FALSE
-	var/datum/personal_statistics/personal_statistics = GLOB.personal_statistics_list[shooter.ckey]
+	var/datum/personal_statistics/personal_statistics = GLOB.personal_statistics_list[ckey]
 	personal_statistics.projectiles_hit++
 	personal_statistics.projectile_damage += damage
-	if(faction && isliving(shooter))	//See if any friendly fire was made
-		var/mob/living/L = shooter
-		if(faction == L.faction)
-			personal_statistics.friendly_fire_damage += damage	//FF multiplier already included by the way
+	personal_statistics.mission_projectile_damage += damage
+
+	var/datum/personal_statistics/victim_personal_statistics = GLOB.personal_statistics_list[victim.ckey]
+
+	if(faction == victim.faction) //See if any friendly fire was made
+		personal_statistics.friendly_fire_damage += damage	//FF multiplier already included by the way
+		victim_personal_statistics?.friendly_fire_recieved += damage
+		personal_statistics.mission_friendly_fire_damage += damage
 	return TRUE
 
 ///Record what reagents and how much of them were transferred to a mob into their ckey's /datum/personal_statistics
@@ -358,6 +466,7 @@ The alternative is scattering them everywhere under their respective objects whi
 				//If a receiving mob exists, we tally up to the user mob's stats that it performed a heal
 				if(receiver)
 					personal_statistics_user.heals++
+					personal_statistics_user.mission_heals++
 				else
 					personal_statistics_user.self_heals++
 			is_healing = TRUE
@@ -375,6 +484,7 @@ The alternative is scattering them everywhere under their respective objects whi
 	//If a receiving mob exists, we tally up to the user mob's stats that it performed a heal
 	if(receiver)
 		personal_statistics_user.heals++
+		personal_statistics_user.mission_heals++
 	else
 		personal_statistics_user.self_heals++
 	return TRUE
@@ -525,6 +635,7 @@ The alternative is scattering them everywhere under their respective objects whi
 		return FALSE
 	var/datum/personal_statistics/personal_statistics = GLOB.personal_statistics_list[ckey]
 	personal_statistics.traps_created++
+	personal_statistics.mission_traps_created++
 	return TRUE
 
 ///Tally up bullets caught/reflected
@@ -537,12 +648,20 @@ The alternative is scattering them everywhere under their respective objects whi
 		personal_statistics.projectiles_reflected += amount
 	return TRUE
 
+/// Adds to the personal statistics if the reflected projectile was a rocket.
+/obj/effect/xeno/shield/proc/record_rocket_reflection(mob/user, atom/movable/projectile/projectile)
+	if(!istype(projectile.ammo, /datum/ammo/rocket) || !user.ckey)
+		return
+	var/datum/personal_statistics/personal_statistics = GLOB.personal_statistics_list[user.ckey]
+	personal_statistics.rockets_reflected++
+
 ///Tally when a structure is constructed
 /mob/proc/record_structures_built()
 	if(!ckey)
 		return FALSE
 	var/datum/personal_statistics/personal_statistics = GLOB.personal_statistics_list[ckey]
 	personal_statistics.structures_built++
+	personal_statistics.mission_structures_built++
 	return TRUE
 
 /mob/proc/record_war_crime()

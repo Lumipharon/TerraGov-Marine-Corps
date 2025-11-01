@@ -8,10 +8,12 @@ Code shamelessly copied from apc_frame
 	desc = "Used for building Fire Alarms"
 	icon = 'icons/obj/objects.dmi'
 	icon_state = "fire_bitem"
-	flags_atom = CONDUCT
+	atom_flags = CONDUCT
 
 /obj/item/frame/fire_alarm/attackby(obj/item/I, mob/user, params)
 	. = ..()
+	if(.)
+		return
 
 	if(iswrench(I))
 		new /obj/item/stack/sheet/metal(loc, 2)
@@ -28,14 +30,14 @@ Code shamelessly copied from apc_frame
 	var/turf/loc = get_turf(user)
 	var/area/A = loc.loc
 	if(!isfloorturf(loc))
-		loc.balloon_alert(user, "bad spot")
+		loc.balloon_alert(user, "bad spot!")
 		return
-	if(A.requires_power == 0 || A.name == "Space")
-		loc.balloon_alert(user, "bad area")
+	if(A.requires_power == 0 || istype(A, /area/space))
+		loc.balloon_alert(user, "bad area!")
 		return
 
 	if(gotwallitem(loc, ndir))
-		loc.balloon_alert(user, "already occupied")
+		loc.balloon_alert(user, "already occupied!")
 		return
 
 	new /obj/machinery/firealarm(loc, ndir, 1)

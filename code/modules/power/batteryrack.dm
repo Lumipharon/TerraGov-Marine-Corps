@@ -90,6 +90,8 @@
 
 /obj/machinery/power/smes/batteryrack/attackby(obj/item/I, mob/user, params) //these can only be moved by being reconstructed, solves having to remake the powernet.
 	. = ..() //SMES attackby for now handles screwdriver, cable coils and wirecutters, no need to repeat that here
+	if(.)
+		return
 
 	if(!CHECK_BITFIELD(machine_stat, PANEL_OPEN))
 		return
@@ -108,8 +110,6 @@
 		M.state = 2
 		M.icon_state = "box_1"
 		for(var/obj/O in component_parts)
-			if(O.reliability != 100 && crit_fail)
-				O.crit_fail = TRUE
 			O.forceMove(loc)
 		qdel(src)
 
@@ -148,7 +148,7 @@
 
 /obj/machinery/power/smes/batteryrack/makeshift/update_icon()
 	. = ..()
-	if(machine_stat & BROKEN)	
+	if(machine_stat & BROKEN)
 		return
 
 	if(outputting)
@@ -195,7 +195,7 @@
 					empulse(src.loc, 3, 8, 1)
 			if (overcharge_percent >= 150)
 				if (prob(1))
-					explosion(loc, 1, 2, 4, 0, 5)
+					explosion(loc, 1, 2, 4, 0, 5, explosion_cause="overcharged smes")
 		if ((3.6e6+1) to INFINITY)
 			if (overcharge_percent >= 115)
 				if (prob(8))
@@ -207,7 +207,7 @@
 					empulse(src.loc, 4, 10, 1)
 			if (overcharge_percent >= 140)
 				if (prob(1))
-					explosion(loc, 2, 4, 6, 0, 8)
+					explosion(loc, 2, 4, 6, 0, 8, explosion_cause="overcharged smes")
 		else //how the hell was this proc called for negative charge
 			charge = 0
 

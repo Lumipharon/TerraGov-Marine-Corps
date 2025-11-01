@@ -5,9 +5,10 @@
 	name = "\improper R-44 magnum speed loader (.44)"
 	desc = "A revolver speed loader."
 	default_ammo = /datum/ammo/bullet/revolver
-	flags_equip_slot = NONE
+	equip_slot_flags = NONE
 	caliber = CALIBER_44
 	icon_state = "m44"
+	icon = 'icons/obj/items/ammo/revolver.dmi'
 	icon_state_mini = "mag_revolver_bronze"
 	w_class = WEIGHT_CLASS_SMALL
 	max_rounds = 6
@@ -30,7 +31,7 @@
 	name = "\improper R-44 magnum speed loader (.44)"
 	desc = "A revolver speed loader."
 	default_ammo = /datum/ammo/bullet/revolver/tp44
-	flags_equip_slot = NONE
+	equip_slot_flags = NONE
 	caliber = CALIBER_44
 	icon_state = "tp44"
 	icon_state_mini = "mag_revolver"
@@ -95,3 +96,29 @@
 	caliber = CALIBER_12x7
 	icon_state = "t76"
 	icon_state_mini = "mag_revolver_red"
+
+// Single action army revolver ammunition.  Base class is unused.
+
+/obj/item/ammo_magazine/revolver/single_action
+	name = "\improper Single action revolver speed-loader (.44)"
+	desc = "A single action revolver speed-loader."
+	default_ammo = /datum/ammo/bullet/revolver
+	equip_slot_flags = NONE
+	caliber = CALIBER_44
+	icon_state = "m44"
+	icon = 'icons/obj/items/ammo/revolver.dmi'
+	icon_state_mini = "mag_revolver_bronze"
+	w_class = WEIGHT_CLASS_SMALL
+	max_rounds = 6
+
+/obj/item/ammo_magazine/revolver/single_action/m44
+	name = "\improper R-44 SAA magnum speed loader (.44)"
+	desc = "A R-44 SAA revolver speed loader."
+	default_ammo = /datum/ammo/bullet/revolver
+	equip_slot_flags = NONE
+	caliber = CALIBER_44
+	icon_state = "m44"
+	icon = 'icons/obj/items/ammo/revolver.dmi'
+	icon_state_mini = "mag_revolver_bronze"
+	w_class = WEIGHT_CLASS_SMALL
+	max_rounds = 6

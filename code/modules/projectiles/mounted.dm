@@ -4,7 +4,7 @@
 	anchored = TRUE
 	resistance_flags = XENO_DAMAGEABLE
 	density = TRUE
-	layer = TANK_BARREL_LAYER
+	layer = ABOVE_MOB_LAYER
 	use_power = FALSE
 	hud_possible = list(MACHINE_HEALTH_HUD, MACHINE_AMMO_HUD)
 	allow_pass_flags = PASSABLE|PASS_LOW_STRUCTURE
@@ -71,14 +71,15 @@
 
 /obj/machinery/deployable/mounted/attackby(obj/item/I, mob/user, params) //This handles reloading the gun, if its in acid cant touch it.
 	. = ..()
+	if(.)
+		return TRUE
 
 	if(!ishuman(user))
 		return
 
-	for(var/obj/effect/xenomorph/acid/A in loc)
-		if(A.acid_t == src)
-			to_chat(user, "You can't get near that, it's melting!")
-			return
+	if(get_self_acid())
+		balloon_alert(user, "It's melting!")
+		return
 
 	reload(user, I)
 
@@ -138,7 +139,7 @@
 
 	playsound(loc, 'sound/weapons/thudswoosh.ogg', 25, TRUE, 7)
 	do_attack_animation(src, ATTACK_EFFECT_GRAB)
-	visible_message("[icon2html(src, viewers(src))] [span_notice("[human_user] mans the [src]!")]",
+	visible_message("[icon2html(src, viewers(src))] [span_notice("[human_user] mans [src]!")]",
 		span_notice("You man the gun!"))
 
 	return ..()
@@ -238,18 +239,18 @@
 	var/obj/item/weapon/gun/gun = get_internal_item()
 	//we can only fire in a 90 degree cone
 	if((dir & angle) && target.loc != loc && target.loc != operator.loc)
-		if(CHECK_BITFIELD(gun.flags_item, DEPLOYED_ANCHORED_FIRING_ONLY) && !anchored)
+		if(CHECK_BITFIELD(gun.item_flags, DEPLOYED_ANCHORED_FIRING_ONLY) && !anchored)
 			to_chat(operator, "[src] cannot be fired without it being anchored.")
 			return FALSE
 		operator.setDir(dir)
 		gun?.set_target(target)
 		update_appearance()
 		return TRUE
-	if(CHECK_BITFIELD(gun?.flags_item, DEPLOYED_NO_ROTATE))
+	if(CHECK_BITFIELD(gun?.item_flags, DEPLOYED_NO_ROTATE))
 		to_chat(operator, "This one is anchored in place and cannot be rotated.")
 		return FALSE
 
-	if(CHECK_BITFIELD(gun?.flags_item, DEPLOYED_NO_ROTATE_ANCHORED) && anchored)
+	if(CHECK_BITFIELD(gun?.item_flags, DEPLOYED_NO_ROTATE_ANCHORED) && anchored)
 		to_chat(operator, "[src] cannot be rotated while anchored.")
 		return FALSE
 
@@ -257,7 +258,7 @@
 	var/left = leftright[1] - 1
 	var/right = leftright[2] + 1
 	if(!(left == (angle-1)) && !(right == (angle+1)))
-		to_chat(operator, span_warning(" [src] cannot be rotated so violently."))
+		to_chat(operator, span_warning("[src] cannot be rotated so violently."))
 		return FALSE
 	var/mob/living/carbon/human/user = operator
 
@@ -275,7 +276,7 @@
 	setDir(angle)
 	user.set_interaction(src)
 	playsound(loc, 'sound/items/ratchet.ogg', 25, 1)
-	operator.visible_message("[operator] rotates the [src].","You rotate the [src].")
+	operator.visible_message("[operator] rotates the [src].","You rotate [src].")
 	update_pixels(user, TRUE)
 
 	if(current_scope?.deployed_scope_rezoom)
@@ -291,26 +292,26 @@
 
 	UnregisterSignal(operator, list(COMSIG_MOB_MOUSEDOWN, COMSIG_MOB_MOUSEDRAG))
 	var/obj/item/weapon/gun/gun = get_internal_item()
-	if(HAS_TRAIT(gun, TRAIT_GUN_IS_AIMING))
-		gun.toggle_aim_mode(operator)
-	gun?.UnregisterSignal(operator, COMSIG_MOB_MOUSEUP)
+	if(gun)
+		if(HAS_TRAIT(gun, TRAIT_GUN_IS_AIMING))
+			gun.toggle_aim_mode(operator)
+		gun.UnregisterSignal(operator, COMSIG_MOB_MOUSEUP)
 
-	for(var/datum/action/action AS in gun.actions)
-		action.remove_action(operator)
+		for(var/datum/action/action AS in gun.actions)
+			action.remove_action(operator)
 
-	for(var/key in gun?.attachments_by_slot)
-		var/obj/item/attachable = gun.attachments_by_slot[key]
-		if(!attachable || !istype(attachable, /obj/item/attachable/scope))
-			continue
-		var/obj/item/attachable/scope/scope = attachable
-		if(!scope.zoom)
-			continue
-		scope.zoom_item_turnoff(operator, operator)
+		for(var/key in gun.attachments_by_slot)
+			var/obj/item/attachable = gun.attachments_by_slot[key]
+			if(!attachable || !istype(attachable, /obj/item/attachable/scope))
+				continue
+			var/obj/item/attachable/scope/scope = attachable
+			if(!scope.zoom)
+				continue
+			scope.zoom_item_turnoff(operator, operator)
+		gun.set_gun_user(null)
 
 	operator.client?.view_size.reset_to_default()
-
 	operator = null
-	gun?.set_gun_user(null)
 	update_pixels(user, FALSE)
 	user_old_x = 0
 	user_old_y = 0

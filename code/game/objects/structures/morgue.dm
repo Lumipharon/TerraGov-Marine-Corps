@@ -7,6 +7,7 @@
 	icon = 'icons/obj/stationobjs.dmi'
 	icon_state = "morgue1"
 	dir = EAST
+	obj_flags = parent_type::obj_flags|BLOCK_Z_OUT_DOWN|BLOCK_Z_IN_UP
 	density = TRUE
 	var/obj/structure/morgue_tray/connected = null
 	var/morgue_type = "morgue"
@@ -88,6 +89,8 @@
 
 /obj/structure/morgue/attackby(obj/item/I, mob/user, params)
 	. = ..()
+	if(.)
+		return
 
 	if(istype(I, /obj/item/tool/pen))
 		var/t = copytext(stripped_input(user, "What would you like the label to be?", name, null), 1, MAX_MESSAGE_LEN)
@@ -192,9 +195,9 @@
 		return
 
 	if(length(contents) <= 1) //1 because the tray is inside.
-		visible_message(span_warning(" You hear a hollow crackle."))
+		visible_message(span_warning("You hear a hollow crackle."))
 	else
-		visible_message(span_warning(" You hear a roar as the crematorium activates."))
+		visible_message(span_warning("You hear a roar as the crematorium activates."))
 
 		cremating = 1
 

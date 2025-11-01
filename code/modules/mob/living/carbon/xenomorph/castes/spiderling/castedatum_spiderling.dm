@@ -4,7 +4,7 @@
 	upgrade_name = ""
 	caste_desc = "An anthropod xenomorph without any qualms to obey their widow, even if it will never grow up and will face death."
 	wound_type = ""
-
+	base_strain_type = /mob/living/carbon/xenomorph/spiderling
 	caste_type_path = /mob/living/carbon/xenomorph/spiderling
 
 	tier = XENO_TIER_MINION
@@ -12,6 +12,7 @@
 
 	// *** Melee Attacks *** //
 	melee_damage = 8
+	accuracy_malus = 65
 
 	// *** Speed *** //
 	speed = -0.6
@@ -24,7 +25,7 @@
 	max_health = 125
 
 	// *** Flags *** //
-	caste_flags = CASTE_NOT_IN_BIOSCAN|CASTE_DO_NOT_ANNOUNCE_DEATH|CASTE_DO_NOT_ALERT_LOW_LIFE
+	caste_flags = CASTE_NOT_IN_BIOSCAN|CASTE_DO_NOT_ANNOUNCE_DEATH|CASTE_DO_NOT_ALERT_LOW_LIFE|CASTE_IS_BUILDER
 
 	// *** Minimap Icon *** //
 	minimap_icon = "spiderling"

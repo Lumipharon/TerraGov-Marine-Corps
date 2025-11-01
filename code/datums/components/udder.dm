@@ -92,7 +92,7 @@
 /obj/item/udder/proc/initial_conditions()
 	if(!udder_mob)
 		return
-	reagents.add_reagent(/datum/reagent/consumable/drink/milk, 20)
+	reagents.add_reagent(/datum/reagent/consumable/milk, 20)
 	START_PROCESSING(SSobj, src)
 
 /**
@@ -102,7 +102,7 @@
  */
 /obj/item/udder/proc/generate()
 	if(prob(5))
-		reagents.add_reagent(/datum/reagent/consumable/drink/milk, rand(5, 10))
+		reagents.add_reagent(/datum/reagent/consumable/milk, rand(5, 10))
 		if(on_generate_callback)
 			on_generate_callback.Invoke(reagents.total_volume, reagents.maximum_volume)
 
@@ -113,10 +113,10 @@
  */
 /obj/item/udder/proc/milk(obj/item/reagent_containers/glass/milk_holder, mob/user)
 	if(milk_holder.reagents.total_volume >= milk_holder.volume)
-		milk_holder.balloon_alert(user, "[milk_holder] is full.")
+		milk_holder.balloon_alert(user, "container full!")
 		return
 	var/transfered = reagents.trans_to(milk_holder, rand(5,10))
 	if(transfered)
 		user.visible_message(span_notice("[user] milks [src] using \the [milk_holder]."), span_notice("You milk [src] using \the [milk_holder]."))
 	else
-		milk_holder.balloon_alert(user, "The udder is dry. Wait a bit longer...")
+		milk_holder.balloon_alert(user, "it's dry!")

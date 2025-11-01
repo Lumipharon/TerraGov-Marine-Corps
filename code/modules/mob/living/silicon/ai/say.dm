@@ -2,7 +2,7 @@
 	var/job = speaker.GetJob()
 	var/namepart = "[speaker.GetVoice()][speaker.get_alt_name()]"
 
-	return radio_freq ? "\[[get_radio_name(radio_freq)][job ? " <a href='?src=[REF(src)];track=[html_encode(namepart)]'>([job])</a>": ""]\] " : ""
+	return radio_freq ? "\[[get_radio_name(radio_freq)][job ? " <a href='byond://?src=[REF(src)];track=[html_encode(namepart)]'>([job])</a>": ""]\] " : ""
 
 /mob/living/silicon/ai/radio(message, message_mode, list/spans, language)
 	if(incapacitated())
@@ -64,7 +64,7 @@
 	var/index = 0
 	for(var/word in GLOB.vox_sounds) //populate our list of available words for the user to see
 		index++
-		dat += "<A href='?src=[REF(src)];say_word=[word]'>[capitalize(word)]</A>"
+		dat += "<A href='byond://?src=[REF(src)];say_word=[word]'>[capitalize(word)]</A>"
 		if(index != length(GLOB.vox_sounds))
 			dat += " / "
 
@@ -114,7 +114,7 @@
 
 	log_game("[key_name(src)] made a vocal announcement with the following message: [message].")
 	log_talk(message, LOG_SAY, tag="VOX Announcement")
-	to_chat(src, span_notice("The following vocal announcement has been made: [message]."))
+	minor_announce(capitalize(message), "[name] announces:", receivers = (GLOB.alive_human_list + GLOB.ai_list + GLOB.observer_list), should_play_sound = FALSE)
 
 	for(var/word in words) //play vox sounds to the rest of our zlevel
 		play_vox_word(word, src.z, null)
