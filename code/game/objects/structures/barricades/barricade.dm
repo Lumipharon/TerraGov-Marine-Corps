@@ -23,7 +23,6 @@
 	var/build_state = BARRICADE_FIRM
 	///The skill level for maintaining this barricade
 	var/skill_level = SKILL_ENGINEER_METAL
-	COOLDOWN_DECLARE(tool_cooldown) //Delay to apply tools to prevent spamming
 
 /obj/structure/barricade/Initialize(mapload, mob/user)
 	. = ..()
