@@ -59,14 +59,7 @@ GLOBAL_LIST_INIT(blacklisted_cargo_types, typecacheof(list(
 	var/railing_gear_name = "supply"
 	var/obj/effect/elevator/elevator_effect
 	///Used to mirrors the turfs (and their contents) on the elevator when raising/lowering, so they don't instantly teleport or vanish.
-	var/obj/effect/elevator/animation_overlay/elevator_animation
-
-/obj/docking_port/mobile/supply/som
-	name = "SOM supply shuttle"
-	id = SHUTTLE_SOM_SUPPLY
-	faction = FACTION_SOM
-	home_id = "supply_SOM_home"
-	railing_gear_name = "supply_SOM"
+	var/obj/effect/elevator_animation_overlay/elevator_animation
 
 /obj/docking_port/mobile/supply/Destroy(force)
 	for(var/i in railings)
@@ -75,6 +68,35 @@ GLOBAL_LIST_INIT(blacklisted_cargo_types, typecacheof(list(
 	railings.Cut()
 	return ..()
 
+//todo: the tiles in the shuttle itself need keep_together, just manually mass var editing atm
+/obj/docking_port/mobile/supply/proc/add_ele_effect(obj/effect/elevator/new_elevator_effect)
+	if(elevator_effect)
+		return
+	elevator_effect = new_elevator_effect
+	elevator_animation = new()
+	elevator_effect.vis_contents += elevator_animation
+
+/obj/docking_port/mobile/supply/proc/load_vis_contents()
+	var/area/away_area = get_area(src)
+	for(var/turf/turf AS in away_area)
+		elevator_animation.vis_contents += turf
+		for(var/atom/movable/vis_content in turf.contents)
+			vis_content.blocks_emissive = EMISSIVE_BLOCK_NONE
+			vis_content.update_emissive_block()
+
+/obj/docking_port/mobile/supply/proc/shuttle_arriving()
+	load_vis_contents()
+	animate(elevator_animation, pixel_x = 0, pixel_y = 0, time = 2 SECONDS)
+
+	elevator_effect.icon_state = "supply_elevator_raised"
+	flick("supply_elevator_raising", elevator_effect)
+
+/obj/docking_port/mobile/supply/proc/shuttle_departing()
+	load_vis_contents()
+	animate(elevator_animation, pixel_x = 160, pixel_y = -80, time = 2 SECONDS)
+
+	elevator_effect.icon_state = "supply_elevator_lowered"
+	flick("supply_elevator_lowering", elevator_effect)
 
 /obj/docking_port/mobile/supply/afterShuttleMove()
 	. = ..()
@@ -82,11 +104,18 @@ GLOBAL_LIST_INIT(blacklisted_cargo_types, typecacheof(list(
 		for(var/j in railings)
 			var/obj/machinery/door/poddoor/railing/R = j
 			R.open()
-	//its landed at req
+		if(!elevator_effect)
+			return
+		for(var/turf/vis_turf in elevator_animation.vis_contents) //todo:clean this up, probs a better way to do this, this happens at init before its linked
+			for(var/atom/movable/vis_content in vis_turf.contents)
+				vis_content.blocks_emissive = initial(vis_content.blocks_emissive)
+				vis_content.update_emissive_block()
+	if(elevator_effect) //todo:clean this up, probs a better way to do this, this happens at init before its linked
+		elevator_animation.vis_contents.Cut()
 
 /obj/docking_port/mobile/supply/on_ignition()
 	if(getDockedId() == home_id)
-		elevator_effect.shuttle_departing()
+		shuttle_departing()
 		for(var/j in railings)
 			var/obj/machinery/door/poddoor/railing/R = j
 			R.close()
@@ -94,7 +123,7 @@ GLOBAL_LIST_INIT(blacklisted_cargo_types, typecacheof(list(
 			var/obj/machinery/gear/G = i
 			G.start_moving(NORTH)
 	else
-		elevator_effect.shuttle_arriving()
+		shuttle_arriving()
 		for(var/i in gears)
 			var/obj/machinery/gear/G = i
 			G.start_moving(SOUTH)
@@ -205,6 +234,12 @@ GLOBAL_LIST_INIT(blacklisted_cargo_types, typecacheof(list(
 		SSpoints.shoppinglist[faction] -= "[SO.id]"
 		SSpoints.shopping_history += SO
 
+/obj/docking_port/mobile/supply/som
+	name = "SOM supply shuttle"
+	id = SHUTTLE_SOM_SUPPLY
+	faction = FACTION_SOM
+	home_id = "supply_SOM_home"
+	railing_gear_name = "supply_SOM"
 
 /datum/export_report
 	/// How many points from that export
@@ -347,7 +382,7 @@ GLOBAL_LIST_INIT(blacklisted_cargo_types, typecacheof(list(
 			supply_shuttle.home_id = home_id
 			supply_shuttle.faction = faction
 			//todo: placeholder way of doing this, clean up later
-			supply_shuttle.elevator_effect = home_port.elevator_effect
+			supply_shuttle.add_ele_effect(home_port.elevator_effect)
 		ui = new(user, src, tgui_name, source_object.name)
 		ui.open()
 
