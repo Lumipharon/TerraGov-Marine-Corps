@@ -26,6 +26,11 @@ GLOBAL_LIST_INIT(blacklisted_cargo_types, typecacheof(list(
 	dwidth = 2
 	dheight = 2
 	height = 5
+	var/obj/effect/elevator/elevator_effect
+
+/obj/docking_port/stationary/supply/Initialize(mapload)
+	. = ..()
+	elevator_effect = new /obj/effect/elevator(loc)
 
 /obj/docking_port/stationary/supply/som
 	id = "supply_SOM_home"
@@ -45,12 +50,16 @@ GLOBAL_LIST_INIT(blacklisted_cargo_types, typecacheof(list(
 	movement_force = list("KNOCKDOWN" = 0, "THROW" = 0)
 	use_ripples = FALSE
 	faction = FACTION_TERRAGOV
+	//prearrivalTime = 0
 	var/list/gears = list()
 	var/list/obj/machinery/door/poddoor/railing/railings = list()
 	/// Id of the home docking port
 	var/home_id = "supply_home"
 	///prefix for railings and gear todo should probbaly be defines instead?
 	var/railing_gear_name = "supply"
+	var/obj/effect/elevator/elevator_effect
+	///Used to mirrors the turfs (and their contents) on the elevator when raising/lowering, so they don't instantly teleport or vanish.
+	var/obj/effect/elevator/animation_overlay/elevator_animation
 
 /obj/docking_port/mobile/supply/som
 	name = "SOM supply shuttle"
@@ -73,9 +82,11 @@ GLOBAL_LIST_INIT(blacklisted_cargo_types, typecacheof(list(
 		for(var/j in railings)
 			var/obj/machinery/door/poddoor/railing/R = j
 			R.open()
+	//its landed at req
 
 /obj/docking_port/mobile/supply/on_ignition()
 	if(getDockedId() == home_id)
+		elevator_effect.shuttle_departing()
 		for(var/j in railings)
 			var/obj/machinery/door/poddoor/railing/R = j
 			R.close()
@@ -83,6 +94,7 @@ GLOBAL_LIST_INIT(blacklisted_cargo_types, typecacheof(list(
 			var/obj/machinery/gear/G = i
 			G.start_moving(NORTH)
 	else
+		elevator_effect.shuttle_arriving()
 		for(var/i in gears)
 			var/obj/machinery/gear/G = i
 			G.start_moving(SOUTH)
@@ -291,6 +303,8 @@ GLOBAL_LIST_INIT(blacklisted_cargo_types, typecacheof(list(
 	var/shuttle_id = ""
 	///Reference to the supply shuttle
 	var/obj/docking_port/mobile/supply/supply_shuttle
+	///Reference to the supply shuttle
+	var/obj/docking_port/stationary/supply/home_port
 	///Faction of the supply console linked
 	var/faction = FACTION_TERRAGOV
 	///Id of the home port
@@ -329,8 +343,11 @@ GLOBAL_LIST_INIT(blacklisted_cargo_types, typecacheof(list(
 	if(!ui)
 		if(shuttle_id)
 			supply_shuttle = SSshuttle.getShuttle(shuttle_id)
+			home_port = SSshuttle.getDock(home_id)
 			supply_shuttle.home_id = home_id
 			supply_shuttle.faction = faction
+			//todo: placeholder way of doing this, clean up later
+			supply_shuttle.elevator_effect = home_port.elevator_effect
 		ui = new(user, src, tgui_name, source_object.name)
 		ui.open()
 
